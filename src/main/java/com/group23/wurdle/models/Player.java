@@ -1,7 +1,8 @@
-package com.group23.wurdle;
+package com.group23.wurdle.models;
 
 public class Player {
     private String nickname;
+
     private int score;
 
     Player(String nickname) {
@@ -18,6 +19,11 @@ public class Player {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    @Override
+    public String toString() {
+        return nickname + " " + score;
     }
 
 }

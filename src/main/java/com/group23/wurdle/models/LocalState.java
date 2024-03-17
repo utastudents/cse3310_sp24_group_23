@@ -1,8 +1,8 @@
-package com.group23.wurdle;
+package com.group23.wurdle.models;
 
 import java.util.ArrayList;
 
-public class State {
+public class LocalState {
     ArrayList<Player> players;
 
 }
