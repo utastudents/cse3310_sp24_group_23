@@ -1,14 +1,14 @@
-package com.group23.wurdle;
+package uta.group23.wurdle;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 
-public class Server extends ServerSocket {
+public class HttpServer extends ServerSocket {
     int port;
 
-    public Server(int port) throws IOException {
+    public HttpServer(int port) throws IOException {
         super(port);
         this.port = port;
 

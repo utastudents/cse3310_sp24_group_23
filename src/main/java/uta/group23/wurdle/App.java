@@ -1,4 +1,4 @@
-package com.group23.wurdle;
+package uta.group23.wurdle;
 
 /**
  * Hello world!
@@ -7,9 +7,9 @@ package com.group23.wurdle;
 public class App {
 
     public static void main(String[] args) {
-        Server server;
+        HttpServer server;
         try {
-            server = new Server(1297);
+            // server = new HttpServer(1297);
 
         } catch (Exception e) {
             e.printStackTrace();
