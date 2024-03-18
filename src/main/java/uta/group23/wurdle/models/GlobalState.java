@@ -1,4 +1,4 @@
-package com.group23.wurdle.models;
+package uta.group23.wurdle.models;
 
 public class GlobalState {
 
