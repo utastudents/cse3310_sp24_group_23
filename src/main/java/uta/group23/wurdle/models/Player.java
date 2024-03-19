@@ -11,6 +11,12 @@ public class Player {
         this.id = UUID.randomUUID().toString();
     }
 
+    public Player(String nickname) {
+        this();
+        this.nickname = nickname;
+        this.score = 0;
+    }
+
     public String getNickname() {
         return nickname;
     }

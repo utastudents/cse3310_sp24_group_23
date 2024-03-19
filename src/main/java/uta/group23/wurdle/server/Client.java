@@ -1,4 +1,4 @@
-package uta.group23.server;
+package uta.group23.wurdle.server;
 
 import java.net.InetSocketAddress;
 
