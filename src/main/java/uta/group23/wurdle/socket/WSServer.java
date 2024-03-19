@@ -16,6 +16,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class WSServer extends WebSocketServer {
     private Context ctx;
     private InetSocketAddress addr;
@@ -27,7 +30,7 @@ public class WSServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Message recv:" + message);
+        JsonObject j = JsonParser.parseString(message).getAsJsonObject();
     }
 
     @Override
