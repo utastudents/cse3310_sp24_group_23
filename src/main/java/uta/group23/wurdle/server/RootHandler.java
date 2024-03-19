@@ -1,4 +1,4 @@
-package uta.group23.server;
+package uta.group23.wurdle.server;
 
 import java.io.IOException;
 import java.io.InputStream;

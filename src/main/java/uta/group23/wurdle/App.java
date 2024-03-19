@@ -5,9 +5,9 @@ import java.net.InetSocketAddress;
 import com.sun.net.httpserver.*;
 
 import uta.group23.wurdle.models.Context;
+import uta.group23.wurdle.server.CreatePlayerHandler;
+import uta.group23.wurdle.server.RootHandler;
 import uta.group23.wurdle.socket.*;
-import uta.group23.server.RootHandler;
-import uta.group23.server.CreatePlayerHandler;
 
 /**
  * Hello world!
