@@ -1,0 +1,1 @@
+mvn exec:java -Dexec.mainClass=uta.group23.wurdle.App
