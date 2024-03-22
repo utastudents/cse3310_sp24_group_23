@@ -1,5 +1,7 @@
 package uta.group23.wurdle.models;
 
+import uta.group23.wurdle.socket.Lobby;
+
 public class User {
     private String nickname;
     private int points;
@@ -15,43 +17,35 @@ public class User {
         this.num_found = num_found;
     }
 
-    public void setNickName(String nickname) 
-    {
+    public void setNickName(String nickname) {
         this.nickname = nickname;
     }
 
-    public void joinLobby(Lobby lobby) 
-    {
-    
+    public void joinLobby(Lobby lobby) {
+
     }
 
-    public Lobby createLobby() 
-    {
+    public Lobby createLobby() {
         return null;
     }
 
-    public Colour setColour() 
-    {
+    public Colour setColour() {
         return null;
     }
 
-    public void leaveLobby() 
-    {
+    public void leaveLobby() {
 
     }
 
-    public boolean isReader() 
-    {
+    public boolean isReader() {
         return false;
     }
 
-    public void selectCell(Lobby lobby, int row, int col) 
-    {
+    public void selectCell(Lobby lobby, int row, int col) {
 
     }
 
-    public void sendMessage(String[] message) 
-    {
+    public void sendMessage(String[] message) {
 
     }
 }

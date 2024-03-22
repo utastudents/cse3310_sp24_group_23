@@ -1,16 +1,14 @@
 package uta.group23.wurdle.models;
 
-public enum Colour 
-{
-    Red("Red"),
-    Green("Green"),
-    Blue("Blue"),
-    Yellow("Yellow"),
-    Purple("Purple"),
-    Cyan("Cyan");
+public enum Colour {
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Purple,
+    Cyan;
 
-    public void chanceColour() 
-    {
+    public void chanceColour() {
 
     }
 }
