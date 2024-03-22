@@ -21,8 +21,18 @@ public class Lobby {
         this.players = new ArrayList<Player>();
     }
 
-    public String getLobbyName() {
-        return lobbyName;
+    public void addPlayer(Player player) {
+        players.add(player);
     }
+
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
+    public void addSpectator(Player player) {
+        players.add(player);
+    }
+
+    
 
 }
