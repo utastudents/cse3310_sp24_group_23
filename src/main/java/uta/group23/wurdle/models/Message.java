@@ -11,4 +11,7 @@ public class Message {
         this.message = msg;
 
     }
+    public void postMessage(StringMessage){
+
+    }
 }
