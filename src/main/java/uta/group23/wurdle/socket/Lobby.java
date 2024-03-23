@@ -30,9 +30,23 @@ public class Lobby {
     }
 
     public void addSpectator(Player player) {
-        players.add(player);
+        // add spectate
+    }
+    public void removeSpectate(Player player) {
+        // remove spectate
+    }
+    public void setPlayerColour(Player player, Colour colour) {
+        // Set player color 
     }
 
+    public boolean readyPlayer(Player player) {
+        // Ready player 
+        return false;
+    }
+
+    public void startGame() {
+        // Start game 
+    }
     
 
 }
