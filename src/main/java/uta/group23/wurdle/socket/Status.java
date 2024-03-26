@@ -1,13 +1,13 @@
 package uta.group23.wurdle.socket;
 
-import uta.group23.wurdle.models.Room;
+import uta.group23.wurdle.socket.Lobby;
 
 public enum Status {
     WAITING,
     IN_PROGRESS,
     FINISHED;
 
-    public static void changeStatus(Room room) {
+    public static void changeStatus(Lobby lobby) {
 
     }
 }

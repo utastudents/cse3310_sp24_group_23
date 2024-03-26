@@ -8,7 +8,7 @@ public enum Colour {
     Purple,
     Cyan;
 
-    public void chanceColour() {
+    public void changeColour() {
 
     }
 }
