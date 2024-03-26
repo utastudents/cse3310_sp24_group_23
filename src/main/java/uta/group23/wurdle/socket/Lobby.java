@@ -2,6 +2,7 @@ package uta.group23.wurdle.socket;
 
 import java.util.ArrayList;
 
+import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
 
 public class Lobby {
@@ -32,21 +33,22 @@ public class Lobby {
     public void addSpectator(Player player) {
         // add spectate
     }
+
     public void removeSpectate(Player player) {
         // remove spectate
     }
+
     public void setPlayerColour(Player player, Colour colour) {
-        // Set player color 
+        // Set player color
     }
 
     public boolean readyPlayer(Player player) {
-        // Ready player 
+        // Ready player
         return false;
     }
 
     public void startGame() {
-        // Start game 
+        // Start game
     }
-    
 
 }
