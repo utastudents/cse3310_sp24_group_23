@@ -11,7 +11,7 @@ public class Message {
         this.message = msg;
 
     }
-    public void postMessage(StringMessage){
+    public void postMessage(String Message){
 
     }
 }
