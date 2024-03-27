@@ -79,7 +79,7 @@ public class Player {
 
     }
 
-    public boolean isReader() {
+    public boolean isReady() {
         return false;
     }
 
