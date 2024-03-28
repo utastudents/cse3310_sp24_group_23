@@ -38,19 +38,6 @@ public class GridTest {
         assertTrue(GridGen.wordExists("Trung", grid));
         assertTrue(GridGen.wordExists("Austin", grid));
 
-        // print the grid
-        for (int i = 0; i < grid.getWidth(); i++) {
-            for (int j = 0; j < grid.getHeight(); j++) {
-                if (grid.getCell(i, j).getLetter() == ' ') {
-                    System.out.print("*");
-                } else {
-                    System.out.print(grid.getCell(i, j).getLetter());
-                }
-
-            }
-            System.out.println();
-        }
-
     }
 
     @Test
@@ -67,9 +54,36 @@ public class GridTest {
 
         for (int i = 0; i < g.getWidth(); i++) {
             for (int j = 0; j < g.getHeight(); j++) {
-                Cell c = g.getGrid()[i][j];
+                Cell c = g.getCell(i, j);
                 assertTrue(c.getLetter() != ' ');
             }
+        }
+
+    }
+
+    @Test
+    public void validGrid2() throws Exception {
+        // visual test
+        Grid g = new Grid(20, 20);
+        // wordlist is in same directory as the test
+        URL path = GridTest.class.getResource("./words.txt");
+        File f = new File(path.getFile());
+
+        GridGen gen = new GridGen(f.getAbsolutePath());
+        gen.generateGrid(g);
+
+        System.out.println("Char count: " + g.getCharCount());
+
+        System.out.println("Grid density: " + g.calculateDensity());
+
+        // print the grid
+        for (int i = 0; i < g.getWidth(); i++) {
+            for (int j = 0; j < g.getHeight(); j++) {
+
+                System.out.print(g.getCell(i, j).getLetter() + " ");
+
+            }
+            System.out.println();
         }
 
     }

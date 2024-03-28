@@ -6,7 +6,7 @@ import java.util.UUID;
 public class Grid {
     private int width;
     private int height;
-    private ArrayList<String> words;
+    private int charCount;
     private Cell[][] grid;
 
     public Grid(int width, int height) {
@@ -19,6 +19,18 @@ public class Grid {
                 grid[i][j] = new Cell();
             }
         }
+    }
+
+    public void addCharCount(int count) {
+        charCount += count;
+    }
+
+    public int getCharCount() {
+        return charCount;
+    }
+
+    public float calculateDensity() {
+        return (float) charCount / (width * height);
     }
 
     public void setCell(int x, int y, char letter) {
@@ -43,10 +55,6 @@ public class Grid {
 
     public int getHeight() {
         return height;
-    }
-
-    public float getDensity() {
-        return 0.0f;
     }
 
     public void claimCell(int x, int y, UUID playerId) {

@@ -32,9 +32,6 @@ public class GridGen {
     public GridGen() {
     }
 
-    public void getDensity(int startIndex, int endIndex) {
-    }
-
     public int getCellIndex(int x, int y, Grid grid) {
         return x * grid.getWidth() + y;
     }
@@ -62,91 +59,85 @@ public class GridGen {
                         if (found) {
                             return true;
                         }
+                    }
 
-                        // scan left
-                        if (j - word.length() >= 0) { // check if word fits in length
-                            found = true;
-                            // we need to see if any char breaks the word
-                            for (int k = 1; k < word.length(); k++) {
-                                if (grid.getCell(i, j - k).getLetter() != word.charAt(k)) {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            if (found) {
-                                return true;
+                    // scan left
+                    if (j - word.length() >= 0) { // check if word fits in length
+                        found = true;
+                        // we need to see if any char breaks the word
+                        for (int k = 1; k < word.length(); k++) {
+                            if (grid.getCell(i, j - k).getLetter() != word.charAt(k)) {
+                                found = false;
+                                break;
                             }
                         }
-
-                        // scan down
-
-                        if (i + word.length() <= grid.getHeight()) { // check if word fits in length
-                            found = true;
-                            // we need to see if any char breaks the word
-                            for (int k = 1; k < word.length(); k++) {
-                                if (grid.getCell(i + k, j).getLetter() != word.charAt(k)) {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            if (found) {
-                                return true;
-                            }
-                        }
-
-                        // scan up
-                        if (i - word.length() >= 0) { // check if word fits in length
-                            found = true;
-                            // we need to see if any char breaks the word
-                            for (int k = 1; k < word.length(); k++) {
-                                if (grid.getCell(i - k, j).getLetter() != word.charAt(k)) {
-                                    found = false;
-                                    break;
-                                }
-                            }
-                            if (found) {
-                                return true;
-                            }
-
-                            // scan down diagonal
-                            if (i + word.length() <= grid.getHeight() && j + word.length() <= grid.getWidth()) { // check
-                                                                                                                 // if
-                                                                                                                 // word
-                                                                                                                 // fits
-                                                                                                                 // in
-                                                                                                                 // length
-                                found = true;
-                                // we need to see if any char breaks the word
-                                for (int k = 1; k < word.length(); k++) {
-                                    if (grid.getCell(i + k, j + k).getLetter() != word.charAt(k)) {
-                                        found = false;
-                                        break;
-                                    }
-                                }
-                                if (found) {
-                                    return true;
-                                }
-                            }
-
-                            // scan up diagonal
-                            if (i - word.length() >= 0 && j - word.length() >= 0) { // check if word fits in length
-                                found = true;
-                                // we need to see if any char breaks the word
-                                for (int k = 1; k < word.length(); k++) {
-                                    if (grid.getCell(i - k, j - k).getLetter() != word.charAt(k)) {
-                                        found = false;
-                                        break;
-                                    }
-                                }
-                                if (found) {
-                                    return true;
-                                }
-                            }
+                        if (found) {
+                            return true;
                         }
                     }
 
-                }
+                    // scan down
+                    if (i + word.length() <= grid.getHeight()) { // check if word fits in length
+                        found = true;
+                        // we need to see if any char breaks the word
+                        for (int k = 1; k < word.length(); k++) {
+                            if (grid.getCell(i + k, j).getLetter() != word.charAt(k)) {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found) {
+                            return true;
+                        }
+                    }
 
+                    // scan up
+                    if (i - word.length() >= 0) { // check if word fits in length
+                        found = true;
+                        // we need to see if any char breaks the word
+                        for (int k = 1; k < word.length(); k++) {
+                            if (grid.getCell(i - k, j).getLetter() != word.charAt(k)) {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found) {
+                            return true;
+                        }
+                    }
+
+                    // scan down diagonal
+                    if (i + word.length() <= grid.getHeight() && j + word.length() <= grid.getWidth()) { // check if
+                                                                                                         // word fits in
+                                                                                                         // length
+                        found = true;
+                        // we need to see if any char breaks the word
+                        for (int k = 1; k < word.length(); k++) {
+                            if (grid.getCell(i + k, j + k).getLetter() != word.charAt(k)) {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found) {
+                            return true;
+                        }
+                    }
+
+                    // scan up diagonal
+                    if (i - word.length() >= 0 && j - word.length() >= 0) { // check if word fits in length
+                        found = true;
+                        // we need to see if any char breaks the word
+                        for (int k = 1; k < word.length(); k++) {
+                            if (grid.getCell(i - k, j - k).getLetter() != word.charAt(k)) {
+                                found = false;
+                                break;
+                            }
+                        }
+                        if (found) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
@@ -236,6 +227,7 @@ public class GridGen {
 
             }
         }
+
     }
 
     public void generateGrid(Grid grid) throws Exception {
