@@ -25,6 +25,10 @@ public class Grid {
         grid[x][y].letter = letter;
     }
 
+    public Cell getCell(int x, int y) {
+        return grid[x][y];
+    }
+
     public int getCellIndex(int x, int y) {
         return x * width + y;
     }
