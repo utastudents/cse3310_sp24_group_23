@@ -112,6 +112,9 @@ public class GridGen {
 
         // add word to grid
         for (int i = 0; i < word.length(); i++) {
+            // word scope
+            // according to the paper, it should be easy to add
+            // diagonal words
             if (dir == Direction.Horizontal) {
                 if (op == OperationMode.Forward) {
                     grid.setCell(x, y + i, word.charAt(i));
