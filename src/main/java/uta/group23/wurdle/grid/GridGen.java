@@ -36,6 +36,28 @@ public class GridGen {
         return x * grid.getWidth() + y;
     }
 
+    public boolean wordExists(String word, Grid grid) throws Exception {
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(wordList));
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.equals(word)) {
+                    return true;
+                }
+                line = reader.readLine();
+            }
+
+            reader.close();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        throw new Exception("Word does not exist in word list");
+
+    }
+
     public void addWordToGrid(String word, Grid grid) {
 
         // adapted from the paper
