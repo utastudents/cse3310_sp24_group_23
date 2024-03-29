@@ -87,4 +87,21 @@ public class GridTest {
         }
 
     }
+
+    @Test
+    public void gridUnder1Second() throws Exception {
+        // test to make sure that the grid generation is under 1 second
+        long start = System.currentTimeMillis();
+        Grid g = new Grid(50, 50);
+        // wordlist is in same directory as the test
+        URL path = GridTest.class.getResource("./words.txt");
+        File f = new File(path.getFile());
+
+        GridGen gen = new GridGen(f.getAbsolutePath());
+        gen.generateGrid(g);
+        long end = System.currentTimeMillis();
+
+        assertTrue(end - start < 1000);
+
+    }
 }
