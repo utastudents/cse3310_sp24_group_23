@@ -21,6 +21,10 @@ public class Lobby {
         this.lobbyMode = lobbyMode;
         this.players = new ArrayList<Player>();
     }
+    
+     public String getLobbyName() {
+        return lobbyName;
+    }
 
     public void addPlayer(Player player) {
         players.add(player);
