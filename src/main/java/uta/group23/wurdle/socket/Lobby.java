@@ -14,6 +14,7 @@ public class Lobby {
     private int password;
     private Mode lobbyMode;
     private ArrayList<Player> players;
+    private int playerCount;
 
     public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode) {
         this.lobbyName = lobbyName;
@@ -25,8 +26,8 @@ public class Lobby {
         this.lobbyMode = lobbyMode;
         this.players = new ArrayList<Player>();
     }
-    
-     public String getLobbyName() {
+
+    public String getLobbyName() {
         return lobbyName;
     }
 
@@ -58,6 +59,7 @@ public class Lobby {
     public void startGame() {
         // Start game
     }
+
     public void displayPlayerStats(Player player) {
         // Display player stats logic
     }
