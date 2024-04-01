@@ -79,6 +79,10 @@ public class Player {
 
     }
 
+    public void lobbyPasswordToggle() {
+        
+    }
+    
     public boolean isReady() {
         return false;
     }
