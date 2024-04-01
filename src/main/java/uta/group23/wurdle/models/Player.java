@@ -8,7 +8,7 @@ public class Player {
     private String nickname;
     private String id;
     private int score;
-
+    private int consecHints;
     private String[] words_found;
     private Colour user_colour;
     private int num_found;
@@ -90,5 +90,10 @@ public class Player {
     public void sendMessage(String[] message) {
 
     }
+
+    public void playAgain() {
+        
+    }
+
 
 }
