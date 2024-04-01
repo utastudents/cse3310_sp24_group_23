@@ -17,4 +17,8 @@ public class LobbyList {
     public void removeLobby(Lobby lobby) {
         lobbies.remove(lobby);
     }
+    public void searchID(int lobbyID) {
+     
+    }
+    
 }
