@@ -6,7 +6,7 @@ import uta.group23.wurdle.socket.Lobby;
 
 public class Player {
     private String nickname;
-    private String id;
+    private String playerID;
     private int score;
     private int consecHints;
     private String[] words_found;
@@ -15,7 +15,7 @@ public class Player {
     private PlayerType user_type;
 
     Player() {
-        this.id = UUID.randomUUID().toString();
+        this.playerID = UUID.randomUUID().toString();
     }
 
     public Player(String nickname) {
@@ -38,8 +38,8 @@ public class Player {
         return score;
     }
 
-    public String getId() {
-        return id;
+    public String getplayerId() {
+        return playerID;
     }
 
     public void setNickname(String nickname) {
