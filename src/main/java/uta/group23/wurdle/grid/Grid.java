@@ -1,6 +1,7 @@
 package uta.group23.wurdle.grid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Grid {
@@ -9,11 +10,13 @@ public class Grid {
     private int charCount;
     private Cell[][] grid;
     private float density;
+    private HashMap<String, Direction> words = new HashMap<>();
 
     public Grid(int width, int height) {
         this.width = width;
         this.height = height;
         this.grid = new Cell[width][height];
+        this.words = new HashMap<>();
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -24,6 +27,14 @@ public class Grid {
 
     public void setDensity(float density) {
         this.density = density;
+    }
+
+    public void addWord(String word, Direction direction) {
+        words.put(word, direction);
+    }
+
+    public HashMap<String, Direction> getWords() {
+        return words;
     }
 
     public float getDensity() {

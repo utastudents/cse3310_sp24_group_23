@@ -8,12 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Timer;
 
-enum Direction {
-    Horizontal,
-    Vertical,
-    Diagonal
-}
-
 enum OperationMode {
     Forward,
     Backward
@@ -28,11 +22,13 @@ public class GridGen {
 
     public GridGen(String wordList) {
         this.wordList = new File(wordList);
-        assert this.wordList.exists();
-
+        if (!this.wordList.exists() || !this.wordList.isFile()) {
+            throw new IllegalArgumentException("Invalid word list file path: " + this.wordList.getAbsolutePath());
+        }
     }
 
     public GridGen() {
+        this.wordList = null;
     }
 
     public int getCellIndex(int x, int y, Grid grid) {
@@ -40,6 +36,7 @@ public class GridGen {
     }
 
     public static boolean wordExists(String word, Grid grid) {
+        word = word.toUpperCase();
         // check if word exists in grid
         // adapted from the paper
         // https://ijses.com/wp-content/uploads/2022/01/68-IJSES-V6N1.pdf
@@ -137,93 +134,105 @@ public class GridGen {
 
     }
 
-    public void addWordToGrid(String word, Grid grid) {
+    private boolean isValidPlacement(String word, int x, int y, Direction dir, OperationMode op, Grid grid) {
+        for (int i = 0; i < word.length(); i++) {
+            int currX = x;
+            int currY = y;
 
+            if (dir == Direction.Horizontal) {
+                if (op == OperationMode.Forward) {
+                    currY += i;
+                } else {
+                    currY -= i;
+                }
+            } else if (dir == Direction.Vertical) {
+                if (op == OperationMode.Forward) {
+                    currX += i;
+                } else {
+                    currX -= i;
+                }
+            } else { // Diagonal
+                if (op == OperationMode.Forward) {
+                    currX += i;
+                    currY += i;
+                } else {
+                    currX -= i;
+                    currY -= i;
+                }
+            }
+
+            // Check if the current cell is out of bounds
+            if (currX < 0 || currX >= grid.getHeight() || currY < 0 || currY >= grid.getWidth()) {
+                return false;
+            }
+
+            // Check if there is an existing letter in the current cell
+            char existingLetter = grid.getCell(currX, currY).letter;
+            if (existingLetter != ' ' && existingLetter != word.charAt(i)) {
+                return false;
+            }
+        }
+
+        // No conflicting intersections found
+        return true;
+    }
+
+    public void addWordToGrid(String word, Grid grid) {
+        word = word.toUpperCase();
         // adapted from the paper
         // https://ijses.com/wp-content/uploads/2022/01/68-IJSES-V6N1.pdf
         // get random starting point
         int x = (int) (Math.random() * grid.getWidth());
         int y = (int) (Math.random() * grid.getHeight());
-
         // get random direction
         Direction dir = Direction.values()[(int) (Math.random() * 3)];
-
         // get random operation mode
-        op = OperationMode.values()[(int) (Math.random() * 2)];
+        OperationMode op = OperationMode.values()[(int) (Math.random() * 2)];
 
         // check if word fits in grid
-        if (word.length() > grid.getWidth() || word.length() > grid.getHeight()) {
+        if (dir == Direction.Horizontal && y + word.length() > grid.getWidth()) {
+            return;
+        } else if (dir == Direction.Vertical && x + word.length() > grid.getHeight()) {
+            return;
+        } else if (dir == Direction.Diagonal
+                && (x + word.length() > grid.getHeight() || y + word.length() > grid.getWidth())) {
             return;
         }
 
         // check if word fits in grid
-        if (dir == Direction.Horizontal) {
-            if (op == OperationMode.Forward) {
-                if (y + word.length() > grid.getWidth()) {
-                    return;
-                }
-            } else {
-                if (y - word.length() < 0) {
-                    return;
-                }
-            }
-        } else if (dir == Direction.Vertical) {
-            if (op == OperationMode.Forward) {
-                if (x + word.length() > grid.getHeight()) {
-                    return;
-                }
-            } else {
-                if (x - word.length() < 0) {
-                    return;
-                }
-            }
-        } else {
-            if (op == OperationMode.Forward) {
-                if (x + word.length() > grid.getHeight() || y + word.length() > grid.getWidth()) {
-                    return;
-                }
-            } else {
-                if (x - word.length() < 0 || y - word.length() < 0) {
-                    return;
-                }
-            }
+        if (!isValidPlacement(word, x, y, dir, op, grid)) {
+            return;
         }
 
         // add word to grid
-        grid.addCharCount(word.length());
-        for (int i = 0; i < word.length(); i++) {
-            // word scope
-            // according to the paper, it should be easy to add
-            // diagonal words
+        grid.addCharCount(word.length()); // Add this line to increment the character count
 
+        for (int i = 0; i < word.length(); i++) {
+            int currX = x;
+            int currY = y;
             if (dir == Direction.Horizontal) {
-                // horizontal forward
                 if (op == OperationMode.Forward) {
-                    grid.setCell(x, y + i, word.charAt(i));
+                    currY += i;
                 } else {
-                    grid.setCell(x, y - i, word.charAt(i));
+                    currY -= i;
                 }
             } else if (dir == Direction.Vertical) {
                 if (op == OperationMode.Forward) {
-                    // vertical forward
-                    grid.setCell(x + i, y, word.charAt(i));
+                    currX += i;
                 } else {
-                    // vertical backward
-                    grid.setCell(x - i, y, word.charAt(i));
+                    currX -= i;
                 }
-            } else {
-                // diagonal
+            } else { // Diagonal
                 if (op == OperationMode.Forward) {
-                    grid.setCell(x + i, y + i, word.charAt(i));
+                    currX += i;
+                    currY += i;
+                } else {
+                    currX -= i;
+                    currY -= i;
                 }
-
-                else {
-                    grid.setCell(x - i, y - i, word.charAt(i));
-                }
-
             }
+            grid.setCell(currX, currY, word.charAt(i));
         }
-
     }
 
     public boolean gridFull(Grid grid) {
@@ -235,6 +244,16 @@ public class GridGen {
             }
         }
         return true;
+    }
+
+    public void fillEmptyCells(Grid grid) {
+        for (int i = 0; i < grid.getWidth(); i++) {
+            for (int j = 0; j < grid.getHeight(); j++) {
+                if (grid.getCell(i, j).getLetter() == ' ') {
+                    grid.setCell(i, j, (char) (Math.random() * 26 + 'A'));
+                }
+            }
+        }
     }
 
     public void generateGrid(Grid grid) throws Exception {
@@ -251,6 +270,11 @@ public class GridGen {
             }
             line = reader.readLine();
         }
+
+        // fill empty cells
+        fillEmptyCells(grid);
+
+        reader.close();
     }
 
 }
