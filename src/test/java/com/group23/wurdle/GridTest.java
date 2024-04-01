@@ -1,11 +1,8 @@
 package com.group23.wurdle;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.net.URL;
-
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.junit.Test;
 
 import uta.group23.wurdle.grid.Cell;
@@ -20,15 +17,26 @@ public class GridTest {
      * Rigorous Test :-)
      */
 
+    private void add10Words(GridGen g, Grid grid) {
+        g.addWordToGrid("Trung", grid);
+        g.addWordToGrid("Austin", grid);
+        g.addWordToGrid("Wurdle", grid);
+        g.addWordToGrid("Java", grid);
+        g.addWordToGrid("Computer", grid);
+        g.addWordToGrid("Science", grid);
+        g.addWordToGrid("Engineering", grid);
+        g.addWordToGrid("Software", grid);
+        g.addWordToGrid("Development", grid);
+        g.addWordToGrid("Test", grid);
+
+        g.fillEmptyCells(grid);
+    }
+
     @Test
     public void canFindWordMultiple() {
         // might not pass all the time, but is meant to make sure that
         // the word list is being read correctly and actually contains valid words from
         // the list
-
-        // wordlist is in same directory as the test
-        URL path = GridTest.class.getResource("./words.txt");
-        File f = new File(path.getFile());
 
         GridGen gen = new GridGen();
         Grid grid = new Grid(20, 20);
@@ -43,38 +51,33 @@ public class GridTest {
     @Test
     public void validGrid() throws Exception {
         Grid g = new Grid(50, 50);
-        // wordlist is in same directory as the test
-        URL path = GridTest.class.getResource("./words.txt");
-        File f = new File(path.getFile());
 
-        GridGen gen = new GridGen(f.getAbsolutePath());
-        gen.generateGrid(g);
-
-        // a cell MUST have a character, empty is ' ' which is invalid
-
+        GridGen gen = new GridGen();
+        add10Words(gen, g);
+        // Generate the grid
+        // Check each cell in the grid
         for (int i = 0; i < g.getWidth(); i++) {
             for (int j = 0; j < g.getHeight(); j++) {
                 Cell c = g.getCell(i, j);
-                assertTrue(c.getLetter() != ' ');
+
+                // Ensure that each cell has a letter (not empty)
+                assertNotEquals(' ', c.getLetter());
             }
         }
-
     }
 
     @Test
     public void validGrid2() throws Exception {
         // visual test
         Grid g = new Grid(20, 20);
-        // wordlist is in same directory as the test
-        URL path = GridTest.class.getResource("./words.txt");
-        File f = new File(path.getFile());
 
-        GridGen gen = new GridGen(f.getAbsolutePath());
-        gen.generateGrid(g);
+        GridGen gen = new GridGen();
+        add10Words(gen, g);
 
         System.out.println("Char count: " + g.getCharCount());
         g.calculateDensity();
         System.out.println("Grid density: " + g.getDensity());
+        System.out.println("Words" + g.getWords().size());
 
         // print the grid
         for (int i = 0; i < g.getWidth(); i++) {
@@ -93,12 +96,9 @@ public class GridTest {
         // test to make sure that the grid generation is under 1 second
         long start = System.currentTimeMillis();
         Grid g = new Grid(50, 50);
-        // wordlist is in same directory as the test
-        URL path = GridTest.class.getResource("./words.txt");
-        File f = new File(path.getFile());
 
-        GridGen gen = new GridGen(f.getAbsolutePath());
-        gen.generateGrid(g);
+        GridGen gen = new GridGen();
+        add10Words(gen, g);
         long end = System.currentTimeMillis();
 
         assertTrue(end - start < 1000);
