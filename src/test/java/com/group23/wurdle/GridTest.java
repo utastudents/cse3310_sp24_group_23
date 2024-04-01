@@ -73,8 +73,8 @@ public class GridTest {
         gen.generateGrid(g);
 
         System.out.println("Char count: " + g.getCharCount());
-
-        System.out.println("Grid density: " + g.calculateDensity());
+        g.calculateDensity();
+        System.out.println("Grid density: " + g.getDensity());
 
         // print the grid
         for (int i = 0; i < g.getWidth(); i++) {

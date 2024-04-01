@@ -8,6 +8,7 @@ public class Grid {
     private int height;
     private int charCount;
     private Cell[][] grid;
+    private float density;
 
     public Grid(int width, int height) {
         this.width = width;
@@ -21,16 +22,25 @@ public class Grid {
         }
     }
 
+    public void setDensity(float density) {
+        this.density = density;
+    }
+
+    public float getDensity() {
+        return density;
+    }
+
+    public void calculateDensity() {
+        int totalCells = width * height;
+        density = (float) charCount / totalCells;
+    }
+
     public void addCharCount(int count) {
         charCount += count;
     }
 
     public int getCharCount() {
         return charCount;
-    }
-
-    public float calculateDensity() {
-        return (float) charCount / (width * height);
     }
 
     public void setCell(int x, int y, char letter) {

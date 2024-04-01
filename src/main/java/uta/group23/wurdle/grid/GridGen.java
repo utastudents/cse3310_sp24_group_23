@@ -1,3 +1,6 @@
+/// BASE CLASS FOR PLUGGABLE GRID GENERATION ALGORITHMS
+// CLASS CAN BE INTEGRATED WITH A GRID OBJECT TO GENERATE A GRID
+
 package uta.group23.wurdle.grid;
 
 import java.io.BufferedReader;
