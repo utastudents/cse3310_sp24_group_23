@@ -80,9 +80,9 @@ public class Player {
     }
 
     public void lobbyPasswordToggle() {
-        
+
     }
-    
+
     public boolean isReady() {
         return false;
     }
@@ -96,8 +96,11 @@ public class Player {
     }
 
     public void playAgain() {
-        
+
     }
 
+    public String getId() {
+        return playerID;
+    }
 
 }
