@@ -1,12 +1,12 @@
 package uta.group23.wurdle.models;
 
-public enum UserType {
+public enum PlayerType {
     Player('P'),
     Spectator('S');
 
     private char type;
 
-    UserType(char type) {
+    PlayerType(char type) {
         this.type = type;
     }
 
