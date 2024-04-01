@@ -12,7 +12,7 @@ public class Player {
     private String[] words_found;
     private Colour user_colour;
     private int num_found;
-    private UserType user_type;
+    private PlayerType user_type;
 
     Player() {
         this.id = UUID.randomUUID().toString();
@@ -56,10 +56,10 @@ public class Player {
     }
 
     public void toggleSpectator() {
-        if (user_type == UserType.Player) {
-            user_type = UserType.Spectator;
+        if (user_type == PlayerType.Player) {
+            user_type = PlayerType.Spectator;
         } else {
-            user_type = UserType.Player;
+            user_type = PlayerType.Player;
         }
     }
 
