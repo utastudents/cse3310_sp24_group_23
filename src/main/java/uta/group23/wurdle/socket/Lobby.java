@@ -8,15 +8,19 @@ import uta.group23.wurdle.models.Player;
 public class Lobby {
     private String lobbyName;
     private int lobbyID;
+    private Player lobbyOwner;
     private Status lobbyStatus;
-    private int playerCount;
+    private int playerNum;
+    private int password;
     private Mode lobbyMode;
     private ArrayList<Player> players;
 
-    public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerCount, Mode lobbyMode) {
+    public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode) {
         this.lobbyName = lobbyName;
         this.lobbyID = lobbyID;
+        this.lobbyOwner = lobbyOwner;
         this.lobbyStatus = lobbyStatus;
+        this.password = password;
         this.playerCount = playerCount;
         this.lobbyMode = lobbyMode;
         this.players = new ArrayList<Player>();
@@ -53,6 +57,9 @@ public class Lobby {
 
     public void startGame() {
         // Start game
+    }
+    public void displayPlayerStats(Player player) {
+        // Display player stats logic
     }
 
 }
