@@ -12,7 +12,7 @@ public class RootHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
-        String response = "<h1>Server started on port</h1>" + "<h1>Port: " + 1234 + "</h1>";
+        String response = "<h1>Server started on port</h1>" + "<h1>Port: " + 9023 + "</h1>";
         he.sendResponseHeaders(200, response.length());
         OutputStream os = he.getResponseBody();
         os.write(response.getBytes());
