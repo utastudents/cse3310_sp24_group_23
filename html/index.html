@@ -1,19 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-    <body>
-        <div id="login" class="container">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Game Lobby</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+   <div class="lobbyForm container text-center">
         <h1>Wurdle</h1>
         <h2>The Word Search Game</h2>
+        <p>Please enter your username:</p>
+        <form id="lobbyForm">
+            <div class="form-group">
+            
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username..." required style="width: 200px; margin: auto;">
+                
+                <button type="submit" class="btn btn-primary mt-3">Start Game</button>
 
-        <p>Please enter your nickname:</p>
-            <fieldset>
-                <legend>Nickname/Handle:</legend>
-                <label for="nickname">Nickname:</label><br>
-                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Nickname..." required ><br><br>
-            <input type="submit" value="Submit">
-            </fieldset>
-        </div>
-        <img class ="definitelynotabackground" src="image.png" alt="Image of how it's supposed to look"/>
-        <img src="https://i.kym-cdn.com/photos/images/original/000/234/765/b7e.jpg" alt="Image of a dog that definitely knows what it's doing">
-    </body>
+            </div>
+
+        </form>
+    </div>
+
+    
+    <div class="lobbyList container text-center mt-5" >
+        <h3>Games in Progress</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Lobby Name</th>
+                    <th>Status</th>
+                    <th>Player Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- List of players in the lobby will be displayed here -->
+            </tbody>
+
+        
+
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+        integrity="sha384-w0Yur8YnYVVuoCjwMnz/e6qlR+lt6zEdN+I3r0pWYyz6L/GFqnsJvST5l8GkZpQG"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shC1n3EJm9q3/eplmoUqSz/8+0Gni4k+Ousn6"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // JavaScript to update the list of players in the lobby
+           var data = [
+            {lobbyName: "Lobby 1", status: "In Progress", playerCount: 3, maxPlayers: 4},
+           ]
+           var tbody = document.querySelector(".lobbyList tbody");
+            
+            data.forEach(function (lobby) {
+                var row = document.createElement("tr");
+                var lobbyName = document.createElement("td");
+                var status = document.createElement("td");
+               
+                var playerCount = document.createElement("td");
+
+                lobbyName.textContent = lobby.lobbyName;
+                status.textContent = lobby.status;
+                
+                playerCount.textContent = lobby.playerCount + "/" + lobby.maxPlayers;
+
+                row.appendChild(lobbyName);
+                row.appendChild(status);
+                row.appendChild(playerCount);
+
+                tbody.appendChild(row);
+            });
+        });
+
+        // JavaScript to handle form submission
+        document.getElementById("lobbyForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            var username = document.getElementById("username").value;
+            if (username.trim() !== "") {
+                // Redirect to the game page or perform any other action
+                alert("Welcome, " + username + "! Starting the game...");
+                // Replace 'game.html' with the actual URL of your game page
+                window.location.href = "game.html";
+            } else {
+                alert("Please enter a username.");
+            }
+        });
+    </script>
+</body>
+
 </html>
