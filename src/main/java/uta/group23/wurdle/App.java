@@ -15,10 +15,10 @@ public class App {
     public static void main(String[] args) {
 
         Context ctx = new Context();
-        HTTPServer server = new HTTPServer(8080, ctx);
+        HTTPServer server = new HTTPServer(9023, ctx);
 
         try {
-            WSServer socketServer = new WSServer(new InetSocketAddress(9999), ctx);
+            WSServer socketServer = new WSServer(new InetSocketAddress(9123), ctx);
             socketServer.run();
         } catch (Exception e) {
             e.printStackTrace();
