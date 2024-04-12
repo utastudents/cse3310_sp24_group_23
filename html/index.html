@@ -8,70 +8,124 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        .change-username-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 260px;
+            background-color: #f1f1f1;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .change-username {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .change-username label {
+            margin-right: 5px;
+        }
+        .change-username input {
+            margin-right: 10px;
+            text-align: center;
+        }
+        .change-username button {
+            margin-top: 4px;
+        }
+
+        .chat-container {
+            position: fixed;
+            top: 160px;
+            right: 20px;
+            bottom: 20px;
+            width: 260px;
+            background-color: #f1f1f1;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .chat-messages {
+            margin-bottom: 10px;
+        }
+
+        .chat-input {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .lobby-list {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
-
     <div class="lobby-main">
         <div class="row">
-            <div class="col-md">
-
+            <div class="col-md-8">
+                <div class="lobbyForm container text-center">
+                    <h1>Wurdle</h1>
+                    <h2>The Word Search Game</h2>
+                    <p>Please enter your username:</p>
+                    <form id="lobbyForm">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username..." required style="width: 200px; margin: auto;">
+                            <button type="submit" class="btn btn-primary mt-3">Start Game</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="lobby-list container text-center ">
+                    <h3>Games in Progress</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Lobby Name</th>
+                                <th>Status</th>
+                                <th>Player Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- List of players in the lobby will be displayed here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md">
-   <div class="lobbyForm container text-center">
-        <h1>Wurdle</h1>
-        <h2>The Word Search Game</h2>
-        <p>Please enter your username:</p>
-        <form id="lobbyForm">
-            <div class="form-group">
-            
-                <input type="text" class="form-control" id="username" name="username" placeholder="Username..." required style="width: 200px; margin: auto;">
-                
-                <button type="submit" class="btn btn-primary mt-3">Start Game</button>
-
+            <div class="change-username-container">
+                <div class="change-username">
+                    <label for="new-username">Username/Nickname:</label>
+                    <!-- Get username and make it the placeholder-->
+                    <input type="text" class="form-control" id="new-username" placeholder="Username..." >
+                    <!-- <button class="btn btn-primary" onclick="changeUsername()">Update</button> -->
+                    <button class="btn btn-primary">Update</button>
+                </div>
             </div>
-
-        </form>
-    </div>
-
-    
-    <div class="lobbyList container text-center mt-5" >
-        <h3>Games in Progress</h3>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Lobby Name</th>
-                    <th>Status</th>
-                    <th>Player Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- List of players in the lobby will be displayed here -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-<div class="col-md">
-    <!-- chat box -->
-   <!-- scrollable, fixed height, text box on bottom -->
-   <div class="chatBox container mt-5">
-        <h3>Chat</h3>
-        <div class="chatMessages" style="height: 200px; overflow-y: scroll;">
-            <!-- Chat messages will be displayed here -->
-        </div>
-        <div class="input-group mt-3">
-            <input type="text" class="form-control" id="message" placeholder="Type a message..." required>
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+            <!-- chat box -->
+            <div class="chat-container">
+                <h3>Chat</h3>
+                <div class="chat-messages">
+                    <!-- Chat messages will be displayed here -->
+                </div>
+                <div class = "chat-input">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="message" placeholder="Type a message..." required>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        
-        </form>
-
-</div>
-</div> <!-- end of row -->
-</div> <!-- end of lobby-main -->
+        </div> <!-- end of row -->
+    </div> <!-- end of lobby-main -->
 
 
 
@@ -186,6 +240,14 @@
                 alert("Please enter a username.");
             }
         });
+
+        // JavaScript to handle message sent via enter key
+        document.getElementById("message").addEventListener("keydown",function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
     </script>
 </body>
 
