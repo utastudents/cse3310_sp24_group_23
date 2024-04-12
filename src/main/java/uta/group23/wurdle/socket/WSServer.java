@@ -23,9 +23,12 @@ public class WSServer extends WebSocketServer {
     private Context ctx;
     private InetSocketAddress addr;
 
-    public WSServer(InetSocketAddress addr, Context ctx) {
+    public WSServer(String hostname, InetSocketAddress addr, Context ctx) {
+        super(addr);
+
         this.addr = addr;
         this.ctx = ctx;
+
     }
 
     @Override
@@ -41,14 +44,16 @@ public class WSServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        System.out.println("Started socket server on port " + this.addr.getPort());
+        System.out.println("Started socket server on port " + this.addr.getPort() + " at " + this.addr.getAddress());
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        System.out.println("New client connected " + conn.getResourceDescriptor());
+        System.out.println("New client connected " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         String newId = UUID.randomUUID().toString();
+        Player newPlayer = new Player(newId);
 
+        ctx.addClient(conn);
     }
 
     @Override

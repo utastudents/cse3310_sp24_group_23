@@ -11,6 +11,13 @@
 </head>
 
 <body>
+
+    <div class="lobby-main">
+        <div class="row">
+            <div class="col-md">
+
+            </div>
+            <div class="col-md">
    <div class="lobbyForm container text-center">
         <h1>Wurdle</h1>
         <h2>The Word Search Game</h2>
@@ -41,10 +48,33 @@
             <tbody>
                 <!-- List of players in the lobby will be displayed here -->
             </tbody>
-
-        
-
+        </table>
     </div>
+</div>
+
+
+<div class="col-md">
+    <!-- chat box -->
+   <!-- scrollable, fixed height, text box on bottom -->
+   <div class="chatBox container mt-5">
+        <h3>Chat</h3>
+        <div class="chatMessages" style="height: 200px; overflow-y: scroll;">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <form id="chatForm" class="mt-3">
+            <div class="form-group
+            ">
+                <input type="text" class="form-control" id="message" name="message" placeholder="Type a message..." required>
+            
+
+            </div>
+        </form>
+
+</div>
+</div> <!-- end of row -->
+</div> <!-- end of lobby-main -->
+
+
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -58,6 +88,51 @@
         crossorigin="anonymous"></script>
 
     <script>
+        // 0.0.0.0/0.0.0.0:9123
+        var serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
+            console.log(serverUrl);
+        var webSocket = new WebSocket(serverUrl);
+
+        webSocket.onopen = function (event) {
+            console.log("WebSocket connection opened.");
+        };
+
+        webSocket.onerror = function (event) {
+            console.error("WebSocket error: ", event);
+        };
+
+        var chatMessages = {
+            "messages": [
+                {"username": "Player 1", "message": "Hello, is anyone here?"},
+                {"username": "Player 2", "message": "Yes, I'm here!"},
+                {"username": "Player 3", "message": "I'm here too!"},
+                {"username": "Player 1", "message": "Great! Let's start the game."}
+            ]
+        }
+
+        function addMessage(username, message) {
+            
+        }
+
+        const sendMessage = async () => {
+            // websocket request
+            const message = document.getElementById("message").value;
+            if (message.trim() !== "") {
+                addMessage("You", message);
+                document.getElementById("message").value = "";
+            }
+
+
+
+        }
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            // JavaScript to update the chat messages
+            chatMessages.messages.forEach(function (chatMessage) {
+                addMessage(chatMessage.username, chatMessage.message);
+            });
+        });
+        
 
         document.addEventListener("DOMContentLoaded", function () {
             // JavaScript to update the list of players in the lobby

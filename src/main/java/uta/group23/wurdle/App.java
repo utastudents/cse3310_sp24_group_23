@@ -17,8 +17,11 @@ public class App {
         HTTPServer server = new HTTPServer(9023, ctx);
 
         try {
-            WSServer socketServer = new WSServer(new InetSocketAddress(9123), ctx);
-            socketServer.run();
+            // port 9123
+            WSServer socketServer = new WSServer("127.0.0.1", new InetSocketAddress(9123), ctx);
+            socketServer.setReuseAddr(true);
+            socketServer.start();
+
         } catch (Exception e) {
             e.printStackTrace();
 

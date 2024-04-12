@@ -17,4 +17,8 @@ public class Client {
     public void setPlayer(Player p) {
         this.player = p;
     }
+
+    public WebSocket getConn() {
+        return conn;
+    }
 }

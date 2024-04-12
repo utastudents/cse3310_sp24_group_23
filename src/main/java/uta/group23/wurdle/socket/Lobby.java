@@ -31,6 +31,10 @@ public class Lobby {
         return lobbyName;
     }
 
+    public int getLobbyID() {
+        return lobbyID;
+    }
+
     public void addPlayer(Player player) {
         players.add(player);
     }

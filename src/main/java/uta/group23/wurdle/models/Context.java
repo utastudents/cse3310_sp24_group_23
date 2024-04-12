@@ -18,4 +18,9 @@ public class Context {
         System.out.println("Client added" + conn.getResourceDescriptor());
     }
 
+    public void removeClient(WebSocket conn) {
+        clients.removeIf(client -> client.getConn().equals(conn));
+        System.out.println("Client removed" + conn.getResourceDescriptor());
+    }
+
 }
