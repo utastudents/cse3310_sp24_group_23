@@ -4,16 +4,25 @@ import org.java_websocket.*;
 
 public class Message {
     private Player sender;
-    private Message message;
+    private String message;
     private ChatScope scope;
 
-    public Message(Player sender, Message msg, ChatScope scope) {
+    public Message(Player sender, String msg, ChatScope scope) {
         this.sender = sender;
         this.message = msg;
         this.scope = scope;
 
     }
-    public void postMessage(String Message){
+
+    public Player getSender() {
+        return sender;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void postMessage(String Message) {
 
     }
 }

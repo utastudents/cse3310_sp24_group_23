@@ -31,9 +31,28 @@ public class WSServer extends WebSocketServer {
 
     }
 
+    public void broadCastMessageBoard() {
+        String messages = ctx.getMessageBoard();
+        broadcast(messages);
+    }
+
     @Override
     public void onMessage(WebSocket conn, String message) {
         JsonObject j = JsonParser.parseString(message).getAsJsonObject();
+        if (j.get("type").getAsString().equals("message")) {
+            String msg = j.get("content").getAsString();
+
+            // add to message board
+            ctx.addMessage(ctx.getPlayerByConn(conn), msg);
+            // broadcast messageBoard to all clients
+            /**
+             * messageBoard: [
+             * {"username": "Player 1", "message": "Hello, is anyone here?"},]
+             */
+
+            broadCastMessageBoard();
+
+        }
     }
 
     @Override
@@ -51,20 +70,26 @@ public class WSServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New client connected " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
         String newId = UUID.randomUUID().toString();
-        Player newPlayer = new Player(newId);
+        Player newPlayer = new Player(newId, conn);
 
-        ctx.addClient(conn);
+        ctx.addPlayer(newPlayer);
+        System.out.println("Client count: " + ctx.getPlayerSize());
+
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         // TODO Auto-generated method stub
         System.out.println("Connection closed : " + conn.getResourceDescriptor());
+
+        ctx.removePlayer(conn);
+        System.out.println("Client count: " + ctx.getPlayerSize());
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        System.out.println(ex.toString());
+        // TODO Auto-generated method stub
+        System.out.println("Error occured: " + ex.getMessage());
     }
 
 }

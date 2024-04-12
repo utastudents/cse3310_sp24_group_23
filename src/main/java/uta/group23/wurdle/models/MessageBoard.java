@@ -1,32 +1,33 @@
 package uta.group23.wurdle.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import com.google.gson.*;
 
-public class MessageBoard{
+public class MessageBoard {
 
   private ArrayList<Message> messages = new ArrayList<>();
 
   public void addMessage(Player sender, String message, ChatScope scope) {
-    //Message message = new Message(sender, message, scope);  //figuring out the array list thing but conflict 
-    //messages.add(message);  //
-    //notifyListeners();
+
+    messages.add(new Message(sender, message, scope));
+
   }
 
-  //Trying to make sense of this to see if we can filter Global vs Local 
+  public String toJson() {
+    /**
+     * messageBoard: [
+     * {"username": "Player 1", "message": "Hello, is anyone here?"},]
+     */
+    // messageBoard is a key that must be present in the JSON object
+    JsonArray messageBoard = new JsonArray();
+    for (Message m : messages) {
+      JsonObject message = new JsonObject();
+      message.addProperty("username", m.getSender().getNickname());
+      message.addProperty("message", m.getMessage());
+      messageBoard.add(message);
+    }
 
-  // public ArrayList<Message> getMessages(ChatScope scope) {
-      // ArrayList<Message> filteredMessages = new ArrayList<>();
-      // for (Message message : messages) {
-      //   if(Message.getScope() == 'Local') {
-      //     filteredMessages.add(message);
-      //   }
-      // }
-      // return filteredMessages;
-  // }
-      
-  //Filter then print?
-
-  public void displayMessage(String user, String[]message){  
-
-   }
+    return "{\"messageBoard\":" + messageBoard.toString() + "}";
+  }
 }

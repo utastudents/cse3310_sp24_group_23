@@ -61,13 +61,12 @@
         <div class="chatMessages" style="height: 200px; overflow-y: scroll;">
             <!-- Chat messages will be displayed here -->
         </div>
-        <form id="chatForm" class="mt-3">
-            <div class="form-group
-            ">
-                <input type="text" class="form-control" id="message" name="message" placeholder="Type a message..." required>
-            
-
+        <div class="input-group mt-3">
+            <input type="text" class="form-control" id="message" placeholder="Type a message..." required>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
             </div>
+        
         </form>
 
 </div>
@@ -88,7 +87,7 @@
         crossorigin="anonymous"></script>
 
     <script>
-        // 0.0.0.0/0.0.0.0:9123
+ 
         var serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
             console.log(serverUrl);
         var webSocket = new WebSocket(serverUrl);
@@ -101,29 +100,42 @@
             console.error("WebSocket error: ", event);
         };
 
-        var chatMessages = {
-            "messages": [
-                {"username": "Player 1", "message": "Hello, is anyone here?"},
-                {"username": "Player 2", "message": "Yes, I'm here!"},
-                {"username": "Player 3", "message": "I'm here too!"},
-                {"username": "Player 1", "message": "Great! Let's start the game."}
-            ]
+        var messages = {};
+
+
+        
+        webSocket.onmessage = function (event) {
+            var message = JSON.parse(event.data);
+            if ("messageBoard" in message) {
+                /**
+                 * messageBoard: [
+                 * {"username": "Player 1", "message": "Hello, is anyone here?"},]
+                 */
+
+                // add last message to the chat box
+                addMessage(message.messageBoard[message.messageBoard.length - 1].username, message.messageBoard[message.messageBoard.length - 1].message);
+
+            }
+        };
+
+        const addMessage = (username, message) => {
+            var chatMessages = document.querySelector(".chatMessages");
+            var chatMessage = document.createElement("div");
+            chatMessage.textContent = username + ": " + message;
+            chatMessages.appendChild(chatMessage);
         }
 
-        function addMessage(username, message) {
-            
-        }
+   
 
         const sendMessage = async () => {
             // websocket request
-            const message = document.getElementById("message").value;
-            if (message.trim() !== "") {
-                addMessage("You", message);
-                document.getElementById("message").value = "";
-            }
+            webSocket.send(JSON.stringify({
+                "type": "message",
+                "content": document.getElementById("message").value
+            }));
 
-
-
+            // clear the input field
+            document.getElementById("message").value = "";
         }
         
         document.addEventListener("DOMContentLoaded", function () {

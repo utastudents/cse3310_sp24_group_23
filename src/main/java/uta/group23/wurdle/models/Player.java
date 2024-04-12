@@ -2,9 +2,13 @@ package uta.group23.wurdle.models;
 
 import java.util.UUID;
 
+import org.java_websocket.WebSocket;
+
+import uta.group23.wurdle.server.Client;
 import uta.group23.wurdle.socket.Lobby;
 
 public class Player {
+    private Client client;
     private String nickname;
     private String playerID;
     private int score;
@@ -18,10 +22,15 @@ public class Player {
         this.playerID = UUID.randomUUID().toString();
     }
 
-    public Player(String nickname) {
+    public Player(String nickname, WebSocket conn) {
         this();
         this.nickname = nickname;
+        this.client = new Client(conn);
         this.score = 0;
+    }
+
+    public Client getClient() {
+        return this.client;
     }
 
     public Player(String nickname, Colour user_colour) {
