@@ -15,16 +15,20 @@ public class Lobby {
     private Mode lobbyMode;
     private ArrayList<Player> players;
     private int playerCount;
+    private int playerCap;
 
-    public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode) {
+    public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, int password,
+            int playerCap,
+            Player lobbyOwner) {
         this.lobbyName = lobbyName;
         this.lobbyID = lobbyID;
         this.lobbyOwner = lobbyOwner;
         this.lobbyStatus = lobbyStatus;
         this.password = password;
-        this.playerCount = playerCount;
+
         this.lobbyMode = lobbyMode;
         this.players = new ArrayList<Player>();
+        this.playerCap = playerCap;
     }
 
     public String getLobbyName() {
