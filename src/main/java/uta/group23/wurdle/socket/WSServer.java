@@ -36,6 +36,11 @@ public class WSServer extends WebSocketServer {
         broadcast(messages);
     }
 
+    public void broadCastLobbyList() {
+        String lobbies = ctx.getLobbyList().toJson();
+        broadcast(lobbies);
+    }
+
     @Override
     public void onMessage(WebSocket conn, String message) {
         JsonObject j = JsonParser.parseString(message).getAsJsonObject();
@@ -53,6 +58,52 @@ public class WSServer extends WebSocketServer {
             broadCastMessageBoard();
 
         }
+
+        broadCastLobbyList();
+
+        if (j.get("type").getAsString().equals("setUsername")) {
+            String username = j.get("username").getAsString();
+            ctx.getPlayerByConn(conn).setNickname(username);
+        }
+
+        if (j.get("type").getAsString().equals("createLobby")) {
+            String lobbyName = j.get("lobbyName").getAsString();
+            String lobbyID = UUID.randomUUID().toString();
+            int password = 0;
+            if (j.has("password")) {
+                password = j.get("password").getAsInt();
+            }
+            int playerCap = j.get("playerCount").getAsInt();
+            String mode = j.get("lobbyMode").getAsString();
+
+            String modeStr = mode.equals("timer") ? "Timer" : "Point";
+            Mode lobbyMode = Mode.valueOf(modeStr);
+            Player lobbyOwner = ctx.getPlayerByConn(conn);
+            Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
+
+            ctx.getLobbyList().addLobby(lobby, lobbyOwner, ctx);
+        }
+
+        if (j.get("type").getAsString().equals("joinLobby")) {
+            String lobbyID = j.get("lobbyID").getAsString();
+            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            Player player = ctx.getPlayerByConn(conn);
+            lobby.addPlayer(player);
+        }
+
+        if (j.get("type").getAsString().equals("leaveLobby")) {
+            String lobbyID = j.get("lobbyID").getAsString();
+            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            Player player = ctx.getPlayerByConn(conn);
+            lobby.removePlayer(player);
+        }
+
+        if (j.get("type").getAsString().equals("startGame")) {
+            String lobbyID = j.get("lobbyID").getAsString();
+            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            lobby.startGame();
+        }
+
     }
 
     @Override
@@ -89,7 +140,7 @@ public class WSServer extends WebSocketServer {
     @Override
     public void onError(WebSocket conn, Exception ex) {
         // TODO Auto-generated method stub
-        System.out.println("Error occured: " + ex.getMessage());
+
     }
 
 }

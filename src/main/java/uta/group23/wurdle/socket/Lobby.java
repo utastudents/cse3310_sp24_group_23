@@ -2,12 +2,14 @@ package uta.group23.wurdle.socket;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonArray;
+
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
 
 public class Lobby {
     private String lobbyName;
-    private int lobbyID;
+    private String lobbyID;
     private Player lobbyOwner;
     private Status lobbyStatus;
     private int playerNum;
@@ -17,7 +19,7 @@ public class Lobby {
     private int playerCount;
     private int playerCap;
 
-    public Lobby(String lobbyName, int lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, int password,
+    public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, int password,
             int playerCap,
             Player lobbyOwner) {
         this.lobbyName = lobbyName;
@@ -35,7 +37,7 @@ public class Lobby {
         return lobbyName;
     }
 
-    public int getLobbyID() {
+    public String getLobbyID() {
         return lobbyID;
     }
 
@@ -68,8 +70,31 @@ public class Lobby {
         // Start game
     }
 
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
     public void displayPlayerStats(Player player) {
         // Display player stats logic
     }
 
+    String toJson() {
+        return "{\"lobbyName\":\"" + lobbyName + "\",\"lobbyID\":" + lobbyID + ",\"lobbyOwner\":\""
+                + lobbyOwner.getNickname() + "\",\"lobbyStatus\":\"" + lobbyStatus + "\",\"playerNum\":" + playerNum
+                + ",\"password\":" + password + ",\"lobbyMode\":\"" + lobbyMode + "\",\"players\":" + players
+                + ",\"playerCount\":" + playerCount + ",\"playerCap\":" + playerCap + "}";
+
+    }
+
+    String summary() {
+        /*
+         * 
+         * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2",
+         * "lobbyId": ""},]}
+         * 
+         */
+        return "{\"lobbyName\":\"" + lobbyName + "\",\"status\":\"" + lobbyStatus + "\",\"playerCount\":\""
+                + playerCount
+                + "\",\"lobbyId\":\"" + lobbyID + "\"}";
+    }
 }

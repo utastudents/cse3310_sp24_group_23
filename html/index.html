@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Search Game Lobby</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -186,7 +187,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Lobby</button>
+                    <button  type='button' id="createLobbyButton" class="btn btn-primary">Create Lobby</button>
                     </form>
                 </div>
             </div>
@@ -201,7 +202,7 @@
     
                             <input type="text" class="form-control" id="username" name="username" placeholder="Username..." required style="width: 200px; margin: auto;">
                 
-                            <button type="submit" class="btn btn-primary mt-3">Start Game</button>
+                            <button type="button" class="btn btn-primary mt-3">Start Game</button>
 
                         </div>
                     </form>
@@ -232,23 +233,23 @@
                     <!-- Get username and make it the placeholder-->
                     <input type="text" class="form-control" id="new-username" placeholder="Username..." >
                     <!-- <button class="btn btn-primary" onclick="changeUsername()">Update</button> -->
-                    <button class="btn btn-primary">Update</button>
+                    <button class="btn btn-primary" type="button" id="updateUsernameButton">Update</button>
                 </div>
             </div>
 
-            <div class="chat-container">
+            <div class="chat-container container">
                 <!-- chat box -->
-                <!-- scrollable, fixed height, text box on bottom -->
+                <!-- scrollable, fixed height,  -->
                 <div class="chatBox">
                     <h3>Chat</h3>
-                    <div class="chatMessages" style="height: 200px; overflow-y: scroll;">
+                    <div class="chatMessages" style="height: 200px; overflow-y: auto;">
                         <!-- Chat messages will be displayed here -->
                     </div>
                     <div class="chat-input">
                         <div class="input-group">
                             <input type="text" class="form-control" id="message" placeholder="Type a message..." required>
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+                                <button class="btn btn-primary" type="button" id="sendMessageButton">Send</button>
                             </div>
                         </div>
                     </div>
@@ -269,10 +270,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shC1n3EJm9q3/eplmoUqSz/8+0Gni4k+Ousn6"
         crossorigin="anonymous"></script>
-
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
- 
-        var serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
+          var serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
             console.log(serverUrl);
         var webSocket = new WebSocket(serverUrl);
 
@@ -284,9 +284,98 @@
             console.error("WebSocket error: ", event);
         };
 
+        webSocket.onclose = function (event) {
+            console.log("WebSocket connection closed.");
+        };
+
+        function sendMessage() {
+            // websocket request
+            webSocket.send(JSON.stringify({
+                "type": "message",
+                "content": document.getElementById("message").value
+            }));
+
+            // clear the input field
+            document.getElementById("message").value = "";
+        }
+
+                // JavaScript to handle message sent via enter key
+        document.getElementById("message").addEventListener("keydown",function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            // JavaScript to update the chat messages
+            chatMessages.messages.forEach(function (chatMessage) {
+                addMessage(chatMessage.username, chatMessage.message);
+            });
+        });
+
+        const sendToast = (message) => {
+            Toastify({
+                text: message,
+                duration: 3000,
+                newWindow: false,
+                close: true,
+                gravity: "bottom", // `top` or `bottom`
+                position: "center", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                },
+                onClick: function () { } // Callback after click
+            }).showToast();
+        }
+if (localStorage.getItem("username") != null) {
+            document.getElementById("username").value = localStorage.getItem("username");
+            
+            webSocket.send(JSON.stringify({
+                "type": "setUsername",
+                "username": localStorage.getItem("username")
+            }));
+        
+        }
+        // ask for username the second player joins and create floating form
+ 
+      
+
+        
+
         var messages = {};
+        const setUsername = async () => {
+            username = document.getElementById("new-username").value;
+            if (username.trim() === "") {
+                alert("Please enter a username.");
+                return;
+            }
+            
+            document.getElementById("new-username").value = "";
 
+            // websocket request
+            webSocket.send(JSON.stringify({
+                "type": "setUsername",
+                "username": username
+            }));
 
+            sendToast("Username updated to " + username);
+
+            localStorage.setItem("username", username);
+         
+        }
+
+        
+        var inLobby = false;
+        var username = localStorage.getItem("username") || "";
+        document.querySelector("#username").value = username;
+
+        if (username != "") {
+            sendToast("Welcome back, " + username + "!");
+            
+        }
+        
         
         webSocket.onmessage = function (event) {
             var message = JSON.parse(event.data);
@@ -300,6 +389,31 @@
                 addMessage(message.messageBoard[message.messageBoard.length - 1].username, message.messageBoard[message.messageBoard.length - 1].message);
 
             }
+
+            if ("lobbyList" in message) {
+                /**
+                 * {"lobbyList" : [
+                 * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2", "lobbyId": ""},]}
+                 */
+                var tbody = document.querySelector(".lobbyList tbody");
+                tbody.innerHTML = "";
+                message.lobbyList.forEach(function (lobby) {
+                    var row = document.createElement("tr");
+                    var lobbyName = document.createElement("td");
+                    var status = document.createElement("td");
+                    var playerCount = document.createElement("td");
+
+                    lobbyName.textContent = lobby.lobbyName;
+                    status.textContent = lobby.status;
+                    playerCount.textContent = lobby.playerCount;
+
+                    row.appendChild(lobbyName);
+                    row.appendChild(status);
+                    row.appendChild(playerCount);
+
+                    tbody.appendChild(row);
+                });
+            }
         };
 
         const addMessage = (username, message) => {
@@ -309,55 +423,61 @@
             chatMessages.appendChild(chatMessage);
         }
 
-   
-
-        const sendMessage = async () => {
+        const createLobby =  () => {
+            if (username == "") {
+                sendToast("Please enter a username.");
+            }
+            else {
             // websocket request
             webSocket.send(JSON.stringify({
-                "type": "message",
-                "content": document.getElementById("message").value
+                "type": "createLobby",
+                "lobbyName": document.getElementById("lobby-name").value,
+                "playerCount": document.getElementById("player-count").value,
+                "lobbyMode": document.getElementById("game-type").value,
+                "password": document.getElementById("lobby-password").value
             }));
-
-            // clear the input field
-            document.getElementById("message").value = "";
         }
-        
+        }
+
+
+        // event listeners so we don't get the bullshit function not defined error
         document.addEventListener("DOMContentLoaded", function () {
             // JavaScript to update the chat messages
             chatMessages.messages.forEach(function (chatMessage) {
                 addMessage(chatMessage.username, chatMessage.message);
             });
+            document.getElementById("username").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                setUsername();
+            }
         });
+
+        document.getElementById("updateUsernameButton").addEventListener("click", function (event) {
+            if (event.key === "Enter") {
+                setUsername();
+            }
+        });
+
+        document.getElementById("createLobbyButton").addEventListener("click", function () {
+            createLobby();
+        });
+
+        document.getElementById("sendMessageButton").addEventListener("click", function () {
+            sendMessage();
+        });
+
+        document.getElementById("new-username").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                setUsername();
+            }
+        });
+
+        });
+       
         
 
-        document.addEventListener("DOMContentLoaded", function () {
-            // JavaScript to update the list of players in the lobby
-           var data = [
-            {lobbyName: "Lobby 1", status: "In Progress", playerCount: 3, maxPlayers: 4},
-           ]
-           var tbody = document.querySelector(".lobbyList tbody");
-            
-            data.forEach(function (lobby) {
-                var row = document.createElement("tr");
-                var lobbyName = document.createElement("td");
-                var status = document.createElement("td");
-               
-                var playerCount = document.createElement("td");
-
-                lobbyName.textContent = lobby.lobbyName;
-                status.textContent = lobby.status;
-                
-                playerCount.textContent = lobby.playerCount + "/" + lobby.maxPlayers;
-
-                row.appendChild(lobbyName);
-                row.appendChild(status);
-                row.appendChild(playerCount);
-
-                tbody.appendChild(row);
-            });
-        });
-
         // JavaScript to handle form submission
+        /*
         document.getElementById("lobbyForm").addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent the default form submission
             var username = document.getElementById("username").value;
@@ -370,13 +490,8 @@
                 alert("Please enter a username.");
             }
         });
+*/
 
-        // JavaScript to handle message sent via enter key
-        document.getElementById("message").addEventListener("keydown",function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
 
         // Javascript to handle password being required
         function togglePassword() {
@@ -408,7 +523,9 @@
                 passwordInput.value = ""; //clear the input if there is any
             }
         }
+        
     </script>
+   
 </body>
 
 </html>
