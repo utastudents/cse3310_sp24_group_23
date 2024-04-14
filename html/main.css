@@ -1,0 +1,210 @@
+.change-username-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 260px;
+    background-color: #f1f1f1;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .change-username {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .change-username label {
+    margin-right: 5px;
+  }
+  .change-username input {
+    margin-right: 10px;
+    text-align: center;
+  }
+  .change-username button {
+    margin-top: 4px;
+  }
+
+  .chat-container {
+    position: fixed;
+    top: 160px;
+    right: 20px;
+    bottom: 20px;
+    width: 260px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    overflow-y: auto;
+  }
+  .chat-messages {
+    position: fixed;
+    margin-bottom: 10px;
+    height: 900px; /*need to adjust height*/
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #c9c9c9;
+    border-radius: 5px;
+  }
+  .chat-input {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+  }
+
+  .lobby-main {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 50px;
+  }
+  .lobby-list {
+    width: 500px;
+    top: 50px;
+    bottom: 20px;
+    left: 50%;
+    background-color: #f1f1f1;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    overflow-y: auto;
+  }
+
+  .lobby-creation-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 220px;
+    background-color: #f1f1f1;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 8px;
+  }
+  .lobby-creation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lobby-creation h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .lobby-creation .form-group {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .lobby-creation .form-group label {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .lobby-creation .form-group input,
+  .lobby-creation .form-group select {
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+  .lobby-creation .form-group .input-group button {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+  .lobby-creation button {
+    font-size: 14px;
+    padding: 6px 12px;
+    width: 100%;
+  }
+  .lobby-creation
+    .form-group
+    .input-group
+    .input-group-append
+    .input-group-text {
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+  #lobby-password:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+
+  .settings-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 999;
+  }
+  .stats-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 999;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+  }
+
+  .settings-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  .settings-buttons button {
+    margin-left: 10px;
+  }
+
+  .extra-buttons-container {
+    position: fixed;
+    text-align: center;
+    top: 395px;
+    left: 20px;
+    width: 220px;
+    background-color: #f1f1f1;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 8px;
+  }
+
+  .recent-leaderboard-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+    position: fixed;
+    text-align: center;
+    top: 475px;
+    left: 20px;
+    width: 220px;
+    background-color: #f1f1f1;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    bottom: 20px;
+    overflow-y: auto;
+  }
+
+  .recent-leaderboard-container h3 {
+    margin-bottom: 5px;
+    font-size: 18px;
+  }
+  .recent-leaderboard-container .table {
+    margin-bottom: 0;
+  }
+  .recent-leaderboard-container td {
+    padding: 8px;
+  }

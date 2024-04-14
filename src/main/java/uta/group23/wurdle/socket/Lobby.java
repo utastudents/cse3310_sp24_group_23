@@ -3,6 +3,7 @@ package uta.group23.wurdle.socket;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
@@ -13,13 +14,13 @@ public class Lobby {
     private Player lobbyOwner;
     private Status lobbyStatus;
     private int playerNum;
-    private int password;
+    private String password;
     private Mode lobbyMode;
     private ArrayList<Player> players;
     private int playerCount;
     private int playerCap;
 
-    public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, int password,
+    public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
             Player lobbyOwner) {
         this.lobbyName = lobbyName;
@@ -43,10 +44,12 @@ public class Lobby {
 
     public void addPlayer(Player player) {
         players.add(player);
+        this.playerCount++;
     }
 
     public void removePlayer(Player player) {
         players.remove(player);
+        this.playerCount--;
     }
 
     public void addSpectator(Player player) {
@@ -78,23 +81,26 @@ public class Lobby {
         // Display player stats logic
     }
 
-    String toJson() {
-        return "{\"lobbyName\":\"" + lobbyName + "\",\"lobbyID\":" + lobbyID + ",\"lobbyOwner\":\""
-                + lobbyOwner.getNickname() + "\",\"lobbyStatus\":\"" + lobbyStatus + "\",\"playerNum\":" + playerNum
-                + ",\"password\":" + password + ",\"lobbyMode\":\"" + lobbyMode + "\",\"players\":" + players
-                + ",\"playerCount\":" + playerCount + ",\"playerCap\":" + playerCap + "}";
-
+    public Status getLobbyStatus() {
+        return this.lobbyStatus;
     }
 
-    String summary() {
-        /*
-         * 
-         * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2",
-         * "lobbyId": ""},]}
-         * 
-         */
-        return "{\"lobbyName\":\"" + lobbyName + "\",\"status\":\"" + lobbyStatus + "\",\"playerCount\":\""
-                + playerCount
-                + "\",\"lobbyId\":\"" + lobbyID + "\"}";
+    public String toJson() {
+        // only return the non-sensitive information
+        return "{\"lobbyName\":\"" + lobbyName + "\",\"lobbyID\":" + lobbyID + ",\"lobbyOwner\":\""
+                + lobbyOwner.getNickname() + "\",\"lobbyStatus\":\"" + lobbyStatus + "\",\"playerNum\":" + playerNum
+                + ",\"lobbyMode\":\"" + lobbyMode + "\",\"players\":" + players + ",\"playerCount\":" + playerCount
+                + ",\"playerCap\":" + playerCap + "}";
+    }
+
+    public JsonObject toJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("lobbyName", lobbyName);
+        jsonObject.addProperty("lobbyStatus", lobbyStatus.toString());
+        jsonObject.addProperty("playerCount", playerCount);
+        jsonObject.addProperty("id", lobbyID);
+        jsonObject.addProperty("ownerID", lobbyOwner.getId());
+
+        return jsonObject;
     }
 }

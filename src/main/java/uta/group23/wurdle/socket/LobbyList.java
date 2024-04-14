@@ -16,6 +16,7 @@ public class LobbyList {
 
     public void addLobby(Lobby lobby, Player player, Context context) {
         // check if player is already in a lobby
+        // In our case, lobby means a game room
         for (Lobby l : lobbies) {
             if (l.getPlayers().contains(player)) {
                 l.removePlayer(player);
@@ -23,10 +24,17 @@ public class LobbyList {
             }
         }
 
+        lobby.addPlayer(player);
+        lobbies.add(lobby);
+
     }
 
     public void removeLobby(Lobby lobby) {
         lobbies.remove(lobby);
+    }
+
+    public int length() {
+        return lobbies.size();
     }
 
     public Lobby searchID(String lobbyID) {
@@ -39,12 +47,13 @@ public class LobbyList {
 
     }
 
-    String toJson() {
+    public String toJson() {
+
         JsonArray lobbyList = new JsonArray();
         for (Lobby l : lobbies) {
-            lobbyList.add(l.summary());
+            lobbyList.add(l.toJson());
         }
-        System.out.println(lobbyList.toString());
+
         return "{\"lobbyList\":" + lobbyList.toString() + "}";
     }
 

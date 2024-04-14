@@ -8,9 +8,9 @@ public class MessageBoard {
 
   private ArrayList<Message> messages = new ArrayList<>();
 
-  public void addMessage(Player sender, String message, ChatScope scope) {
+  public void addMessage(String nick, String message, ChatScope scope) {
 
-    messages.add(new Message(sender, message, scope));
+    messages.add(new Message(nick, message, scope));
 
   }
 
@@ -23,10 +23,12 @@ public class MessageBoard {
     JsonArray messageBoard = new JsonArray();
     for (Message m : messages) {
       JsonObject message = new JsonObject();
-      message.addProperty("username", m.getSender().getNickname());
+      message.addProperty("username", m.getSender());
       message.addProperty("message", m.getMessage());
       messageBoard.add(message);
     }
+
+    System.out.println(messageBoard.toString());
 
     return "{\"messageBoard\":" + messageBoard.toString() + "}";
   }

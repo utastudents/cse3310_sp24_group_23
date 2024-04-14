@@ -1,710 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Word Search Game Lobby</title>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
     <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="main.css" />
+  </head>
 
-    <style>
-        .change-username-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 260px;
-            background-color: #f1f1f1;
-            padding: 10px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-        .change-username {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .change-username label {
-            margin-right: 5px;
-        }
-        .change-username input {
-            margin-right: 10px;
-            text-align: center;
-        }
-        .change-username button {
-            margin-top: 4px;
-        }
-
-        .chat-container {
-            position: fixed;
-            top: 160px;
-            right: 20px;
-            bottom: 20px;
-            width: 260px;
-            background-color: #f1f1f1;
-            padding: 20px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            overflow-y: auto;
-        }
-        .chat-messages {
-            position: fixed;
-            margin-bottom: 10px;
-            height: 900px; /*need to adjust height*/
-            overflow-y: auto;
-            padding: 10px;
-            background-color: #c9c9c9;
-            border-radius: 5px;
-
-        }
-        .chat-input {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-        }
-
-        .lobby-main {
-            display: flex;
-            width: 100%;
-            justify-content: center;
-            margin-top: 50px;
-        }
-        .lobby-list {
-            width: 500px;
-            top: 50px;
-            bottom: 20px;
-            left: 50%;
-            background-color: #f1f1f1;
-            padding: 20px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            overflow-y: auto; 
-        
-        }
-
-        .lobby-creation-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 220px;
-            background-color: #f1f1f1;
-            padding: 15px;
-            box-sizing: border-box;
-            border-radius: 8px;
-        }
-        .lobby-creation {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .lobby-creation h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-        .lobby-creation .form-group {
-            width: 100%;
-            margin-bottom: 8px;
-        }
-        .lobby-creation .form-group label {
-            font-size: 14px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .lobby-creation .form-group input,
-        .lobby-creation .form-group select {
-            font-size: 14px;
-            padding: 6px 8px;
-        }
-        .lobby-creation .form-group .input-group button {
-            font-size: 14px;
-            padding: 6px 10px;
-        }
-        .lobby-creation button {
-            font-size: 14px;
-            padding: 6px 12px;
-            width: 100%;
-        }
-        .lobby-creation .form-group .input-group .input-group-append .input-group-text {
-            font-size: 14px;
-            padding: 6px 8px;
-        }
-        #lobby-password:disabled {
-        background-color: #f5f5f5;
-        cursor: not-allowed;
-        }
-        
-        .settings-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            z-index: 999;
-        }
-        .stats-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            z-index: 999;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 998;
-        }
-
-        .settings-buttons {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .settings-buttons button {
-            margin-left: 10px;
-        }
-
-        .extra-buttons-container {
-            position: fixed;
-            text-align: center;
-            top: 395px;
-            left: 20px;
-            width: 220px;
-            background-color: #f1f1f1;
-            padding: 15px;
-            box-sizing: border-box;
-            border-radius: 8px;
-        }
-
-        .recent-leaderboard-container {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            font-size: 14px;
-            position: fixed;
-            text-align: center;
-            top: 475px;
-            left: 20px;
-            width: 220px;
-            background-color: #f1f1f1;
-            padding: 15px;
-            box-sizing: border-box;
-            border-radius: 8px;
-            bottom:20px;
-            overflow-y: auto;
-    
-        }
-
-        .recent-leaderboard-container h3 {
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-        .recent-leaderboard-container .table {
-            margin-bottom: 0;
-        }
-        .recent-leaderboard-container td {
-            padding: 8px;
-        }
-
-    </style>    
-</head>
-
-<body>
-
+  <body>
     <div class="lobby-main">
-        <div class="row">
-            <div class="col-md">
+      <div class="row">
+        <div class="col-md"></div>
 
-            </div>
-
-            <div class="lobby-creation-container">
-                <div class="lobby-creation">
-                    <h3>Create a Lobby</h3>
-                    <form id="lobby-creation-form">
-                    <div class="form-group">
-                        <label for="lobby-name">Lobby Name:</label>
-                        <input type="text" class="form-control" id="lobby-name" placeholder="Enter lobby name" maxlength="20" required>
+        <div class="lobby-creation-container">
+          <div class="lobby-creation">
+            <h3>Create a Lobby</h3>
+            <form id="lobby-creation-form">
+              <div class="form-group">
+                <label for="lobby-name">Lobby Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lobby-name"
+                  placeholder="Enter lobby name"
+                  maxlength="20"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="player-count">No. Players:</label>
+                <select class="form-control" id="player-count" required>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="game-type">Game Type:</label>
+                <select class="form-control" id="game-type" required>
+                  <option value="point">Point</option>
+                  <option value="timer">Timer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="lobby-password">Password:</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="lobby-password"
+                    placeholder="4-digit PIN"
+                    pattern="[0-9]{4}"
+                    minlength="4"
+                    maxlength="4"
+                    disabled
+                  />
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <!-- Alt + 255 character here cause I don't wanna figure out the css just for a space there :D -->
+                      <input
+                        type="checkbox"
+                        id="require-password"
+                        onchange="togglePasswordField()"
+                      />
+                      Require
                     </div>
-                    <div class="form-group">
-                        <label for="player-count">No. Players:</label>
-                        <select class="form-control" id="player-count" required>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="game-type">Game Type:</label>
-                        <select class="form-control" id="game-type" required>
-                            <option value="point">Point</option>
-                            <option value="timer">Timer</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="lobby-password">Password:</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="lobby-password" placeholder="4-digit PIN" pattern="[0-9]{4}" minlength="4" maxlength="4" disabled>
-                            <div class="input-group-append">
-                                <div class="input-group-text">                                              <!-- Alt + 255 character here cause I don't wanna figure out the css just for a space there :D -->
-                                    <input type="checkbox" id="require-password" onchange="togglePasswordField()">  Require
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button  type='button' id="createLobbyButton" class="btn btn-primary">Create Lobby</button>
-                    </form>
+                  </div>
                 </div>
-            </div>
-            
+              </div>
+              <button
+                type="button"
+                id="createLobbyButton"
+                class="btn btn-primary"
+              >
+                Create Lobby
+              </button>
+            </form>
+          </div>
+        </div>
 
-            <div class="settings-container" style="display: none;">
-                <div class="settings-menu">
-                    <h3>Settings</h3>
-                    <!-- Add settings options here -->
-                    Some settings options here with more options somehow
-                    <div class="settings-buttons">
-                        <button class="btn btn-primary" onclick="saveSettings()">Save</button> <!--Save button doesn't do anything right now-->
-                        <button class="btn btn-secondary" onclick="closeSettings()" >Close</button>
-                    </div>
-                </div>
+        <div class="settings-container" style="display: none">
+          <div class="settings-menu">
+            <h3>Settings</h3>
+            <!-- Add settings options here -->
+            Some settings options here with more options somehow
+            <div class="settings-buttons">
+              <button class="btn btn-primary" onclick="saveSettings()">
+                Save
+              </button>
+              <!--Save button doesn't do anything right now-->
+              <button class="btn btn-secondary" onclick="closeSettings()">
+                Close
+              </button>
             </div>
+          </div>
+        </div>
 
-            <div class="stats-container" style="display: none;">
-                <div class="stats-menu">
-                    <h3>Settings</h3>
-                        <!-- Add stat options here -->
-                        Find some stats stuff to put in here<br>
-                        <button class="btn btn-secondary" onclick="closeStats()">Close</button>
-                </div>
-            </div>
-            
-            <div class="overlay" style="display: none;"></div>
-            
-            
-            <div class="extra-buttons-container">
-                <button class="btn btn-primary" onclick="toggleSettings()">Settings</button>
-                <button class="btn btn-primary" onclick="toggleStats()">Extra Stats</button>
-            </div>
+        <div class="stats-container" style="display: none">
+          <div class="stats-menu">
+            <h3>Settings</h3>
+            <!-- Add stat options here -->
+            Find some stats stuff to put in here<br />
+            <button class="btn btn-secondary" onclick="closeStats()">
+              Close
+            </button>
+          </div>
+        </div>
 
-            <div class="recent-leaderboard-container">
-                <h3>Last Game Highscores</h3>
-                <table class="table table-striped table-sm">
-                    <thead align="center">
-                        <tr>
-                            <th>Player</th>
-                            <th>Points</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Recent highscores will be displayed here -->
-                        <tr>
-                            <td>John Doe</td>
-                            <td>1500</td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>1200</td>
-                        </tr>
-                        <tr>
-                            <td>Bob Johnson</td>
-                            <td>1100</td>
-                        </tr>
-                        <tr>
-                            <td>Alice Williams</td>
-                            <td>1050</td>
-                        </tr>
-                        <tr>
-                            <td>Tom Davis</td>
-                            <td>1000</td>
-                        </tr>
-                    </tbody>
+        <div class="overlay" style="display: none"></div>
+
+        <div class="extra-buttons-container">
+          <button class="btn btn-primary" onclick="toggleSettings()">
+            Settings
+          </button>
+          <button class="btn btn-primary" onclick="toggleStats()">
+            Extra Stats
+          </button>
+        </div>
+
+        <div class="recent-leaderboard-container">
+          <h3>Last Game Highscores</h3>
+          <table class="table table-striped table-sm">
+            <thead align="center">
+              <tr>
+                <th>Player</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Recent highscores will be displayed here -->
+              <tr>
+                <td>John Doe</td>
+                <td>1500</td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>1200</td>
+              </tr>
+              <tr>
+                <td>Bob Johnson</td>
+                <td>1100</td>
+              </tr>
+              <tr>
+                <td>Alice Williams</td>
+                <td>1050</td>
+              </tr>
+              <tr>
+                <td>Tom Davis</td>
+                <td>1000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-md">
+          <div class="lobbyForm container text-center">
+            <h1>Wurdle</h1>
+            <h2>The Word Search Game</h2>
+            <p>Please enter your username:</p>
+            <form id="lobbyForm">
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  placeholder="Username..."
+                  maxlength="20"
+                  style="width: 200px; margin: auto"
+                />
+
+                <button type="button" class="btn btn-primary mt-3">
+                  Start Game
+                </button>
+              </div>
+            </form>
+
+            <div class="lobby-list">
+              <div class="lobbyList container text-center">
+                <h3>Games in Progress</h3>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Lobby Name</th>
+                      <th>Status</th>
+                      <th>Player Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- List of players in the lobby will be displayed here -->
+                  </tbody>
                 </table>
+              </div>
             </div>
+          </div>
+          <div id="wordGrid" class="container text-center mt-3 align-center">
+            <!-- Word grid will be displayed here -->
+          </div>
+        </div>
+        <!-- end of col-md -->
 
-            <div class="col-md">
-                <div class="lobbyForm container text-center">
-                    <h1>Wurdle</h1>
-                    <h2>The Word Search Game</h2>
-                    <p>Please enter your username:</p>
-                    <form id="lobbyForm">
-                        <div class="form-group">
-    
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Username..." maxlength="20" style="width: 200px; margin: auto;">
-                
-                            <button type="button" class="btn btn-primary mt-3">Start Game</button>
+        <div class="change-username-container">
+          <div class="change-username">
+            <label for="new-username">Username/Nickname:</label>
+            <!-- Get username and make it the placeholder-->
+            <input
+              type="text"
+              class="form-control"
+              id="new-username"
+              placeholder="Username..."
+              maxlength="20"
+            />
+            <!-- <button class="btn btn-primary" onclick="changeUsername()">Update</button> -->
+            <button
+              class="btn btn-primary"
+              type="button"
+              id="updateUsernameButton"
+            >
+              Update
+            </button>
+          </div>
+        </div>
 
-                        </div>
-                    </form>
-                </div>
-
-                <div class="lobby-list">   
-                    <div class="lobbyList container text-center" >
-                        <h3>Games in Progress</h3>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Lobby Name</th>
-                                    <th>Status</th>
-                                    <th>Player Count</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- List of players in the lobby will be displayed here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="chat-container container">
+          <!-- chat box -->
+          <!-- scrollable, fixed height,  -->
+          <div class="chatBox">
+            <h3>Chat</h3>
+            <div class="chatMessages" style="height: 400px; overflow-y: scroll">
+              <!-- Chat messages will be displayed here -->
             </div>
-            
-            
-
-            <div class="change-username-container">
-                <div class="change-username">
-                    <label for="new-username">Username/Nickname:</label>
-                    <!-- Get username and make it the placeholder-->
-                    <input type="text" class="form-control" id="new-username" placeholder="Username..." maxlength="20" >
-                    <!-- <button class="btn btn-primary" onclick="changeUsername()">Update</button> -->
-                    <button class="btn btn-primary" type="button" id="updateUsernameButton">Update</button>
+            <div class="chat-input">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="message"
+                  placeholder="Type a message..."
+                  required
+                />
+                <div class="input-group-append">
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    id="sendMessageButton"
+                  >
+                    Send
+                  </button>
                 </div>
+              </div>
             </div>
-
-            <div class="chat-container container">
-                <!-- chat box -->
-                <!-- scrollable, fixed height,  -->
-                <div class="chatBox">
-                    <h3>Chat</h3>
-                    <div class="chatMessages" style="height: 400px; overflow-y: scroll;">
-
-                        <!-- Chat messages will be displayed here -->
-                    </div>
-                    <div class="chat-input">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="message" placeholder="Type a message..." required>
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button" id="sendMessageButton">Send</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- end of row -->
-    </div> <!-- end of lobby-main -->
-
-
+          </div>
+        </div>
+      </div>
+      <!-- end of row -->
+    </div>
+    <!-- end of lobby-main -->
 
     <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
-        integrity="sha384-w0Yur8YnYVVuoCjwMnz/e6qlR+lt6zEdN+I3r0pWYyz6L/GFqnsJvST5l8GkZpQG"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shC1n3EJm9q3/eplmoUqSz/8+0Gni4k+Ousn6"
-        crossorigin="anonymous"></script>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script>
-          var serverUrl = "ws://" + window.location.hostname +":"+ (parseInt(location.port) + 100);
-            console.log(serverUrl);
-        var webSocket = new WebSocket(serverUrl);
-
-        webSocket.onopen = function (event) {
-            console.log("WebSocket connection opened.");
-        };
-
-        webSocket.onerror = function (event) {
-            console.error("WebSocket error: ", event);
-        };
-
-        webSocket.onclose = function (event) {
-            console.log("WebSocket connection closed.");
-        };
-
-        function sendMessage() {
-            // websocket request
-            webSocket.send(JSON.stringify({
-                "type": "message",
-                "content": document.getElementById("message").value
-            }));
-
-            // clear the input field
-            document.getElementById("message").value = "";
-        }
-
-                // JavaScript to handle message sent via enter key
-        document.getElementById("message").addEventListener("keydown",function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            // JavaScript to update the chat messages
-            chatMessages.messages.forEach(function (chatMessage) {
-                addMessage(chatMessage.username, chatMessage.message);
-            });
-        });
-
-        const sendToast = (message) => {
-            Toastify({
-                text: message,
-                duration: 3000,
-                newWindow: false,
-                close: true,
-                gravity: "bottom", // `top` or `bottom`
-                position: "center", // `left`, `center` or `right`
-                stopOnFocus: true, // Prevents dismissing of toast on hover
-                style: {
-                    background: "linear-gradient(to right, #00b09b, #96c93d)",
-                },
-                onClick: function () { } // Callback after click
-            }).showToast();
-        }
-if (localStorage.getItem("username") != null) {
-            document.getElementById("username").value = localStorage.getItem("username");
-            
-            webSocket.send(JSON.stringify({
-                "type": "setUsername",
-                "username": localStorage.getItem("username")
-            }));
-        
-        }
-        // ask for username the second player joins and create floating form
- 
-      
-
-        
-
-        var messages = {};
-        const setUsername = async () => {
-            username = document.getElementById("new-username").value;
-            if (username.trim() === "") {
-                alert("Please enter a username.");
-                return;
-            }
-            
-            document.getElementById("new-username").value = "";
-
-            // websocket request
-            webSocket.send(JSON.stringify({
-                "type": "setUsername",
-                "username": username
-            }));
-
-            sendToast("Username updated to " + username);
-
-            localStorage.setItem("username", username);
-         
-        }
-
-        
-        var inLobby = false;
-        var username = localStorage.getItem("username") || "";
-        document.querySelector("#username").value = username;
-
-        if (username != "") {
-            sendToast("Welcome back, " + username + "!");
-            
-        }
-        
-        
-        webSocket.onmessage = function (event) {
-            var message = JSON.parse(event.data);
-            if ("messageBoard" in message) {
-                /**
-                 * messageBoard: [
-                 * {"username": "Player 1", "message": "Hello, is anyone here?"},]
-                 */
-
-                // add last message to the chat box
-                addMessage(message.messageBoard[message.messageBoard.length - 1].username, message.messageBoard[message.messageBoard.length - 1].message);
-
-            }
-
-            if ("lobbyList" in message) {
-                /**
-                 * {"lobbyList" : [
-                 * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2", "lobbyId": ""},]}
-                 */
-                var tbody = document.querySelector(".lobbyList tbody");
-                tbody.innerHTML = "";
-                message.lobbyList.forEach(function (lobby) {
-                    var row = document.createElement("tr");
-                    var lobbyName = document.createElement("td");
-                    var status = document.createElement("td");
-                    var playerCount = document.createElement("td");
-
-                    lobbyName.textContent = lobby.lobbyName;
-                    status.textContent = lobby.status;
-                    playerCount.textContent = lobby.playerCount;
-
-                    row.appendChild(lobbyName);
-                    row.appendChild(status);
-                    row.appendChild(playerCount);
-
-                    tbody.appendChild(row);
-                });
-            }
-        };
-
-        const addMessage = (username, message) => {
-            var chatMessages = document.querySelector(".chatMessages");
-            var chatMessage = document.createElement("div");
-            chatMessage.textContent = username + ": " + message;
-            chatMessages.appendChild(chatMessage);
-        }
-
-        const createLobby =  () => {
-            if (username == "") {
-                sendToast("Please enter a username.");
-            }
-            else {
-            // websocket request
-            webSocket.send(JSON.stringify({
-                "type": "createLobby",
-                "lobbyName": document.getElementById("lobby-name").value,
-                "playerCount": document.getElementById("player-count").value,
-                "lobbyMode": document.getElementById("game-type").value,
-                "password": document.getElementById("lobby-password").value
-            }));
-        }
-        }
-
-
-        // event listeners so we don't get the bullshit function not defined error
-        document.addEventListener("DOMContentLoaded", function () {
-            // JavaScript to update the chat messages
-            chatMessages.messages.forEach(function (chatMessage) {
-                addMessage(chatMessage.username, chatMessage.message);
-            });
-            document.getElementById("username").addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                setUsername();
-            }
-        });
-
-        document.getElementById("updateUsernameButton").addEventListener("click", function (event) {
-            if (event.key === "Enter") {
-                setUsername();
-            }
-        });
-
-        document.getElementById("createLobbyButton").addEventListener("click", function () {
-            createLobby();
-        });
-
-        document.getElementById("sendMessageButton").addEventListener("click", function () {
-            sendMessage();
-        });
-
-        document.getElementById("new-username").addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                setUsername();
-            }
-        });
-
-        });
-       
-        
-
-        // JavaScript to handle form submission
-        /*
-        document.getElementById("lobbyForm").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent the default form submission
-            var username = document.getElementById("username").value;
-            if (username.trim() !== "") {
-                // Redirect to the game page or perform any other action
-                alert("Welcome, " + username + "! Starting the game...");
-                // Replace 'game.html' with the actual URL of your game page
-                window.location.href = "game.html";
-            } else {
-                alert("Please enter a username.");
-            }
-        });
-*/
-
-
-        // Javascript to handle password being required
-        function togglePassword() {
-            var passwordInput = document.getElementById("lobby-password");
-            var requirePassword = document.getElementById("require-password");
-            if (requirePassword.checked) {
-                passwordInput.required = true;
-                passwordInput.pattern = "[0-9]{4}";
-            } 
-            else {
-                passwordInput.required = false;
-                passwordInput.pattern = "";
-            }
-        }
-
-        function togglePasswordField() {
-            var passwordInput = document.getElementById("lobby-password");
-            var requirePassword = document.getElementById("require-password");
-
-            if (requirePassword.checked) {
-                passwordInput.disabled = false;
-                passwordInput.type = "text";
-                passwordInput.pattern = "[0-9]{4}";
-            } 
-            else {
-                passwordInput.disabled = true;
-                passwordInput.type = "text";
-                passwordInput.pattern = "";
-                passwordInput.value = ""; //clear the input if there is any
-            }
-        }
-
-        function toggleSettings() {
-            const settingsContainer = document.querySelector('.settings-container');
-            const overlay = document.querySelector('.overlay');
-
-            settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'block' : 'none';
-            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function closeSettings() {
-            // Hide the settings menu and overlay
-            const settingsContainer = document.querySelector('.settings-container');
-            const overlay = document.querySelector('.overlay');
-            settingsContainer.style.display = 'none';
-            overlay.style.display = 'none';
-        }
-
-        function toggleStats() {
-            const settingsContainer = document.querySelector('.stats-container');
-            const overlay = document.querySelector('.overlay');
-
-            settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'block' : 'none';
-            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function closeStats() {
-            // Hide the settings menu and overlay
-            const settingsContainer = document.querySelector('.stats-container');
-            const overlay = document.querySelector('.overlay');
-            settingsContainer.style.display = 'none';
-            overlay.style.display = 'none';
-        }
-        
-    </script>
-   
-</body>
-
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+      integrity="sha384-w0Yur8YnYVVuoCjwMnz/e6qlR+lt6zEdN+I3r0pWYyz6L/GFqnsJvST5l8GkZpQG"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shC1n3EJm9q3/eplmoUqSz/8+0Gni4k+Ousn6"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+    ></script>
+    <script type="text/javascript" src="./game.js"></script>
+  </body>
 </html>

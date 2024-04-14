@@ -3,19 +3,19 @@ package uta.group23.wurdle.models;
 import org.java_websocket.*;
 
 public class Message {
-    private Player sender;
+    private String nick;
     private String message;
     private ChatScope scope;
 
-    public Message(Player sender, String msg, ChatScope scope) {
-        this.sender = sender;
+    public Message(String nick, String msg, ChatScope scope) {
+        this.nick = nick;
         this.message = msg;
         this.scope = scope;
 
     }
 
-    public Player getSender() {
-        return sender;
+    public String getSender() {
+        return nick;
     }
 
     public String getMessage() {

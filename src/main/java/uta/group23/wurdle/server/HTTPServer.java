@@ -80,26 +80,32 @@ class RootHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange he) throws IOException {
         // Serve an HTML file
-        String htmlFilePath = "./html/index.html";
-        File htmlFile = new File(htmlFilePath);
-        if (htmlFile.exists() && htmlFile.isFile()) {
-            // Set the response headers indicating the content type as HTML
-            he.getResponseHeaders().set("Content-Type", "text/html");
-            he.sendResponseHeaders(200, htmlFile.length());
-            OutputStream outputStream = he.getResponseBody();
-            FileInputStream fis = new FileInputStream(htmlFile);
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            fis.close();
-            outputStream.close();
+        String htmlPath = "./html/";
+        String requestURI = he.getRequestURI().toString();
+        if (requestURI.equals("/")) {
+            htmlPath += "index.html";
         } else {
-            // Handle file not found
+            htmlPath += requestURI.substring(1);
+        }
+
+        File file = new File(htmlPath);
+        if (!file.exists()) {
             he.sendResponseHeaders(404, 0);
             he.getResponseBody().close();
+            return;
         }
+
+        he.sendResponseHeaders(200, file.length());
+        OutputStream os = he.getResponseBody();
+        FileInputStream fs = new FileInputStream(file);
+        byte[] buffer = new byte[0x10000];
+        int count = 0;
+        while ((count = fs.read(buffer)) >= 0) {
+            os.write(buffer, 0, count);
+        }
+        fs.close();
+        os.close();
+
     }
 
 }

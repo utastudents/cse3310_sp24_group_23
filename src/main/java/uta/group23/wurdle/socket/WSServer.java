@@ -37,7 +37,7 @@ public class WSServer extends WebSocketServer {
     }
 
     public void broadCastLobbyList() {
-        String lobbies = ctx.getLobbyList().toJson();
+        String lobbies = ctx.getLobbyList();
         broadcast(lobbies);
     }
 
@@ -48,7 +48,7 @@ public class WSServer extends WebSocketServer {
             String msg = j.get("content").getAsString();
 
             // add to message board
-            ctx.addMessage(ctx.getPlayerByConn(conn), msg);
+            ctx.addMessage(ctx.getPlayerByConn(conn).getNickname(), msg);
             // broadcast messageBoard to all clients
             /**
              * messageBoard: [
@@ -64,44 +64,61 @@ public class WSServer extends WebSocketServer {
         if (j.get("type").getAsString().equals("setUsername")) {
             String username = j.get("username").getAsString();
             ctx.getPlayerByConn(conn).setNickname(username);
+
+            ctx.addMessage("System", "New player connected: " + username);
+            broadCastMessageBoard();
         }
 
         if (j.get("type").getAsString().equals("createLobby")) {
             String lobbyName = j.get("lobbyName").getAsString();
             String lobbyID = UUID.randomUUID().toString();
-            int password = 0;
-            if (j.has("password")) {
-                password = j.get("password").getAsInt();
-            }
-            int playerCap = j.get("playerCount").getAsInt();
-            String mode = j.get("lobbyMode").getAsString();
+            String password = "";
 
+            int playerCap = j.get("playerCount").getAsInt();
+
+            if (j.get("password") != null) {
+                password = j.get("password").getAsString();
+            }
+
+            String mode = j.get("lobbyMode").getAsString();
+            System.out.println(1);
             String modeStr = mode.equals("timer") ? "Timer" : "Point";
             Mode lobbyMode = Mode.valueOf(modeStr);
             Player lobbyOwner = ctx.getPlayerByConn(conn);
             Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
 
-            ctx.getLobbyList().addLobby(lobby, lobbyOwner, ctx);
+            ctx.addLobby(lobby, lobbyOwner);
+            broadCastLobbyList();
         }
 
         if (j.get("type").getAsString().equals("joinLobby")) {
             String lobbyID = j.get("lobbyID").getAsString();
-            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            Lobby lobby = ctx.searchID(lobbyID);
             Player player = ctx.getPlayerByConn(conn);
             lobby.addPlayer(player);
         }
 
         if (j.get("type").getAsString().equals("leaveLobby")) {
             String lobbyID = j.get("lobbyID").getAsString();
-            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            Lobby lobby = ctx.searchID(lobbyID);
             Player player = ctx.getPlayerByConn(conn);
             lobby.removePlayer(player);
         }
 
         if (j.get("type").getAsString().equals("startGame")) {
             String lobbyID = j.get("lobbyID").getAsString();
-            Lobby lobby = ctx.getLobbyList().searchID(lobbyID);
+            Lobby lobby = ctx.searchID(lobbyID);
             lobby.startGame();
+        }
+
+        if (j.get("type").getAsString().equals("joinLobby")) {
+
+            String lobbyID = j.get("lobbyID").getAsString();
+            Lobby lobby = ctx.searchID(lobbyID);
+            Player player = ctx.getPlayerByConn(conn);
+            lobby.addPlayer(player);
+
+            broadCastLobbyList();
         }
 
     }
@@ -115,6 +132,7 @@ public class WSServer extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Started socket server on port " + this.addr.getPort() + " at " + this.addr.getAddress());
+
     }
 
     @Override
@@ -125,7 +143,8 @@ public class WSServer extends WebSocketServer {
 
         ctx.addPlayer(newPlayer);
         System.out.println("Client count: " + ctx.getPlayerSize());
-
+        // send selfID to client
+        conn.send("{\"type\": \"selfID\", \"id\": \"" + newId + "\"}");
     }
 
     @Override
@@ -135,6 +154,9 @@ public class WSServer extends WebSocketServer {
 
         ctx.removePlayer(conn);
         System.out.println("Client count: " + ctx.getPlayerSize());
+
+        ctx.addMessage("System", "Player disconnected " + ctx.getPlayerByConn(conn).getNickname());
+        broadCastMessageBoard();
     }
 
     @Override
