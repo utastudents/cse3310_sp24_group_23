@@ -8,12 +8,18 @@ import org.java_websocket.WebSocket;
 import com.google.gson.JsonArray;
 
 import uta.group23.wurdle.server.Client;
+import uta.group23.wurdle.socket.LobbyList;
 
 public class Context {
     private ArrayList<Player> players = new ArrayList<>();
     private MessageBoard messageBoard = new MessageBoard();
+    private LobbyList lobbyList = new LobbyList();
 
     public Context() {
+    }
+
+    public LobbyList getLobbyList() {
+        return lobbyList;
     }
 
     public void addPlayer(Player player) {
@@ -23,6 +29,7 @@ public class Context {
 
     public void removePlayer(WebSocket conn) {
         players.removeIf(client -> client.getClient().getConn().equals(conn));
+
         System.out.println("Client removed" + conn.getResourceDescriptor());
     }
 

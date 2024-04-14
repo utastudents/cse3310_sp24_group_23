@@ -9,4 +9,5 @@ public enum Mode {
     public static void changeMode(Lobby lobby) {
 
     }
+
 }
