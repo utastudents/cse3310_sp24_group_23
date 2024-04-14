@@ -53,7 +53,14 @@
             overflow-y: auto;
         }
         .chat-messages {
+            position: fixed;
             margin-bottom: 10px;
+            height: 900px; /*need to adjust height*/
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #c9c9c9;
+            border-radius: 5px;
+
         }
         .chat-input {
             position: absolute;
@@ -82,65 +89,137 @@
         }
 
         .lobby-creation-container {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 220px;
-  background-color: #f1f1f1;
-  padding: 15px;
-  box-sizing: border-box;
-  border-radius: 8px;
-}
-
-.lobby-creation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.lobby-creation h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.lobby-creation .form-group {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.lobby-creation .form-group label {
-  font-size: 14px;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.lobby-creation .form-group input,
-.lobby-creation .form-group select {
-  font-size: 14px;
-  padding: 6px 8px;
-}
-
-.lobby-creation .form-group .input-group button {
-  font-size: 14px;
-  padding: 6px 10px;
-}
-
-.lobby-creation button {
-  font-size: 14px;
-  padding: 6px 12px;
-  width: 100%;
-}
-
-.lobby-creation .form-group .input-group .input-group-append .input-group-text {
-  font-size: 14px;
-  padding: 6px 8px;
-}
-
-#lobby-password:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 220px;
+            background-color: #f1f1f1;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+        .lobby-creation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .lobby-creation h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .lobby-creation .form-group {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .lobby-creation .form-group label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .lobby-creation .form-group input,
+        .lobby-creation .form-group select {
+            font-size: 14px;
+            padding: 6px 8px;
+        }
+        .lobby-creation .form-group .input-group button {
+            font-size: 14px;
+            padding: 6px 10px;
+        }
+        .lobby-creation button {
+            font-size: 14px;
+            padding: 6px 12px;
+            width: 100%;
+        }
+        .lobby-creation .form-group .input-group .input-group-append .input-group-text {
+            font-size: 14px;
+            padding: 6px 8px;
+        }
+        #lobby-password:disabled {
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+        }
         
+        .settings-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 999;
+        }
+        .stats-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 999;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+
+        .settings-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .settings-buttons button {
+            margin-left: 10px;
+        }
+
+        .extra-buttons-container {
+            position: fixed;
+            text-align: center;
+            top: 395px;
+            left: 20px;
+            width: 220px;
+            background-color: #f1f1f1;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+
+        .recent-leaderboard-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            font-size: 14px;
+            position: fixed;
+            text-align: center;
+            top: 475px;
+            left: 20px;
+            width: 220px;
+            background-color: #f1f1f1;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            bottom:20px;
+            overflow-y: auto;
+    
+        }
+
+        .recent-leaderboard-container h3 {
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        .recent-leaderboard-container .table {
+            margin-bottom: 0;
+        }
+        .recent-leaderboard-container td {
+            padding: 8px;
+        }
 
     </style>    
 </head>
@@ -181,8 +260,8 @@
                         <div class="input-group">
                             <input type="password" class="form-control" id="lobby-password" placeholder="4-digit PIN" pattern="[0-9]{4}" minlength="4" maxlength="4" disabled>
                             <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <input type="checkbox" id="require-password" onchange="togglePasswordField()"> Require
+                                <div class="input-group-text">                                              <!-- Alt + 255 character here cause I don't wanna figure out the css just for a space there :D -->
+                                    <input type="checkbox" id="require-password" onchange="togglePasswordField()">  Require
                                 </div>
                             </div>
                         </div>
@@ -190,6 +269,71 @@
                     <button  type='button' id="createLobbyButton" class="btn btn-primary">Create Lobby</button>
                     </form>
                 </div>
+            </div>
+            
+
+            <div class="settings-container" style="display: none;">
+                <div class="settings-menu">
+                    <h3>Settings</h3>
+                    <!-- Add settings options here -->
+                    Some settings options here with more options somehow
+                    <div class="settings-buttons">
+                        <button class="btn btn-primary" onclick="saveSettings()">Save</button> <!--Save button doesn't do anything right now-->
+                        <button class="btn btn-secondary" onclick="closeSettings()" >Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container" style="display: none;">
+                <div class="stats-menu">
+                    <h3>Settings</h3>
+                        <!-- Add stat options here -->
+                        Find some stats stuff to put in here<br>
+                        <button class="btn btn-secondary" onclick="closeStats()">Close</button>
+                </div>
+            </div>
+            
+            <div class="overlay" style="display: none;"></div>
+            
+            
+            <div class="extra-buttons-container">
+                <button class="btn btn-primary" onclick="toggleSettings()">Settings</button>
+                <button class="btn btn-primary" onclick="toggleStats()">Extra Stats</button>
+            </div>
+
+            <div class="recent-leaderboard-container">
+                <h3>Last Game Highscores</h3>
+                <table class="table table-striped table-sm">
+                    <thead align="center">
+                        <tr>
+                            <th>Player</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Recent highscores will be displayed here -->
+                        <tr>
+                            <td>John Doe</td>
+                            <td>1500</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>1200</td>
+                        </tr>
+                        <tr>
+                            <td>Bob Johnson</td>
+                            <td>1100</td>
+                        </tr>
+                        <tr>
+                            <td>Alice Williams</td>
+                            <td>1050</td>
+                        </tr>
+                        <tr>
+                            <td>Tom Davis</td>
+                            <td>1000</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="col-md">
@@ -200,7 +344,7 @@
                     <form id="lobbyForm">
                         <div class="form-group">
     
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Username..." required style="width: 200px; margin: auto;">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username..." maxlength="20" style="width: 200px; margin: auto;">
                 
                             <button type="button" class="btn btn-primary mt-3">Start Game</button>
 
@@ -226,12 +370,14 @@
                     </div>
                 </div>
             </div>
+            
+            
 
             <div class="change-username-container">
                 <div class="change-username">
                     <label for="new-username">Username/Nickname:</label>
                     <!-- Get username and make it the placeholder-->
-                    <input type="text" class="form-control" id="new-username" placeholder="Username..." >
+                    <input type="text" class="form-control" id="new-username" placeholder="Username..." maxlength="20" >
                     <!-- <button class="btn btn-primary" onclick="changeUsername()">Update</button> -->
                     <button class="btn btn-primary" type="button" id="updateUsernameButton">Update</button>
                 </div>
@@ -242,7 +388,8 @@
                 <!-- scrollable, fixed height,  -->
                 <div class="chatBox">
                     <h3>Chat</h3>
-                    <div class="chatMessages" style="height: 200px; overflow-y: auto;">
+                    <div class="chatMessages" style="height: 400px; overflow-y: scroll;">
+
                         <!-- Chat messages will be displayed here -->
                     </div>
                     <div class="chat-input">
@@ -522,6 +669,38 @@ if (localStorage.getItem("username") != null) {
                 passwordInput.pattern = "";
                 passwordInput.value = ""; //clear the input if there is any
             }
+        }
+
+        function toggleSettings() {
+            const settingsContainer = document.querySelector('.settings-container');
+            const overlay = document.querySelector('.overlay');
+
+            settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'block' : 'none';
+            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function closeSettings() {
+            // Hide the settings menu and overlay
+            const settingsContainer = document.querySelector('.settings-container');
+            const overlay = document.querySelector('.overlay');
+            settingsContainer.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function toggleStats() {
+            const settingsContainer = document.querySelector('.stats-container');
+            const overlay = document.querySelector('.overlay');
+
+            settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'block' : 'none';
+            overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function closeStats() {
+            // Hide the settings menu and overlay
+            const settingsContainer = document.querySelector('.stats-container');
+            const overlay = document.querySelector('.overlay');
+            settingsContainer.style.display = 'none';
+            overlay.style.display = 'none';
         }
         
     </script>
