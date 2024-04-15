@@ -39,17 +39,37 @@ this.send = function (message, callback) {
 };
 
 function sendMessage() {
+  // get the message
+  const messageText = document.getElementById("message").value;
+
+  // get the timestamp
+  const timestamp = new Date().toLocaleTimeString();
+
+  // add the message
+  // addMessage("You", messageText, timestamp);
+
+
   // websocket request
   send(
     JSON.stringify({
       type: "message",
-      content: document.getElementById("message").value,
+      content: messageText,
+      timestamp: timestamp // add current timestamp
     })
   );
 
+
+
   // clear the input field
   document.getElementById("message").value = "";
+
+  // scroll the chatBox to the bottom
+  const chatMessages = document.querySelector('.chatBox');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.scrollIntoView({behavior: 'smooth', block: 'end'});
 }
+
+
 
 let username = localStorage.getItem("username") || "";
 let uuid = "";
@@ -211,10 +231,27 @@ webSocket.onmessage = function (event) {
   }
 };
 
-const addMessage = (username, message) => {
+const addMessage = (username, message, timestamp) => {
   let chatMessages = document.querySelector(".chatMessages");
   let chatMessage = document.createElement("div");
-  chatMessage.textContent = username + ": " + message;
+  chatMessage.classList.add("chat-message");
+  //chatMessage.textContent = username + ": " + message;
+  //chatMessages.appendChild(chatMessage);
+
+  // create the mesage text element 
+  let messageTextElement = document.createElement("div");
+  messageTextElement.classList.add("chat-message-text");
+  messageTextElement.textContent = `${username}: ${message}`;
+
+  // create the timestamp
+  let timestampElement = document.createElement("div");
+  timestampElement.classList.add("chat-message-timestamp");
+  timestampElement.textContent = new Date().toLocaleTimeString(); // add the timestamp
+
+  // append the message text and timestamp together
+  chatMessage.appendChild(messageTextElement);
+  chatMessage.appendChild(timestampElement);
+
   chatMessages.appendChild(chatMessage);
 };
 
@@ -223,6 +260,11 @@ const createLobby = () => {
     sendToast("Please enter a username.");
   } else {
     // websocket request
+
+    if (document.getElementById("lobby-name").value.trim() === ""){
+      sendToast("Please enter a lobby name.");
+      return;
+    }
     send(
       JSON.stringify({
         type: "createLobby",
