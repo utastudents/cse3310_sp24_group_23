@@ -25,7 +25,10 @@ public class Context {
 
     public void removePlayer(WebSocket conn) {
         players.removeIf(client -> client.getClient().getConn().equals(conn));
-
+        // remove player from possible lobbies O(n*m)
+        for (Lobby l : lobbies) {
+            l.removePlayer(getPlayerByConn(conn));
+        }
         System.out.println("Client removed" + conn.getResourceDescriptor());
     }
 
@@ -68,12 +71,30 @@ public class Context {
 
     public Lobby searchID(String lobbyID) {
         for (Lobby l : lobbies) {
-            if (l.getLobbyID() == lobbyID) {
+            if (l.getLobbyID().equals(lobbyID)) {
                 return l;
             }
         }
         return null;
 
+    }
+
+    public boolean isLobbyNameTaken(String lobbyName) {
+        for (Lobby l : lobbies) {
+            if (l.getLobbyName().equals(lobbyName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isUsernameTaken(String username) {
+        for (Player p : players) {
+            if (p.getNickname().equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getLobbyList() {

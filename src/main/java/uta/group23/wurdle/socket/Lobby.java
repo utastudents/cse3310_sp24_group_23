@@ -1,7 +1,9 @@
 package uta.group23.wurdle.socket;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -16,7 +18,7 @@ public class Lobby {
     private int playerNum;
     private String password;
     private Mode lobbyMode;
-    private ArrayList<Player> players;
+    private HashSet<Player> players;
     private int playerCount;
     private int playerCap;
 
@@ -30,7 +32,7 @@ public class Lobby {
         this.password = password;
 
         this.lobbyMode = lobbyMode;
-        this.players = new ArrayList<Player>();
+        this.players = new HashSet<>();
         this.playerCap = playerCap;
     }
 
@@ -42,7 +44,21 @@ public class Lobby {
         return lobbyID;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    private void checkFull() {
+        if (playerCount == playerCap) {
+            lobbyStatus = Status.IN_PROGRESS;
+        }
+    }
+
     public void addPlayer(Player player) {
+
+        if (playerCount == playerCap) {
+            return;
+        }
         players.add(player);
         this.playerCount++;
     }
@@ -73,7 +89,7 @@ public class Lobby {
         // Start game
     }
 
-    public ArrayList<Player> getPlayers() {
+    public HashSet<Player> getPlayers() {
         return players;
     }
 
@@ -97,10 +113,31 @@ public class Lobby {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("lobbyName", lobbyName);
         jsonObject.addProperty("lobbyStatus", lobbyStatus.toString());
-        jsonObject.addProperty("playerCount", playerCount);
+        jsonObject.addProperty("playerCount", players.size());
         jsonObject.addProperty("id", lobbyID);
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
 
         return jsonObject;
+    }
+
+    public JsonObject toJsonObjectPrivate() {
+        JsonArray playersList = new JsonArray();
+        for (Player p : players) {
+            playersList.add(p.toJsonObject());
+
+        }
+
+        JsonObject jsonObject = new JsonObject();
+
+        jsonObject.addProperty("lobbyName", lobbyName);
+        jsonObject.addProperty("lobbyStatus", lobbyStatus.toString());
+        jsonObject.addProperty("playerCount", players.size());
+        jsonObject.addProperty("id", lobbyID);
+        jsonObject.addProperty("ownerID", lobbyOwner.getId());
+        jsonObject.addProperty("password", password);
+
+        jsonObject.add("players", playersList);
+        return jsonObject;
+
     }
 }

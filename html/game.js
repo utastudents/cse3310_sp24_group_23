@@ -3,7 +3,7 @@ let gameStarted = false;
 let serverUrl =
   "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 console.log(serverUrl);
-let webSocket = new WebSocket(serverUrl);
+const webSocket = new WebSocket(serverUrl);
 
 webSocket.onopen = function (event) {
   console.log("WebSocket connection opened.");
@@ -51,6 +51,10 @@ function sendMessage() {
   document.getElementById("message").value = "";
 }
 
+let username = localStorage.getItem("username") || "";
+let uuid = "";
+document.querySelector("#username").value = username;
+
 // JavaScript to handle message sent via enter key
 document
   .getElementById("message")
@@ -75,6 +79,7 @@ const sendToast = (message) => {
     onClick: function () {}, // Callback after click
   }).showToast();
 };
+
 if (localStorage.getItem("username") != null) {
   document.getElementById("username").value = localStorage.getItem("username");
 
@@ -85,13 +90,14 @@ if (localStorage.getItem("username") != null) {
     })
   );
 }
+
 // ask for username the second player joins and create floating form
 
 let messages = {};
-const setUsername = async () => {
+const setUsername = () => {
   username = document.getElementById("new-username").value;
   if (username.trim() === "") {
-    alert("Please enter a username.");
+    sendToast("Please enter a username.");
     return;
   }
 
@@ -105,21 +111,41 @@ const setUsername = async () => {
     })
   );
 
-  sendToast("Username updated to " + username);
+  //sendToast("Username updated to " + username);
 
-  localStorage.setItem("username", username);
+  //localStorage.setItem("username", username);
 };
-
-let username = localStorage.getItem("username") || "";
-let uuid = "";
-document.querySelector("#username").value = username;
 
 if (username != "") {
   sendToast("Welcome back, " + username + "!");
 }
 
 webSocket.onmessage = function (event) {
-  let message = JSON.parse(event.data);
+  const message = JSON.parse(event.data);
+
+  if (message.type == "usernameQuery") {
+    //const username = document.getElementById("new-username").value;
+    if (message.accepted) {
+      localStorage.setItem("username", username);
+      sendToast("Username updated to " + username);
+    } else {
+      sendToast("Username already taken.");
+    }
+  }
+
+  if (message.type == "lobbyUpdate") {
+    let lobby = message.lobby;
+    let members = lobby.players;
+    // update players
+    let playerList = document.getElementById("playerListHorizontal");
+    playerList.innerHTML = "";
+    members.forEach(function (member) {
+      let player = document.createElement("ul");
+      player.textContent = member.nickname;
+      playerList.appendChild(player);
+    });
+  }
+
   if ("messageBoard" in message) {
     /**
      * messageBoard: [
@@ -155,8 +181,10 @@ webSocket.onmessage = function (event) {
       status.textContent = lobby.lobbyStatus;
       playerCount.textContent = lobby.playerCount;
       joinButton.textContent = "Join";
+      joinButton.className = "joinButton btn btn-primary";
+
       const lobbyOwner = lobby.ownerID;
-      const id = lobby.lobbyId;
+      const id = lobby.id;
 
       row.appendChild(lobbyName);
       row.appendChild(status);
@@ -173,6 +201,9 @@ webSocket.onmessage = function (event) {
             lobbyId: id,
           })
         );
+
+        toggleLobbyForm();
+        inLobby = true;
       });
 
       tbody.appendChild(row);

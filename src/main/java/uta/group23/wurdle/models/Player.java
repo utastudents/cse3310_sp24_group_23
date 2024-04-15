@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import org.java_websocket.WebSocket;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import uta.group23.wurdle.server.Client;
 import uta.group23.wurdle.socket.Lobby;
 
@@ -17,13 +20,16 @@ public class Player {
     private Colour user_colour;
     private int num_found;
     private PlayerType user_type;
+    private int lastActive;
 
     Player() {
         this.playerID = UUID.randomUUID().toString();
+        this.score = 0;
+        this.lastActive = 0;
     }
 
     public Player(String nickname, WebSocket conn) {
-        this();
+        this.playerID = UUID.randomUUID().toString();
         this.nickname = nickname;
         this.client = new Client(conn);
         this.score = 0;
@@ -34,7 +40,7 @@ public class Player {
     }
 
     public Player(String nickname, Colour user_colour) {
-        this();
+
         this.nickname = nickname;
         this.user_colour = user_colour;
     }
@@ -110,6 +116,16 @@ public class Player {
 
     public String getId() {
         return playerID;
+    }
+
+    public JsonObject toJsonObject() {
+
+        JsonObject obj = new JsonObject();
+        obj.addProperty("nickname", nickname);
+        obj.addProperty("playerID", playerID);
+        obj.addProperty("score", score);
+        return obj;
+
     }
 
 }

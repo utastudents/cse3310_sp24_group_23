@@ -63,8 +63,15 @@ public class WSServer extends WebSocketServer {
 
         if (j.get("type").getAsString().equals("setUsername")) {
             String username = j.get("username").getAsString();
-            ctx.getPlayerByConn(conn).setNickname(username);
+            // ctx.getPlayerByConn(conn).setNickname(username);
+            if (ctx.isUsernameTaken(username)) {
+                /* type: "usernameQuery", accepted: false */
+                conn.send("{\"type\": \"usernameQuery\", \"accepted\": false}");
+                return;
+            }
 
+            conn.send("{\"type\": \"usernameQuery\", \"accepted\": true}");
+            ctx.getPlayerByConn(conn).setNickname(username);
             ctx.addMessage("System", "New player connected: " + username);
             broadCastMessageBoard();
         }
@@ -91,13 +98,6 @@ public class WSServer extends WebSocketServer {
             broadCastLobbyList();
         }
 
-        if (j.get("type").getAsString().equals("joinLobby")) {
-            String lobbyID = j.get("lobbyID").getAsString();
-            Lobby lobby = ctx.searchID(lobbyID);
-            Player player = ctx.getPlayerByConn(conn);
-            lobby.addPlayer(player);
-        }
-
         if (j.get("type").getAsString().equals("leaveLobby")) {
             String lobbyID = j.get("lobbyID").getAsString();
             Lobby lobby = ctx.searchID(lobbyID);
@@ -113,10 +113,26 @@ public class WSServer extends WebSocketServer {
 
         if (j.get("type").getAsString().equals("joinLobby")) {
 
-            String lobbyID = j.get("lobbyID").getAsString();
+            String lobbyID = j.get("lobbyId").getAsString();
             Lobby lobby = ctx.searchID(lobbyID);
+
+            if (j.get("password") != null) {
+                String password = j.get("password").getAsString();
+                if (!lobby.getPassword().equals(password)) {
+                    return;
+                }
+            }
+
             Player player = ctx.getPlayerByConn(conn);
             lobby.addPlayer(player);
+
+            // broadcast lobby info to all clients of this lobby
+
+            for (Player p : lobby.getPlayers()) {
+                String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
+                System.out.println(data);
+                p.getClient().getConn().send(data);
+            }
 
             broadCastLobbyList();
         }
