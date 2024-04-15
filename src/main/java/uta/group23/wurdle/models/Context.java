@@ -45,6 +45,10 @@ public class Context {
         return players.size();
     }
 
+    public int getLobbySize() {
+        return lobbies.size();
+    }
+
     public String getMessageBoard() {
         return messageBoard.toJson();
     }

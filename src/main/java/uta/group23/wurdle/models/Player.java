@@ -40,7 +40,7 @@ public class Player {
     }
 
     public Player(String nickname, Colour user_colour) {
-
+        this.playerID = UUID.randomUUID().toString();
         this.nickname = nickname;
         this.user_colour = user_colour;
     }
