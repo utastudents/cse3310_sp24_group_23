@@ -68,15 +68,6 @@ public class Lobby {
             return;
         }
 
-        // check if player is already in a lobby by nickname or by connection
-        for (Player p : players) {
-            if (p.getNickname().equals(player.getNickname())) {
-                return;
-            }
-            if (p.getConn().equals(player.getConn())) {
-                return;
-            }
-        }
         players.add(player);
         this.playerCount++;
     }

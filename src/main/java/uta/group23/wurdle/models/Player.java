@@ -22,7 +22,7 @@ public class Player {
     private PlayerType user_type;
     private int lastActive;
 
-    Player() {
+    public Player() {
         this.playerID = UUID.randomUUID().toString();
         this.score = 0;
         this.lastActive = 0;

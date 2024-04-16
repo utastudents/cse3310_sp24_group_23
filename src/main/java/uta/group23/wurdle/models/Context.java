@@ -25,14 +25,15 @@ public class Context {
 
     public void removePlayer(WebSocket conn) {
 
-        // remove player from possible lobbies O(n*m)
-        String nick = getPlayerByConn(conn).getNickname();
-        for (Lobby l : lobbies) {
-            l.removePlayer(getPlayerByConn(conn));
+        // remove player from possible lobbies O(n*L)
+        Player player = getPlayerByConn(conn); // O(n)
+        String nick = player.getNickname();
+        for (Lobby l : lobbies) { // O(L)
+            l.removePlayer(player); // O(1)
         }
         System.out.println("Client removed" + nick);
 
-        players.remove(getPlayerByConn(conn));
+        players.remove(player); // O(1)
     }
 
     public void addMessage(String nick, String message) {
