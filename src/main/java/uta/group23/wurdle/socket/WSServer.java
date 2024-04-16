@@ -62,47 +62,15 @@ public class WSServer extends WebSocketServer {
         broadCastLobbyList();
 
         if (j.get("type").getAsString().equals("setUsername")) {
-            String username = j.get("username").getAsString();
-            // ctx.getPlayerByConn(conn).setNickname(username);
-            if (ctx.isUsernameTaken(username)) {
-                /* type: "usernameQuery", accepted: false */
-                conn.send("{\"type\": \"usernameQuery\", \"accepted\": false}");
-                return;
-            }
-
-            conn.send("{\"type\": \"usernameQuery\", \"accepted\": true}");
-            ctx.getPlayerByConn(conn).setNickname(username);
-            ctx.addMessage("System", "New player connected: " + username);
-            broadCastMessageBoard();
+            setUsername(conn, j);
         }
 
         if (j.get("type").getAsString().equals("createLobby")) {
-            String lobbyName = j.get("lobbyName").getAsString();
-            String lobbyID = UUID.randomUUID().toString();
-            String password = "";
-
-            int playerCap = j.get("playerCount").getAsInt();
-
-            if (j.get("password") != null) {
-                password = j.get("password").getAsString();
-            }
-
-            String mode = j.get("lobbyMode").getAsString();
-            System.out.println(1);
-            String modeStr = mode.equals("timer") ? "Timer" : "Point";
-            Mode lobbyMode = Mode.valueOf(modeStr);
-            Player lobbyOwner = ctx.getPlayerByConn(conn);
-            Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
-
-            ctx.addLobby(lobby, lobbyOwner);
-            broadCastLobbyList();
+            createLobby(conn, j);
         }
 
         if (j.get("type").getAsString().equals("leaveLobby")) {
-            String lobbyID = j.get("lobbyID").getAsString();
-            Lobby lobby = ctx.searchID(lobbyID);
-            Player player = ctx.getPlayerByConn(conn);
-            lobby.removePlayer(player);
+            leaveLobby(conn, j);
         }
 
         if (j.get("type").getAsString().equals("startGame")) {
@@ -137,6 +105,50 @@ public class WSServer extends WebSocketServer {
             broadCastLobbyList();
         }
 
+    }
+
+    private void setUsername(WebSocket conn, JsonObject j) {
+        String username = j.get("username").getAsString();
+        // ctx.getPlayerByConn(conn).setNickname(username);
+        if (ctx.isUsernameTaken(username)) {
+            /* type: "usernameQuery", accepted: false */
+            conn.send("{\"type\": \"usernameQuery\", \"accepted\": false}");
+            return;
+        }
+
+        conn.send("{\"type\": \"usernameQuery\", \"accepted\": true}");
+        ctx.getPlayerByConn(conn).setNickname(username);
+        ctx.addMessage("System", "New player connected: " + username);
+        broadCastMessageBoard();
+    }
+
+    private void leaveLobby(WebSocket conn, JsonObject j) {
+        String lobbyID = j.get("lobbyID").getAsString();
+        Lobby lobby = ctx.searchID(lobbyID);
+        Player player = ctx.getPlayerByConn(conn);
+        lobby.removePlayer(player);
+    }
+
+    private void createLobby(WebSocket conn, JsonObject j) {
+        String lobbyName = j.get("lobbyName").getAsString();
+        String lobbyID = UUID.randomUUID().toString();
+        String password = "";
+
+        int playerCap = j.get("playerCount").getAsInt();
+
+        if (j.get("password") != null) {
+            password = j.get("password").getAsString();
+        }
+
+        String mode = j.get("lobbyMode").getAsString();
+        System.out.println(1);
+        String modeStr = mode.equals("timer") ? "Timer" : "Point";
+        Mode lobbyMode = Mode.valueOf(modeStr);
+        Player lobbyOwner = ctx.getPlayerByConn(conn);
+        Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
+
+        ctx.addLobby(lobby, lobbyOwner);
+        broadCastLobbyList();
     }
 
     @Override
