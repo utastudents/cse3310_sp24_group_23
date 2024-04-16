@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import uta.group23.wurdle.grid.Grid;
+import uta.group23.wurdle.grid.GridGen;
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
 
@@ -21,6 +23,8 @@ public class Lobby {
     private HashSet<Player> players;
     private int playerCount;
     private int playerCap;
+    private Grid grid;
+    private GridGen gridGen;
 
     public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
@@ -38,6 +42,10 @@ public class Lobby {
 
     public String getLobbyName() {
         return lobbyName;
+    }
+
+    public Grid getGrid() {
+        return this.grid;
     }
 
     public String getLobbyID() {
@@ -58,6 +66,16 @@ public class Lobby {
 
         if (playerCount == playerCap) {
             return;
+        }
+
+        // check if player is already in a lobby by nickname or by connection
+        for (Player p : players) {
+            if (p.getNickname().equals(player.getNickname())) {
+                return;
+            }
+            if (p.getConn().equals(player.getConn())) {
+                return;
+            }
         }
         players.add(player);
         this.playerCount++;
@@ -116,6 +134,7 @@ public class Lobby {
         jsonObject.addProperty("playerCount", players.size());
         jsonObject.addProperty("id", lobbyID);
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
+        jsonObject.addProperty("ownerName", lobbyOwner.getNickname());
 
         return jsonObject;
     }
