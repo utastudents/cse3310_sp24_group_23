@@ -43,7 +43,7 @@ public class WSServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        JsonObject j = JsonParser.parseString(message).getAsJsonObject();
+        JsonObject j = JsonParser.parseString(message).getAsJsonObject(); // convert to json
         if (j.get("type").getAsString().equals("message")) {
             String msg = j.get("content").getAsString();
 

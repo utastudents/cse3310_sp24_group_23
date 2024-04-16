@@ -48,28 +48,23 @@ function sendMessage() {
   // add the message
   // addMessage("You", messageText, timestamp);
 
-
   // websocket request
   send(
     JSON.stringify({
       type: "message",
       content: messageText,
-      timestamp: timestamp // add current timestamp
+      timestamp: timestamp, // add current timestamp
     })
   );
-
-
 
   // clear the input field
   document.getElementById("message").value = "";
 
   // scroll the chatBox to the bottom
-  const chatMessages = document.querySelector('.chatBox');
+  const chatMessages = document.querySelector(".chatBox");
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  chatMessages.scrollIntoView({behavior: 'smooth', block: 'end'});
+  chatMessages.scrollIntoView({ behavior: "smooth", block: "end" });
 }
-
-
 
 let username = localStorage.getItem("username") || "";
 let uuid = "";
@@ -150,6 +145,7 @@ webSocket.onmessage = function (event) {
       sendToast("Username updated to " + username);
     } else {
       sendToast("Username already taken.");
+      localStorage.setItem("username", "");
     }
   }
 
@@ -192,12 +188,14 @@ webSocket.onmessage = function (event) {
     tbody.innerHTML = "";
     message.lobbyList.forEach(function (lobby) {
       let row = document.createElement("tr");
-      let lobbyName = document.createElement("td");
+      const lobbyName = document.createElement("td");
+      let owner = document.createElement("td");
       let status = document.createElement("td");
       let playerCount = document.createElement("td");
       let joinButton = document.createElement("button");
 
       lobbyName.textContent = lobby.lobbyName;
+      owner.textContent = lobby.ownerName;
       status.textContent = lobby.lobbyStatus;
       playerCount.textContent = lobby.playerCount;
       joinButton.textContent = "Join";
@@ -206,6 +204,7 @@ webSocket.onmessage = function (event) {
       const lobbyOwner = lobby.ownerID;
       const id = lobby.id;
 
+      row.appendChild(owner);
       row.appendChild(lobbyName);
       row.appendChild(status);
       row.appendChild(playerCount);
@@ -238,7 +237,7 @@ const addMessage = (username, message, timestamp) => {
   //chatMessage.textContent = username + ": " + message;
   //chatMessages.appendChild(chatMessage);
 
-  // create the mesage text element 
+  // create the mesage text element
   let messageTextElement = document.createElement("div");
   messageTextElement.classList.add("chat-message-text");
   messageTextElement.textContent = `${username}: ${message}`;
@@ -261,7 +260,7 @@ const createLobby = () => {
   } else {
     // websocket request
 
-    if (document.getElementById("lobby-name").value.trim() === ""){
+    if (document.getElementById("lobby-name").value.trim() === "") {
       sendToast("Please enter a lobby name.");
       return;
     }
@@ -278,11 +277,6 @@ const createLobby = () => {
 };
 
 const toggleLobbyForm = () => {
-  document.querySelector(".lobbyForm").style.display =
-    document.querySelector(".lobbyForm").style.display === "none"
-      ? "block"
-      : "none";
-
   // toggle word grid
   document.getElementById("wordGrid").style.display =
     document.querySelector(".lobbyForm").style.display === "none"

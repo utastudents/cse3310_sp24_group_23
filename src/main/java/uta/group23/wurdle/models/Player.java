@@ -39,6 +39,10 @@ public class Player {
         return this.client;
     }
 
+    public WebSocket getConn() {
+        return this.client.getConn();
+    }
+
     public Player(String nickname, Colour user_colour) {
         this.playerID = UUID.randomUUID().toString();
         this.nickname = nickname;

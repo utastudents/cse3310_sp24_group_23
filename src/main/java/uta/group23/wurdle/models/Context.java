@@ -24,17 +24,21 @@ public class Context {
     }
 
     public void removePlayer(WebSocket conn) {
-        players.removeIf(client -> client.getClient().getConn().equals(conn));
+
         // remove player from possible lobbies O(n*m)
+        String nick = getPlayerByConn(conn).getNickname();
         for (Lobby l : lobbies) {
             l.removePlayer(getPlayerByConn(conn));
         }
-        System.out.println("Client removed" + conn.getResourceDescriptor());
+        System.out.println("Client removed" + nick);
+
+        players.remove(getPlayerByConn(conn));
     }
 
     public void addMessage(String nick, String message) {
+
         messageBoard.addMessage(nick, message, ChatScope.Global);
-        System.out.println(lobbies.size());
+
     }
 
     public Player getPlayerByConn(WebSocket conn) {
