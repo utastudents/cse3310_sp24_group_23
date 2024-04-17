@@ -179,12 +179,14 @@ public class WSServer extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         // TODO Auto-generated method stub
         System.out.println("Connection closed : " + conn.getResourceDescriptor());
-
+        
+        ctx.addMessage("System", "Player '"+ ctx.getPlayerByConn(conn).getNickname() + "' has disconnected");
+        broadCastMessageBoard();
+        
         ctx.removePlayer(conn);
         System.out.println("Client count: " + ctx.getPlayerSize());
 
-        ctx.addMessage("System", "Player disconnected " + ctx.getPlayerByConn(conn).getNickname());
-        broadCastMessageBoard();
+        
     }
 
     @Override
