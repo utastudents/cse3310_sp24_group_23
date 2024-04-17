@@ -37,6 +37,7 @@ public class ServerTest {
         Lobby lobby = new Lobby("lobbyName", "lobbyID", Status.WAITING, 0, Mode.Timer, "password", 4, bot);
         ctx.addLobby(lobby, bot);
         lobby.addPlayer(bot2);
+
         assertEquals(1, ctx.getLobbySize());
     }
 

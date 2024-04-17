@@ -73,12 +73,13 @@ public class Lobby {
             if (p.getNickname().equals(player.getNickname())) {
                 return;
             }
-            if (p.getConn().equals(player.getConn())) {
-                return;
-            }
+
+            // don't need to compare conn since nickname is unique
+
         }
         players.add(player);
         this.playerCount++;
+        checkFull();
     }
 
     public void removePlayer(Player player) {
