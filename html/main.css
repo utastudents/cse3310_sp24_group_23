@@ -235,3 +235,7 @@
   .recent-leaderboard-container td {
     padding: 8px;
   }
+
+.join-button {
+  margin-left: 10px;
+}

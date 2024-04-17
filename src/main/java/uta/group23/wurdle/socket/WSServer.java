@@ -67,6 +67,7 @@ public class WSServer extends WebSocketServer {
 
         if (j.get("type").getAsString().equals("createLobby")) {
             createLobby(conn, j);
+            broadCastLobbyList();
         }
 
         if (j.get("type").getAsString().equals("leaveLobby")) {
@@ -84,23 +85,24 @@ public class WSServer extends WebSocketServer {
             String lobbyID = j.get("lobbyId").getAsString();
             Lobby lobby = ctx.searchID(lobbyID);
 
-            if (j.get("password") != null) {
-                String password = j.get("password").getAsString();
-                if (!lobby.getPassword().equals(password)) {
-                    return;
-                }
-            }
+            // if (j.get("password") != null) {
+            //     String password = j.get("password").getAsString();
+            //     if (!lobby.getPassword().equals(password)) {
+            //         return;
+            //     }
+            // }
 
-            Player player = ctx.getPlayerByConn(conn);
-            lobby.addPlayer(player);
+            String password = j.get("password").getAsString();
+            joinLobby(conn, lobbyID, password);
 
-            // broadcast lobby info to all clients of this lobby
+            // Moved this into joinLobby function 
+            // // broadcast lobby info to all clients of this lobby
 
-            for (Player p : lobby.getPlayers()) {
-                String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
-                System.out.println(data);
-                p.getClient().getConn().send(data);
-            }
+            // for (Player p : lobby.getPlayers()) {
+            //     String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
+            //     System.out.println(data);
+            //     p.getClient().getConn().send(data);
+            // }
 
             broadCastLobbyList();
         }
@@ -132,10 +134,10 @@ public class WSServer extends WebSocketServer {
     private void createLobby(WebSocket conn, JsonObject j) {
         String lobbyName = j.get("lobbyName").getAsString();
         String lobbyID = UUID.randomUUID().toString();
-        String password = "";
-
+        
         int playerCap = j.get("playerCount").getAsInt();
 
+        String password = "";
         if (j.get("password") != null) {
             password = j.get("password").getAsString();
         }
@@ -193,4 +195,19 @@ public class WSServer extends WebSocketServer {
 
     }
 
+    private void joinLobby(WebSocket conn, String LobbyId, String password) {
+        Lobby lobby = ctx.searchID(LobbyId);
+        if (lobby.getPassword().equals(password)) {
+            Player player = ctx.getPlayerByConn(conn);
+            lobby.addPlayer(player);
+    
+            // broadcast lobby info to all clients of this lobby
+            for (Player p : lobby.getPlayers()) {
+                String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
+                p.getClient().getConn().send(data);
+            }
+        } else {
+            conn.send("{\"type\": \"joinLobbyError\", \"message\": \"Incorrect password\"}");
+        }
+    }
 }

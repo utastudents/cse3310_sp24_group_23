@@ -419,3 +419,64 @@ function closeStats() {
   settingsContainer.style.display = "none";
   overlay.style.display = "none";
 }
+
+// Lobby creation form and lobby list container to hide and display upon creation
+const lobbyCreationForm = document.getElementById('lobby-creation-form');
+const lobbyListContainer =  document.querySelector('.lobby-list');
+
+// Event listener for the lobby creation form
+lobbyCreationForm.addEventListener('submit', (event) => {
+  event.preventDefault(); // prevent the form from submitting
+
+  // Get the form data
+  const lobbyName = document.getElementById('lobby-name').value;
+  const playerCount = document.getElementById('player-count').value;
+  const gameType = document.getElementById('game-type').value;
+  const requirePassword = documnet.getElementById('require-password').checked;
+  const lobbyPassword = requirePassword ? document.getElementById('lobby-password').value : null;
+
+  // Display a cool little toast that they created a lobby successfully
+  sendToast(`Successfully created Lobby: ${lobbyName}`);
+
+  // Hide the lobby list upon creation
+  lobbyListContainer.style.display = 'none';
+});
+
+// Create new lobby on the server
+function createLobby(lobbyName, playerCount, gameType, requirePassword, lobbyPassword){
+  // Send json to server 
+  send(
+    JSON.stringify({
+      type: "createLobby",
+      lobbyName: lobbyName,
+      playerCount: playerCount,
+      lobbyMode: gameType,
+      password: requirePassword ? lobbyPassword : null,
+
+    })
+  );
+}
+
+// Update the lobby list
+function updateLobbyList(lobbies) {
+  lobbyListTbody.innerHTML = ''; // clear it 
+
+  lobbies.forEach((lobby) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${lobby.owner}</td>
+      <td>${lobby.name}</td>
+      <td>${lobby.status}</td>
+      <td>${lobby.playerCount} / ${lobby.playerCap}</td>
+      <td>
+        <button class="btn btn-primary join-button" onclick="joinLobby('${lobby.id}', '${lobby.password}')">Join</button>
+      </td>
+    `;
+    lobbyListTbody.appendChild(row)
+  })
+  
+  
+}
+
+
+
