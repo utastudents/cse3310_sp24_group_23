@@ -1,6 +1,4 @@
-let inLobby = false;
-let gameStarted = false;
-let serverUrl =
+const serverUrl =
   "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 console.log(serverUrl);
 const webSocket = new WebSocket(serverUrl);
@@ -38,6 +36,20 @@ this.send = function (message, callback) {
   }, 1000);
 };
 
+this.clientState = {
+  lobby: {
+    id: "",
+    name: "",
+    owner: "",
+    players: [],
+  },
+
+  username: "",
+  uuid: "",
+  inGame: false, // game has started
+  inLobby: false,
+};
+
 function sendMessage() {
   // get the message
   const messageText = document.getElementById("message").value;
@@ -66,9 +78,8 @@ function sendMessage() {
   chatMessages.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
-let username = localStorage.getItem("username") || "";
-let uuid = "";
-document.querySelector("#username").value = username;
+clientState.username = localStorage.getItem("username") || "";
+document.querySelector("#username").value = clientState.username;
 
 // JavaScript to handle message sent via enter key
 document
@@ -108,10 +119,9 @@ if (localStorage.getItem("username") != null) {
 
 // ask for username the second player joins and create floating form
 
-let messages = {};
 const setUsername = () => {
-  username = document.getElementById("new-username").value;
-  if (username.trim() === "") {
+  clientState.username = document.getElementById("new-username").value;
+  if (clientState.username.trim() === "") {
     sendToast("Please enter a username.");
     return;
   }
@@ -122,7 +132,7 @@ const setUsername = () => {
   send(
     JSON.stringify({
       type: "setUsername",
-      username: username,
+      username: clientState.username,
     })
   );
 
@@ -132,17 +142,22 @@ const setUsername = () => {
 };
 
 if (username != "") {
-  sendToast("Welcome back, " + username + "!");
+  sendToast("Welcome back, " + clientState.username + "!");
 }
 
 webSocket.onmessage = function (event) {
+  if (!clientState.inLobby) {
+    document.getElementById("wordGrid").style.display = "none";
+    document.getElementById("playerListHorizontal").style.display = "none";
+  }
+
   const message = JSON.parse(event.data);
 
   if (message.type == "usernameQuery") {
     //const username = document.getElementById("new-username").value;
     if (message.accepted) {
-      localStorage.setItem("username", username);
-      sendToast("Username updated to " + username);
+      localStorage.setItem("username", clientState.username);
+      sendToast("Username updated to " + clientState.username);
     } else {
       sendToast("Username already taken.");
       localStorage.setItem("username", "");
@@ -150,25 +165,21 @@ webSocket.onmessage = function (event) {
   }
 
   if (message.type == "lobbyUpdate") {
-    let lobby = message.lobby;
-    let members = lobby.players;
+    const lobby = message.lobby;
+    const members = lobby.players;
+    clientState.lobby.players = members;
+
     // update players
-    let playerList = document.getElementById("playerListHorizontal");
+    const playerList = document.getElementById("playerListHorizontal");
     playerList.innerHTML = "";
     members.forEach(function (member) {
-      let player = document.createElement("ul");
+      const player = document.createElement("ul");
       player.textContent = member.nickname;
       playerList.appendChild(player);
     });
   }
 
   if ("messageBoard" in message) {
-    /**
-     * messageBoard: [
-     * {"username": "Player 1", "message": "Hello, is anyone here?"},]
-     */
-
-    // add last message to the chat box
     addMessage(
       message.messageBoard[message.messageBoard.length - 1].username,
       message.messageBoard[message.messageBoard.length - 1].message
@@ -176,7 +187,7 @@ webSocket.onmessage = function (event) {
   }
 
   if (message.type == "selfID") {
-    uuid = message.id;
+    clientState.uuid = message.id;
   }
 
   if ("lobbyList" in message) {
@@ -209,7 +220,12 @@ webSocket.onmessage = function (event) {
       row.appendChild(status);
       row.appendChild(playerCount);
 
-      if (lobby.lobbyStatus === "WAITING" && lobbyOwner !== uuid) {
+      clientState.lobby.id = id;
+      clientState.lobby.name = lobby.lobbyName;
+      clientState.lobby.owner = lobby.ownerID;
+      clientState.inLobby = true;
+
+      if (lobby.lobbyStatus === "WAITING" && lobbyOwner !== clientState.uuid) {
         row.appendChild(joinButton);
       }
 
@@ -255,7 +271,7 @@ const addMessage = (username, message, timestamp) => {
 };
 
 const createLobby = () => {
-  if (username == "") {
+  if (clientState.username == "") {
     sendToast("Please enter a username.");
   } else {
     // websocket request
@@ -264,6 +280,9 @@ const createLobby = () => {
       sendToast("Please enter a lobby name.");
       return;
     }
+
+    this.clientState.inLobby = true;
+
     send(
       JSON.stringify({
         type: "createLobby",
@@ -286,7 +305,7 @@ const toggleLobbyForm = () => {
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
-  if (!gameStarted) {
+  if (!clientState.gameStarted) {
     // hide the word grid if the game has not started
     //document.getElementById("wordGrid").style.display = "some";
   }
