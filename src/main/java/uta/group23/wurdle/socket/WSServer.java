@@ -127,6 +127,14 @@ public class WSServer extends WebSocketServer {
         Lobby lobby = ctx.searchID(lobbyID);
         Player player = ctx.getPlayerByConn(conn);
         lobby.removePlayer(player);
+
+        // broadcast lobby info to all clients of this lobby
+        for (Player p : lobby.getPlayers()) {
+            String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
+            p.getClient().getConn().send(data);
+        }
+
+        broadCastLobbyList();
     }
 
     private void createLobby(WebSocket conn, JsonObject j) {
@@ -148,7 +156,11 @@ public class WSServer extends WebSocketServer {
         Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
 
         ctx.addLobby(lobby, lobbyOwner);
+
+        String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
+        conn.send(data);
         broadCastLobbyList();
+
     }
 
     @Override

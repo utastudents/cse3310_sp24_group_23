@@ -25,7 +25,7 @@
       <div class="row">
         <div class="col-md"></div>
 
-        <div class="lobby-creation-container">
+        <div class="lobby-creation-container" id="lobby-creation-container">
           <div class="lobby-creation">
             <h3>Create a Lobby</h3>
             <form id="lobby-creation-form">
@@ -171,20 +171,12 @@
           <div class="lobbyForm container text-center">
             <h1>Wurdle</h1>
             <h2>The Word Search Game</h2>
-            <p>Please enter your username:</p>
+        
             <form id="lobbyForm">
               <div class="form-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  name="username"
-                  placeholder="Username..."
-                  maxlength="20"
-                  style="width: 200px; margin: auto"
-                />
 
-                <button type="button" class="btn btn-primary mt-3">
+
+                <button type="button" class="btn btn-primary mt-3" id="gameStart-button">
                   Start Game
                 </button>
               </div>
@@ -242,7 +234,7 @@
               type="button"
               id="updateUsernameButton"
             >
-              Update
+              Set
             </button>
           </div>
         </div>

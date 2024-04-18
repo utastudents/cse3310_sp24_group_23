@@ -28,7 +28,16 @@ public class Context {
         // remove player from possible lobbies O(n*m)
         String nick = getPlayerByConn(conn).getNickname();
         for (Lobby l : lobbies) {
-            l.removePlayer(getPlayerByConn(conn));
+            // if lobby owner and player count zero, remove lobby
+            // if players present, transfer ownership to next player
+            if (l.getPlayers().contains(getPlayerByConn(conn))) {
+                l.removePlayer(getPlayerByConn(conn));
+                if (l.getPlayers().size() == 0) {
+                    lobbies.remove(l);
+                } else {
+                    l.setLobbyOwner(l.getPlayers().toArray(new Player[0])[0]);
+                }
+            }
         }
         System.out.println("Client removed" + nick);
 

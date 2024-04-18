@@ -44,6 +44,10 @@ public class Lobby {
         return lobbyName;
     }
 
+    public void setLobbyOwner(Player player) {
+        this.lobbyOwner = player;
+    }
+
     public Grid getGrid() {
         return this.grid;
     }
@@ -73,9 +77,7 @@ public class Lobby {
             if (p.getNickname().equals(player.getNickname())) {
                 return;
             }
-
             // don't need to compare conn since nickname is unique
-
         }
         players.add(player);
         this.playerCount++;
