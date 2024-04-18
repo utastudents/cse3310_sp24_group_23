@@ -44,6 +44,10 @@ public class Lobby {
         return lobbyName;
     }
 
+    public void setLobbyOwner(Player player) {
+        this.lobbyOwner = player;
+    }
+
     public Grid getGrid() {
         return this.grid;
     }

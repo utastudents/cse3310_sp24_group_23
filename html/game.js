@@ -50,6 +50,11 @@ this.clientState = {
   inLobby: false,
 };
 
+this.widgets = {
+  lobbyForm: document.getElementById("lobbyForm"),
+  lobbyCreationContainer: document.getElementById("lobby-creation-container"),
+};
+
 function sendMessage() {
   // get the message
   const messageText = document.getElementById("message").value;
@@ -78,8 +83,7 @@ function sendMessage() {
   chatMessages.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
-clientState.username = localStorage.getItem("username") || "";
-document.querySelector("#username").value = clientState.username;
+this.clientState.username = localStorage.getItem("username") || "";
 
 // JavaScript to handle message sent via enter key
 document
@@ -107,8 +111,6 @@ const sendToast = (message) => {
 };
 
 if (localStorage.getItem("username") != null) {
-  document.getElementById("username").value = localStorage.getItem("username");
-
   send(
     JSON.stringify({
       type: "setUsername",
@@ -141,7 +143,7 @@ const setUsername = () => {
   //localStorage.setItem("username", username);
 };
 
-if (username != "") {
+if (clientState.username != "") {
   sendToast("Welcome back, " + clientState.username + "!");
 }
 
@@ -191,6 +193,14 @@ webSocket.onmessage = function (event) {
   }
 
   if ("lobbyList" in message) {
+    if (clientState.inLobby) {
+      widgets.lobbyCreationContainer.style.display = "none";
+      // hide the lobby list
+      document.querySelector(".lobby-list").style.display = "none";
+
+      // show the player list
+      document.getElementById("playerListHorizontal").style.display = "block";
+    }
     /**
      * {"lobbyList" : [
      * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2", "lobbyId": ""},]}
@@ -220,11 +230,6 @@ webSocket.onmessage = function (event) {
       row.appendChild(status);
       row.appendChild(playerCount);
 
-      clientState.lobby.id = id;
-      clientState.lobby.name = lobby.lobbyName;
-      clientState.lobby.owner = lobby.ownerID;
-      clientState.inLobby = true;
-
       if (lobby.lobbyStatus === "WAITING" && lobbyOwner !== clientState.uuid) {
         row.appendChild(joinButton);
       }
@@ -237,8 +242,17 @@ webSocket.onmessage = function (event) {
           })
         );
 
-        toggleLobbyForm();
-        inLobby = true;
+        clientState.lobby.id = id;
+        clientState.lobby.name = lobby.lobbyName;
+        clientState.lobby.owner = lobby.ownerID;
+        clientState.inLobby = true;
+
+        // hide the lobby list
+        document.querySelector(".lobbyList").style.display = "none";
+        document.querySelector(".lobby").style.display = "block";
+
+        // show the player list
+        document.getElementById("playerListHorizontal").style.display = "block";
       });
 
       tbody.appendChild(row);
@@ -295,14 +309,6 @@ const createLobby = () => {
   }
 };
 
-const toggleLobbyForm = () => {
-  // toggle word grid
-  document.getElementById("wordGrid").style.display =
-    document.querySelector(".lobbyForm").style.display === "none"
-      ? "block"
-      : "none";
-};
-
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
   if (!clientState.gameStarted) {
@@ -324,14 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.getElementById("wordGrid").appendChild(table);
-
-  document
-    .getElementById("username")
-    .addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        setUsername();
-      }
-    });
 
   document
     .getElementById("updateUsernameButton")
