@@ -20,13 +20,12 @@ public class MessageBoard {
      * {"username": "Player 1", "message": "Hello, is anyone here?"},]
      */
     // messageBoard is a key that must be present in the JSON object
+    // only send one message, since we are only sending the last message
     JsonArray messageBoard = new JsonArray();
-    for (Message m : messages) {
-      JsonObject message = new JsonObject();
-      message.addProperty("username", m.getSender());
-      message.addProperty("message", m.getMessage());
-      messageBoard.add(message);
-    }
+    JsonObject message = new JsonObject();
+    message.addProperty("username", messages.get(messages.size() - 1).getSender());
+    message.addProperty("message", messages.get(messages.size() - 1).getMessage());
+    messageBoard.add(message);
 
     System.out.println(messageBoard.toString());
 
