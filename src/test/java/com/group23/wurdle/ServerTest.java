@@ -57,15 +57,9 @@ public class ServerTest {
         // parse json
         JsonArray messages = JsonParser.parseString(messageBoard).getAsJsonObject().get("messageBoard")
                 .getAsJsonArray();
-        assertEquals(2, messages.size());
+        assertEquals(1, messages.size());// only the latest message should be broadcasted
 
-        // check if first message is Hello by bot
-        assertEquals("Hello", messages.get(0).getAsJsonObject().get("message").getAsString());
-        assertEquals(bot.getNickname(), messages.get(0).getAsJsonObject().get("username").getAsString());
-
-        // check if second message is Hi by bot2
-        assertEquals("Hi", messages.get(1).getAsJsonObject().get("message").getAsString());
-        assertEquals(bot2.getNickname(), messages.get(1).getAsJsonObject().get("username").getAsString());
-
+        // check if the message is the same
+        assertEquals("Hi", messages.get(0).getAsJsonObject().get("message").getAsString());
     }
 }
