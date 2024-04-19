@@ -19,10 +19,7 @@ public class Message {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
-    public void postMessage(String Message) {
-
-    }
 }
