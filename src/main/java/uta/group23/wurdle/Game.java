@@ -51,7 +51,15 @@ public class Game {
     public void removeWordFound(String word) {
     }
 
-    public void assignPoints(Player player) {
+    public void assignPoints(Player player, String selectedCells[]) 
+    {
+        //calculate score for word found based on word length
+        int lengthmultiplier = 2;
+        int score = selectedCells.length * lengthmultiplier;
+
+        //get players current score and add on the score for the word found
+        int currentScore = player.getScore();
+        player.setScore(currentScore + score);
     }
 
     public boolean isGameOver(Player player, int pointThreshold) {
