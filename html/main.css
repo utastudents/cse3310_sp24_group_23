@@ -89,18 +89,72 @@
     width: 100%;
     justify-content: center;
     margin-top: 50px;
-  }
-  .lobby-list {
-    width: 500px;
-    top: 50px;
-    bottom: 20px;
-    left: 50%;
+}
+
+.lobby-list {
+    /* width: 100%; */
+    width: 900px;
     background-color: #f1f1f1;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.lobby-list-header {
+    position: sticky;
+    top: 0;
+    background-color: #f1f1f1;
+    padding-bottom: 1rem;
+    z-index: 1;
+}
+
+.lobby-controls-header {
+    position: sticky;
+    bottom: 0;
+    background-color: #f1f1f1;
+    padding: 1rem 0;
+    z-index: 1;
+}
+
+.lobbyList {
+    width: 100%;
+    position: relative;
+    flex-grow: 1;
     overflow-y: auto;
-  }
+}
+
+.lobby-table-container {
+    height: 100%;
+}
+
+.lobby-table-container .table {
+    margin-bottom: 0;
+}
+
+.lobby-password-container {
+    width: 250px;
+    padding-left:  20px;
+}
+
+.lobby-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+.spec-wide {
+    width: 160px;
+}
+
+.join-wide {
+    width: 100px;
+}
 
   .lobby-creation-container {
     position: fixed;
@@ -157,6 +211,61 @@
     cursor: not-allowed;
   }
 
+  .lobby-settings-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 260px;
+    background-color: #f1f1f1;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.lobby-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lobby-settings h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.lobby-settings .form-group {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.lobby-settings .form-group label {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.lobby-settings .form-group input,
+.lobby-settings .form-group select {
+    font-size: 14px;
+    padding: 6px 8px;
+}
+
+.lobby-settings button {
+    font-size: 14px;
+    padding: 6px 12px;
+    width: 100%;
+}
+
+.lobby-settings .btn-kick {
+    width: 50px;
+    font-size: 14px;
+}
+
+#lobby-name-display,
+#lobby-id-display {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
   .settings-container {
     position: fixed;
     top: 50%;
@@ -237,3 +346,138 @@
   .recent-leaderboard-container td {
     padding: 8px;
   }
+
+  .playerList {
+    width: 100%;
+    max-width: 900px;
+    background-color: #f1f1f1;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.player-list-header {
+    position: sticky;
+    top: 0;
+    background-color: #f1f1f1;
+    padding-bottom: 1rem;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+}
+.player-list-header .row {
+  justify-content: space-between;
+}
+
+.playerListHorizontal {
+    width: 100%;
+    position: relative;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.player-table-container {
+    height: 100%;
+}
+
+.player-table-container .table {
+    margin-bottom: 0;
+}
+
+.color-and-controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 1rem;
+}
+
+.color-square-container {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  column-gap: 2rem;
+}
+.color-squares-container {
+  display: flex;
+  align-items: center;
+} /*This one ensures that the colour squares are always aligned cause I want them aligned otherwise I'd go insane not seeing them aligned but it might cause the colour labels to be shifted which might cause me to go insane seeing that too*/
+
+.color-square {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.color-selection-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  margin-right: 10px;
+}
+
+.color-selection-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.color-selection-title {
+  margin-right: 1rem;
+  font-weight: bold;
+}
+.change-color-button {
+  margin-left: 1rem;
+}
+
+.color-selection-box {
+  background-color: #868686;
+  padding: 0.5rem;
+  border-radius: 3px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 0.25rem;
+}
+
+.color-square-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.color-square2 {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0 0.125rem;
+}
+
+.color-square.selected {
+  border: 2px solid #000;
+}
+
+.changeColorButton {
+  padding-left: 10px;
+}
+
+.lobby-controls-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 1rem;
+  padding-right: 20px;
+}
+
+.lobby-controls-container button {
+  margin-left: 2rem;
+}
