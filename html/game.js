@@ -190,7 +190,21 @@ webSocket.onmessage = function (event) {
 
   if (message.type == "selfID") {
     clientState.uuid = message.id;
-  }
+  } 
+    if (message.type === "playerReadiedUp") {
+    const playerId = message.playerId;
+    // Update the UI to reflect player readiness
+    handlePlayerReadiedUp(playerId);
+}
+
+
+function handlePlayerReadiedUp(playerId) {
+// Find and update the UI to reflect player readiness
+const playerElement = document.getElementById(playerId);
+if (playerElement) {
+    playerElement.classList.add('ready'); // 
+}
+}
 
   if ("lobbyList" in message) {
     if (clientState.inLobby) {
