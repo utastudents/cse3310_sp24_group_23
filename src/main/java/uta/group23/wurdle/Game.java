@@ -37,7 +37,15 @@ public class Game {
     public void updateTimer() {
     }
 
-    public void checkWord(Player player, String selectedCells[]) {
+   public void checkWord(Player player, String selectedCells[]) 
+    {
+        //check is at least 3 cells are selected
+        if (selectedCells.length < 3) 
+        {
+            //clear selected cells to allow player to select new word
+            selectedCells = new String[0];
+        return;
+        }
     }
 
     public void removeWordFound(String word) {
