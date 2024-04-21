@@ -13,32 +13,28 @@ public class Leaderboard {
         this.scores = new HashMap<Player, Integer>();
     }
 
-    public void storeScores() {
+    public void updateScore(int score) {
         scores.put(player, score);
     }
 
-    public void sortScores() 
-    {
+    public void sortScores() {
         List<Map.Entry<Player, Integer>> scoreList = new ArrayList<>(scores.entrySet());
 
-        //sort the scores in ascending order
-        scoreList.sort(new Comparator<Map.Entry<Player, Integer>>() 
-        {
+        // sort the scores in ascending order
+        scoreList.sort(new Comparator<Map.Entry<Player, Integer>>() {
             @Override
-            public int compare(Map.Entry<Player, Integer> e1, Map.Entry<Player, Integer> e2) 
-            {
+            public int compare(Map.Entry<Player, Integer> e1, Map.Entry<Player, Integer> e2) {
                 return e1.getValue().compareTo(e2.getValue());
             }
         });
-        
-        //clear the scores map for next game
+
+        // clear the scores map for next game
         scores.clear();
 
-        //add the sorted entries back into the scores map
-        for (Map.Entry<Player, Integer> entry : scoreList) 
-        {
+        // add the sorted entries back into the scores map
+        for (Map.Entry<Player, Integer> entry : scoreList) {
             scores.put(entry.getKey(), entry.getValue());
-        }    
+        }
     }
 
     public void updateScores() {
