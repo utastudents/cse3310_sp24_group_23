@@ -63,7 +63,12 @@ public class Context {
     }
 
     public String getMessageBoard() {
-        return messageBoard.toJson();
+        // ["data",{"id":30,"data":{"id":"aa0b64e5-8111-41b6-9540-cb58536f4ba8","msg":"guy:
+        // world"}}]
+        Message lastMessage = messageBoard.getLastMessage();
+        String json = "[\"data\",{\"id\":30,\"data\":{\"id\":\"" + lastMessage.getSender() + "\",\"msg\":\""
+                + lastMessage.getMessage() + "\"}}]";
+        return json;
     }
 
     public void addLobby(Lobby lobby, Player player) {
@@ -115,12 +120,16 @@ public class Context {
     }
 
     public String getLobbyList() {
+        String json = "";
         JsonArray lobbyList = new JsonArray();
         for (Lobby l : lobbies) {
             lobbyList.add(l.toJsonObject());
         }
 
-        return "{\"lobbyList\":" + lobbyList.toString() + "}";
+        String list = lobbyList.toString();
+
+        json = "[\"data\",{\"id\":11,\"data\": {\"id\":0,\"data\":" + list + "}}]";
+        return json;
     }
 
 }

@@ -14,22 +14,17 @@ public class MessageBoard {
 
   }
 
+  public Message getLastMessage() {
+    return messages.get(messages.size() - 1);
+  }
+
   public String toJson() {
-    /**
-     * messageBoard: [
-     * {"username": "Player 1", "message": "Hello, is anyone here?"},]
-     */
-    // messageBoard is a key that must be present in the JSON object
-    JsonArray messageBoard = new JsonArray();
-    for (Message m : messages) {
-      JsonObject message = new JsonObject();
-      message.addProperty("username", m.getSender());
-      message.addProperty("message", m.getMessage());
-      messageBoard.add(message);
-    }
+    // only send last message
+    // ["data",{"id":30,"data":{"id":0,"msg":"test2"}}] (S->C)
 
-    System.out.println(messageBoard.toString());
-
-    return "{\"messageBoard\":" + messageBoard.toString() + "}";
+    JsonObject j = new JsonObject();
+    j.addProperty("id", messages.get(messages.size() - 1).getSender());
+    j.addProperty("msg", messages.get(messages.size() - 1).getMessage());
+    return j.toString();
   }
 }
