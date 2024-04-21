@@ -55,11 +55,14 @@ public class ServerTest {
 
         String messageBoard = ctx.getMessageBoard();
         // parse json
-        JsonArray messages = JsonParser.parseString(messageBoard).getAsJsonObject().get("messageBoard")
-                .getAsJsonArray();
-        assertEquals(1, messages.size());// only the latest message should be broadcasted
 
-        // check if the message is the same
-        assertEquals("Hi", messages.get(0).getAsJsonObject().get("message").getAsString());
+        // ["data",{"id":30,"data":{"id":"aa0b64e5-8111-41b6-9540-cb58536f4ba8","msg":"guy:
+        // world"}}] example
+        JsonArray jsonArray = JsonParser.parseString(messageBoard).getAsJsonArray();
+        // check json format
+        assertEquals("data", jsonArray.get(0).getAsString());
+        assertEquals("30", jsonArray.get(1).getAsJsonObject().get("id").getAsString());
+        // check if message is Hi
+        assertEquals("Hi", jsonArray.get(1).getAsJsonObject().get("data").getAsJsonObject().get("msg").getAsString());
     }
 }
