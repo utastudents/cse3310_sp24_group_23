@@ -14,22 +14,17 @@ public class MessageBoard {
 
   }
 
+  public Message getLastMessage() {
+    return messages.get(messages.size() - 1);
+  }
+
   public String toJson() {
-    /**
-     * messageBoard: [
-     * {"username": "Player 1", "message": "Hello, is anyone here?"},]
-     */
-    // messageBoard is a key that must be present in the JSON object
-    // only send 1 messageBoard being the last one since it is a global chat
+    // only send last message
+    // ["data",{"id":30,"data":{"id":0,"msg":"test2"}}] (S->C)
 
-    JsonArray messageBoard = new JsonArray();
-    JsonObject message = new JsonObject();
-    message.addProperty("username", messages.get(messages.size() - 1).getSender());
-    message.addProperty("message", messages.get(messages.size() - 1).getMessage());
-    messageBoard.add(message);
-
-    System.out.println(messageBoard.toString());
-
-    return "{\"messageBoard\":" + messageBoard.toString() + "}";
+    JsonObject j = new JsonObject();
+    j.addProperty("id", messages.get(messages.size() - 1).getSender());
+    j.addProperty("msg", messages.get(messages.size() - 1).getMessage());
+    return j.toString();
   }
 }
