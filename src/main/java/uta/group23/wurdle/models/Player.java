@@ -26,6 +26,7 @@ public class Player {
         this.playerID = UUID.randomUUID().toString();
         this.score = 0;
         this.lastActive = 0;
+        this.ready = false;
     }
 
     public Player(String nickname, WebSocket conn) {
@@ -103,7 +104,11 @@ public class Player {
     }
 
     public boolean isReady() {
-        return false;
+        return ready;
+    }
+    
+     public void setReady(boolean ready) {
+        this.ready = ready;
     }
 
     public void selectCell(Lobby lobby, int row, int col) {
