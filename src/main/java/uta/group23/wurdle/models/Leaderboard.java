@@ -17,10 +17,10 @@ public class Leaderboard {
         scores.put(player, score);
     }
 
+    List<Map.Entry<Player, Integer>> scoreList = new ArrayList<>(scores.entrySet());
+    
     public void sortScores() 
     {
-        List<Map.Entry<Player, Integer>> scoreList = new ArrayList<>(scores.entrySet());
-
         //sort the scores in ascending order
         scoreList.sort(new Comparator<Map.Entry<Player, Integer>>() 
         {
@@ -45,7 +45,21 @@ public class Leaderboard {
 
     }
 
-    public void displayScores() {
+    public void displayScores() 
+    {
+    //check is game contains complete scores
+    if (scoreList != null && !scoreList.isEmpty()) 
+        {
+            //iterate over sorterd scores
+            for (Map.Entry<Player, Integer> entry : scoreList) 
+                {
+                    //get player name and score
+                    Player player = entry.getKey();
+                    Integer score = entry.getValue();
+
+                    //have to implement html display, but will do once grid is playable
+                }
+        }
 
     }
 }
