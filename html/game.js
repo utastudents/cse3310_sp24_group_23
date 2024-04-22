@@ -209,7 +209,8 @@ webSocket.onmessage = function (event) {
         break;
       case 11:
         // ["data",{"id":11,"data": {"id":0,"data":[{"lobbyName":"sfs","lobbyStatus":"WAITING","playerCount":1,"id":"e82cfd8e-b917-4bab-a27a-260346c03339","ownerID":"247bb7d4-7262-4a42-989b-44fd6c5856d7","ownerName":"person"}]}}]
-
+        // 0 public lobby list
+        // 1 private lobby information
         if (data.data.id == 0) {
           // update lobby list
           const lobbyList = data.data.data;
@@ -233,12 +234,14 @@ webSocket.onmessage = function (event) {
             let owner = document.createElement("td");
             let status = document.createElement("td");
             let playerCount = document.createElement("td");
+            let mode = document.createElement("td");
             let joinButton = document.createElement("button");
 
             lobbyName.textContent = lobby.lobbyName;
             owner.textContent = lobby.ownerName;
             status.textContent = lobby.lobbyStatus;
             playerCount.textContent = lobby.playerCount;
+            mode.textContent = lobby.lobbyMode;
             joinButton.textContent = "Join";
             joinButton.className = "joinButton btn btn-primary";
 
@@ -249,6 +252,7 @@ webSocket.onmessage = function (event) {
             row.appendChild(lobbyName);
             row.appendChild(status);
             row.appendChild(playerCount);
+            row.appendChild(mode);
 
             if (
               lobby.lobbyStatus === "WAITING" &&
@@ -259,22 +263,24 @@ webSocket.onmessage = function (event) {
 
             joinButton.addEventListener("click", function () {
               send(
-                JSON.stringify({
-                  type: "joinLobby",
-                  lobbyId: id,
-                })
+                JSON.stringify([
+                  "data",
+                  {
+                    id: 12, // C->S
+                    data: {
+                      id: 1, // join lobby
+                      data: {
+                        id: id,
+                      },
+                    },
+                  },
+                ])
               );
 
               clientState.lobby.id = id;
               clientState.lobby.name = lobby.lobbyName;
               clientState.lobby.owner = lobby.ownerID;
               clientState.inLobby = true;
-
-              // hide the lobby list
-              document.querySelector(
-                ".lobby-creation-container"
-              ).style.display = "none";
-              document.querySelector(".lobby-list").style.display = "none";
 
               // show the player list
               document.getElementById("playerListHorizontal").style.display =
@@ -283,6 +289,53 @@ webSocket.onmessage = function (event) {
 
             tbody.appendChild(row);
           });
+        }
+
+        if (data.id == 1) {
+          /*
+          [
+  "data",
+  {
+    "id": 11,
+    "data": {
+      "id": 1,
+      "data": {
+        "lobbyName": "hello",
+        "lobbyStatus": "IN_PROGRESS",
+        "playerCount": 2,
+        "id": "7d21db73-2a46-4b94-b8e0-f18fdc08faf4",
+        "ownerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
+        "password": "",
+        "players": [
+          {
+            "nickname": "93346552-a1ad-4cd3-ab34-11b402d98d9f",
+            "playerID": "ba3ceb38-2b0a-417b-a6d0-53593b1c48d2",
+            "score": 0
+          },
+          {
+            "nickname": "orange",
+            "playerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
+            "score": 0
+          }
+        ]
+      }
+    }
+  }
+]   
+          */
+          // update private lobby information
+
+          // lobby update private
+          const lobby = data.data.data;
+          clientState.lobby.players = lobby.players;
+          clientState.lobby.id = lobby.id;
+
+          console.log(lobby);
+          document.getElementById("lobbyName").textContent =
+            "Lobby Name: " + lobby.lobbyName;
+
+          document.getElementById("roomID").textContent =
+            "Lobby ID: " + lobby.id;
         }
         break;
 
@@ -306,115 +359,31 @@ webSocket.onmessage = function (event) {
       localStorage.setItem("username", "");
     }
   }
-
+  /* 
   if (message.type == "lobbyUpdate") {
+    const playerTable = document.getElementById("playerListHorizontal");
     const lobby = message.lobby;
     const lobbyName = lobby.name;
+    console.log(lobby);
     const lobbyID = lobby.id;
     const members = lobby.players;
     clientState.lobby.players = members;
 
-    
-
-    document.getElementById("lobbyName").textContent = "Lobby Name: "+ lobbyName;
-    document.getElementById("roomID").textContent = "Lobby ID: "+ lobbyID;
+    document.getElementById("lobbyName").textContent =
+      "Lobby Name: " + lobbyName;
+    document.getElementById("roomID").textContent = "Lobby ID: " + lobbyID;
 
     // update players
-    const playerList = this.widgets.playerList;
-    playerList.innerHTML = "";
-    members.forEach(function (member) {
-      const player = document.createElement("ul");
-      player.textContent = member.nickname;
-      playerList.appendChild(player);
-    });
-  }
-
-
-  if ("lobbyList" in message) {
-    if (clientState.inLobby) {
-      widgets.lobbyCreationContainer.style.display = "none";
-      // hide the lobby list
-      document.querySelector(".lobby-list").style.display = "none";
-
-      // show the player list
-      document.getElementById("playerListHorizontal").style.display = "block";
-
-      // show the lobby settings container
-      document.getElementById('lobby-settings-container').style.display = "block";
-
-      // fill out the lobby settings form
-      document.getElementById('lobby-name-display').value = clientState.lobby.name;
-      document.getElementById('lobby-id-display').value = clientState.lobby.id;
-      document.getElementById('player-count-input').value = message.lobby.playerCount;
-      document.getElementById('game-type-input').value = message.lobby.lobbyMode;
-
-      // Populate the kick player select
-      const kickPlayerSelect = document.getElementById('kick-player-select');
-      kickPlayerSelect.innerHTML = '';
-      message.lobby.players.forEach(player => {
-        const option = documnet.createElement('option');
-        option.value = player.id;
-        option.textContent = player.nickname;
-        kickPlayerSelect.appendChild(option);
-      });
-    }
-    /**
-     * {"lobbyList" : [
-     * {"lobbyName": "Lobby 1", "status": "In Progress", "playerCount": "2", "lobbyId": ""},]}
-     */
-    let tbody = document.querySelector(".lobbyList tbody");
-    tbody.innerHTML = "";
-    message.lobbyList.forEach(function (lobby) {
+    playerTable.innerHTML = "";
+    members.forEach((player) => {
       let row = document.createElement("tr");
-      const lobbyName = document.createElement("td");
-      let owner = document.createElement("td");
-      let status = document.createElement("td");
-      let playerCount = document.createElement("td");
-      let joinButton = document.createElement("button");
-
-      lobbyName.textContent = lobby.lobbyName;
-      owner.textContent = lobby.ownerName;
-      status.textContent = lobby.lobbyStatus;
-      playerCount.textContent = lobby.playerCount;
-      joinButton.textContent = "Join";
-      joinButton.className = "joinButton btn btn-primary";
-
-      const lobbyOwner = lobby.ownerID;
-      const id = lobby.id;
-
-      row.appendChild(owner);
-      row.appendChild(lobbyName);
-      row.appendChild(status);
-      row.appendChild(playerCount);
-
-      if (lobby.lobbyStatus === "WAITING" && lobbyOwner !== clientState.uuid) {
-        row.appendChild(joinButton);
-      }
-
-      joinButton.addEventListener("click", function () {
-        send(
-          JSON.stringify({
-            type: "joinLobby",
-            lobbyId: id,
-          })
-        );
-
-        clientState.lobby.id = id;
-        clientState.lobby.name = lobby.lobbyName;
-        clientState.lobby.owner = lobby.ownerID;
-        clientState.inLobby = true;
-
-        // hide the lobby list
-        document.querySelector(".lobbyList").style.display = "none";
-        document.querySelector(".lobby").style.display = "block";
-
-        // show the player list
-        document.getElementById("playerListHorizontal").style.display = "block";
-      });
-
-      tbody.appendChild(row);
+      let cell = document.createElement("td");
+      cell.textContent = player.nickname;
+      row.appendChild(cell);
+      playerTable.appendChild(row);
     });
   }
+*/
 };
 
 const addMessage = (username, message, timestamp) => {
@@ -439,6 +408,17 @@ const addMessage = (username, message, timestamp) => {
   chatMessage.appendChild(timestampElement);
 
   chatMessages.appendChild(chatMessage);
+};
+
+const showPlayerList = () => {
+  document.querySelector("#playerList").style.display = "block";
+  document.querySelector(".lobby-list").style.display = "none";
+};
+
+const showLobbyList = () => {
+  document.querySelector("#playerList").style.display = "none";
+  document.querySelector(".lobby-list").style.display = "block";
+  document.querySelector(".lobby-creation-container").style.display = "block";
 };
 
 const createLobby = () => {
@@ -470,11 +450,16 @@ const createLobby = () => {
         },
       ])
     );
+
+    // hide the lobby list
+    showPlayerList();
   }
 };
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
+  showLobbyList();
+
   if (!clientState.gameStarted) {
     // hide the word grid if the game has not started
     //document.getElementById("wordGrid").style.display = "some";
@@ -521,6 +506,25 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 });
+
+document
+  .getElementById("leaveLobbyButton")
+  .addEventListener("click", function () {
+    send(
+      JSON.stringify([
+        "leave",
+        {
+          id: clientState.uuid,
+          data: {
+            username: clientState.username,
+          },
+        },
+      ])
+    );
+
+    clientState.inLobby = false;
+    showLobbyList();
+  });
 
 // JavaScript to handle form submission
 /*
@@ -601,65 +605,66 @@ function closeStats() {
   overlay.style.display = "none";
 }
 
-const searchInput = document.getElementById('searchInput');
-const lobbyTableBody = document.getElementById('lobbyTableBody');
+const searchInput = document.getElementById("searchInput");
+const lobbyTableBody = document.getElementById("lobbyTableBody");
 let selectedLobbyId = null;
 
 // Add event listener to the search input
-searchInput.addEventListener('input', function() {
-    filterLobbyList(message.lobbyList, this.value.toLowerCase());
-});
-
-// Add event listener to the lobby table rows
-lobbyTableBody.addEventListener('click', function(event) {
-    if (event.target.classList.contains('join-button')) {
-        const row = event.target.closest('tr');
-        const lobbyId = row.dataset.lobbyId;
-        selectedLobbyId = lobbyId;
-        highlightSelectedRow(row);
-    }
+searchInput.addEventListener("input", function () {
+  filterLobbyList(message.lobbyList, this.value.toLowerCase());
 });
 
 // Add event listener to the join button
-document.getElementById('joinButton').addEventListener('click', function() {
-    if (selectedLobbyId) {
-        send(
-            JSON.stringify({
-                type: "joinLobby",
-                lobbyId: selectedLobbyId,
-            })
-        );
+document.getElementById("joinButton").addEventListener("click", function () {
+  if (selectedLobbyId) {
+    send(
+      JSON.stringify({
+        type: "joinLobby",
+        lobbyId: selectedLobbyId,
+      })
+    );
 
-        // Update client state and UI
-        clientState.lobby.id = selectedLobbyId;
-        // ...
-    } else {
-        sendToast("Please select a lobby to join.");
-    }
+    // Update client state and UI
+    clientState.lobby.id = selectedLobbyId;
+
+    // Hide the lobby list and show the player list
+    showPlayerList();
+
+    // ...
+  } else {
+    sendToast("Please select a lobby to join.");
+  }
 });
 
 function highlightSelectedRow(row) {
-    const rows = Array.from(lobbyTableBody.getElementsByTagName('tr'));
-    rows.forEach(r => r.classList.remove('table-primary'));
-    row.classList.add('table-primary');
+  const rows = Array.from(lobbyTableBody.getElementsByTagName("tr"));
+  rows.forEach((r) => r.classList.remove("table-primary"));
+  row.classList.add("table-primary");
 }
 
 function filterLobbyList(lobbies, searchTerm) {
-    const tableRows = Array.from(lobbyTableBody.getElementsByTagName('tr'));
+  const tableRows = Array.from(lobbyTableBody.getElementsByTagName("tr"));
 
-    tableRows.forEach(row => {
-        const lobbyName = row.getElementsByTagName('td')[1].textContent.toLowerCase();
-        const ownerName = row.getElementsByTagName('td')[0].textContent.toLowerCase();
+  /* 
+  tableRows.forEach((row) => {
+    const lobbyName = row
+      .getElementsByTagName("td")[1]
+      .textContent.toLowerCase();
+    const ownerName = row
+      .getElementsByTagName("td")[0]
+      .textContent.toLowerCase();
 
-        const matchingLobby = lobbies.find(lobby =>
-            lobby.lobbyName.toLowerCase().includes(searchTerm) ||
-            lobby.ownerName.toLowerCase().includes(searchTerm)
-        );
+    const matchingLobby = lobbies.find(
+      (lobby) =>
+        lobby.lobbyName.toLowerCase().includes(searchTerm) ||
+        lobby.ownerName.toLowerCase().includes(searchTerm)
+    );
 
-        if (matchingLobby) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
+    if (matchingLobby) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+  */
 }

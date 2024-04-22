@@ -138,6 +138,7 @@ public class Lobby {
         jsonObject.addProperty("id", lobbyID);
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
         jsonObject.addProperty("ownerName", lobbyOwner.getNickname());
+        jsonObject.addProperty("lobbyMode", lobbyMode.toString());
 
         return jsonObject;
     }
@@ -157,6 +158,7 @@ public class Lobby {
         jsonObject.addProperty("id", lobbyID);
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
         jsonObject.addProperty("password", password);
+        jsonObject.addProperty("lobbyMode", lobbyMode.toString());
 
         jsonObject.add("players", playersList);
         return jsonObject;

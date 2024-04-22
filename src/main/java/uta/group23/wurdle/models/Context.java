@@ -23,6 +23,24 @@ public class Context {
         System.out.println("Client added" + player.getClient().getConn().getResourceDescriptor());
     }
 
+    public void leaveLobby(WebSocket conn) {
+        // remove player from possible lobbies O(n*m)
+        String nick = getPlayerByConn(conn).getNickname();
+        for (Lobby l : lobbies) {
+            // if lobby owner and player count zero, remove lobby
+            // if players present, transfer ownership to next player
+            if (l.getPlayers().contains(getPlayerByConn(conn))) {
+                l.removePlayer(getPlayerByConn(conn));
+                if (l.getPlayers().size() == 0) {
+                    lobbies.remove(l);
+                } else {
+                    l.setLobbyOwner(l.getPlayers().toArray(new Player[0])[0]);
+                }
+            }
+        }
+        System.out.println("Client removed" + nick);
+    }
+
     public void removePlayer(WebSocket conn) {
 
         // remove player from possible lobbies O(n*m)
@@ -117,6 +135,15 @@ public class Context {
             }
         }
         return false;
+    }
+
+    public Lobby getLobbyById(String lobbyId) {
+        for (Lobby l : lobbies) {
+            if (l.getLobbyID().equals(lobbyId)) {
+                return l;
+            }
+        }
+        return null;
     }
 
     public String getLobbyList() {
