@@ -15,6 +15,7 @@ public class Player {
     private String nickname;
     private String playerID;
     private int score;
+    private boolean ready;
     private int consecHints;
     private String[] words_found;
     private Colour user_colour;
