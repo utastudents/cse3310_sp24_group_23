@@ -44,16 +44,22 @@ public class WSServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         JsonObject j = JsonParser.parseString(message).getAsJsonObject(); // convert to json
-         if (j.has("type")) {
+
+        if (j.has("type")) {
             String messageType = j.get("type").getAsString();
     
-            if (messageType.equals("playerReadiedUp")) {
+            if (messageType.equals("playerReady")) {
                 // Extract player ID from the message
                 String playerId = j.get("playerId").getAsString();
                 // Broadcast this readiness status update to all clients
-                broadcastPlayerReadiedUp(playerId);
+                Player player = ctx.getplayerId(playerId);
+
+                if (player != null && !player.isReady()) {
+                    player.setReady(true);
+                broadcastPlayerReady(playerId);
             }
         }
+
         if (j.get("type").getAsString().equals("message")) {
             String msg = j.get("content").getAsString();
 
@@ -115,15 +121,17 @@ public class WSServer extends WebSocketServer {
             broadCastLobbyList();
         }
 
-    } 
-      private void broadcastPlayerReadiedUp(String playerId){
+
+    }
+    private void broadcastPlayerReady(String playerId){
         JsonObject msg= new JsonObject();
-        msg.addProperty("type", "playerReadiedUp");
+        msg.addProperty("type", "playerReady");
         msg.addProperty("playerId", playerId);
     
         broadcast(msg.toString());
         
     } 
+
 
     private void setUsername(WebSocket conn, JsonObject j) {
         String username = j.get("username").getAsString();
