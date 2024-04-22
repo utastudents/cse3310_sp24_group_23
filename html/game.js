@@ -1,3 +1,4 @@
+
 const serverUrl =
   "ws://" + window.location.hostname + ":" + (parseInt(location.port) + 100);
 console.log(serverUrl);
@@ -168,8 +169,15 @@ webSocket.onmessage = function (event) {
 
   if (message.type == "lobbyUpdate") {
     const lobby = message.lobby;
+    const lobbyName = lobby.name;
+    const lobbyID = lobby.id;
     const members = lobby.players;
     clientState.lobby.players = members;
+
+    
+
+    document.getElementById("lobbyName").textContent = "Lobby Name: "+ lobbyName;
+    document.getElementById("roomID").textContent = "Lobby ID: "+ lobbyID;
 
     // update players
     const playerList = document.getElementById("playerListHorizontal");
@@ -190,20 +198,42 @@ webSocket.onmessage = function (event) {
 
   if (message.type == "selfID") {
     clientState.uuid = message.id;
-  } 
-    if (message.type === "playerReadiedUp") {
-    const playerId = message.playerId;
-    // Update the UI to reflect player readiness
-    handlePlayerReadiedUp(playerId);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const readyButton = document.getElementById('readyButton');
+
+    // Check if the button element exists
+    if (readyButton) {
+        readyButton.addEventListener('click', () => {
+            // Code to handle button click
+            handleReadyButtonClick();
+        });
+    }
+});
+function handleReadyButtonClick() {
+  // Code to handle the button click event
+  console.log('Ready button clicked!');
+
+  // Optionally, you can send a message to the server indicating readiness
+  sendPlayerReadyMessage();
 }
 
+function sendPlayerReadyMessage() {
+  // Use WebSocket or any other method to communicate with the server
+  const playerElement = document.getElementById(playerId);
+  const message = {
+      type: 'playerReady',
+      playerId: playerId
+  };
 
-function handlePlayerReadiedUp(playerId) {
-// Find and update the UI to reflect player readiness
-const playerElement = document.getElementById(playerId);
-if (playerElement) {
-    playerElement.classList.add('ready'); // 
+  // Send the message to the server (example)
+  sendWebSocketMessage(message);
 }
+
+function sendWebSocketMessage(message) {
+  // Implement code to send a WebSocket message to the server
+   socket.send(JSON.stringify(message));
+  
 }
 
   if ("lobbyList" in message) {
@@ -214,6 +244,25 @@ if (playerElement) {
 
       // show the player list
       document.getElementById("playerListHorizontal").style.display = "block";
+
+      // show the lobby settings container
+      document.getElementById('lobby-settings-container').style.display = "block";
+
+      // fill out the lobby settings form
+      document.getElementById('lobby-name-display').value = clientState.lobby.name;
+      document.getElementById('lobby-id-display').value = clientState.lobby.id;
+      document.getElementById('player-count-input').value = message.lobby.playerCount;
+      document.getElementById('game-type-input').value = message.lobby.lobbyMode;
+
+      // Populate the kick player select
+      const kickPlayerSelect = document.getElementById('kick-player-select');
+      kickPlayerSelect.innerHTML = '';
+      message.lobby.players.forEach(player => {
+        const option = documnet.createElement('option');
+        option.value = player.id;
+        option.textContent = player.nickname;
+        kickPlayerSelect.appendChild(option);
+      });
     }
     /**
      * {"lobbyList" : [
@@ -320,6 +369,7 @@ const createLobby = () => {
         password: document.getElementById("lobby-password").value,
       })
     );
+    
   }
 };
 
@@ -449,4 +499,67 @@ function closeStats() {
   const overlay = document.querySelector(".overlay");
   settingsContainer.style.display = "none";
   overlay.style.display = "none";
+}
+
+const searchInput = document.getElementById('searchInput');
+const lobbyTableBody = document.getElementById('lobbyTableBody');
+let selectedLobbyId = null;
+
+// Add event listener to the search input
+searchInput.addEventListener('input', function() {
+    filterLobbyList(message.lobbyList, this.value.toLowerCase());
+});
+
+// Add event listener to the lobby table rows
+lobbyTableBody.addEventListener('click', function(event) {
+    if (event.target.classList.contains('join-button')) {
+        const row = event.target.closest('tr');
+        const lobbyId = row.dataset.lobbyId;
+        selectedLobbyId = lobbyId;
+        highlightSelectedRow(row);
+    }
+});
+
+// Add event listener to the join button
+document.getElementById('joinButton').addEventListener('click', function() {
+    if (selectedLobbyId) {
+        send(
+            JSON.stringify({
+                type: "joinLobby",
+                lobbyId: selectedLobbyId,
+            })
+        );
+
+        // Update client state and UI
+        clientState.lobby.id = selectedLobbyId;
+        // ...
+    } else {
+        sendToast("Please select a lobby to join.");
+    }
+});
+
+function highlightSelectedRow(row) {
+    const rows = Array.from(lobbyTableBody.getElementsByTagName('tr'));
+    rows.forEach(r => r.classList.remove('table-primary'));
+    row.classList.add('table-primary');
+}
+
+function filterLobbyList(lobbies, searchTerm) {
+    const tableRows = Array.from(lobbyTableBody.getElementsByTagName('tr'));
+
+    tableRows.forEach(row => {
+        const lobbyName = row.getElementsByTagName('td')[1].textContent.toLowerCase();
+        const ownerName = row.getElementsByTagName('td')[0].textContent.toLowerCase();
+
+        const matchingLobby = lobbies.find(lobby =>
+            lobby.lobbyName.toLowerCase().includes(searchTerm) ||
+            lobby.ownerName.toLowerCase().includes(searchTerm)
+        );
+
+        if (matchingLobby) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
 }
