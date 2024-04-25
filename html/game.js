@@ -291,7 +291,7 @@ webSocket.onmessage = function (event) {
           });
         }
 
-        if (data.id == 1) {
+        if (data.data.id == 1) {
           /*
           [
   "data",
@@ -327,15 +327,27 @@ webSocket.onmessage = function (event) {
 
           // lobby update private
           const lobby = data.data.data;
+
           clientState.lobby.players = lobby.players;
           clientState.lobby.id = lobby.id;
 
-          console.log(lobby);
           document.getElementById("lobbyName").textContent =
             "Lobby Name: " + lobby.lobbyName;
 
           document.getElementById("roomID").textContent =
             "Lobby ID: " + lobby.id;
+
+          // update players list
+          let playerTableBody = document.getElementById("playerListHorizontal"); // tbody
+          playerTableBody.innerHTML = "";
+          lobby.players.forEach((player) => {
+            let row = document.createElement("tr");
+            let cell = document.createElement("td");
+            console.log(cell);
+            cell.textContent = player.nickname;
+            row.appendChild(cell);
+            playerTableBody.appendChild(row);
+          });
         }
         break;
 

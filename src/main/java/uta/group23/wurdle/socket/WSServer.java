@@ -106,6 +106,15 @@ public class WSServer extends WebSocketServer {
             Mode lobbyMode = Mode.valueOf(modeStr);
             Player lobbyOwner = ctx.getPlayerByConn(conn);
             Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
+            lobby.addPlayer(lobbyOwner);
+
+            // send data back to creator
+            String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
+                    + lobby.toJsonObjectPrivate().toString()
+                    + "}}]";
+
+            System.out.println(lobbyData);
+            conn.send(lobbyData);
 
             ctx.addLobby(lobby, lobbyOwner);
 
@@ -140,6 +149,7 @@ public class WSServer extends WebSocketServer {
                     int subId = subData.get("id").getAsInt();
 
                     if (subId == 1) {
+                        System.out.println("Joining lobby");
                         // join lobby
                         String lobbyID = subData.get("data").getAsJsonObject().get("id").getAsString();
                         Lobby lobby = ctx.searchID(lobbyID);
@@ -150,6 +160,8 @@ public class WSServer extends WebSocketServer {
                         for (Player p : lobby.getPlayers()) {
                             String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
                                     + lobby.toJsonObjectPrivate().toString() + "}}]";
+
+                            System.out.println(lobbyData);
                             p.getConn().send(lobbyData);
                         }
 
