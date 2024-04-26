@@ -85,7 +85,11 @@ public class Player {
     }
 
     public void joinLobby(Lobby lobby) {
-
+      if (user_type == PlayerType.Player) {
+            lobby.addPlayer(this);
+        } else {
+            lobby.addSpectator(this);
+        }
     }
 
     public Lobby createLobby() {
