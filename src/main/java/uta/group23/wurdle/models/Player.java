@@ -15,6 +15,7 @@ public class Player {
     private String nickname;
     private String playerID;
     private int score;
+    private boolean ready;
     private int consecHints;
     private String[] words_found;
     private Colour user_colour;
@@ -26,6 +27,7 @@ public class Player {
         this.playerID = UUID.randomUUID().toString();
         this.score = 0;
         this.lastActive = 0;
+        this.ready = false;
     }
 
     public Player(String nickname, WebSocket conn) {
@@ -91,7 +93,11 @@ public class Player {
     }
 
     public void joinLobby(Lobby lobby) {
-
+      if (user_type == PlayerType.Player) {
+            lobby.addPlayer(this);
+        } else {
+            lobby.addSpectator(this);
+        }
     }
 
     public Lobby createLobby() {
@@ -111,7 +117,11 @@ public class Player {
     }
 
     public boolean isReady() {
-        return false;
+        return ready;
+    }
+    
+     public void setReady(boolean ready) {
+        this.ready = ready;
     }
 
     public void selectCell(Lobby lobby, int row, int col) {

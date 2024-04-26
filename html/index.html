@@ -76,7 +76,7 @@
                         onchange="togglePasswordField()"
                       />
                       <!-- Alt + 255 character here cause I don't wanna figure out the css just for a space there :D -->
-                       Require
+                       Require  Require
                     </div>
                   </div>
                 </div>
@@ -445,6 +445,7 @@
             </div>
           </div>
         </div>
+        <!-- end of col-md -->
 
         <div class="change-username-container">
           <div class="change-username">
@@ -530,34 +531,3 @@
     <script type="text/javascript" src="./game.js"></script>
   </body>
 </html>
-
-<!-- <script>
-searchInput.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-        handleLobbySearch();
-    }
-});
-
-searchInput.addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    const tableRows = Array.from(lobbyTableBody.getElementsByTagName('tr'));
-
-    const { lobbies } = JSON.parse(ctx.getLobbyList());
-
-    tableRows.forEach(row => {
-        const lobbyName = row.getElementsByTagName('td')[1].textContent.toLowerCase();
-        const ownerName = row.getElementsByTagName('td')[0].textContent.toLowerCase();
-
-        const matchingLobby = lobbies.find(lobby =>
-            lobby.lobbyName.toLowerCase().includes(searchTerm) ||
-            lobby.ownerName.toLowerCase().includes(searchTerm)
-        );
-
-        if (matchingLobby) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-});
-</script> -->

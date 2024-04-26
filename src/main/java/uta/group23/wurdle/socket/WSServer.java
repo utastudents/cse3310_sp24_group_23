@@ -6,6 +6,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import uta.group23.wurdle.models.Context;
 import uta.group23.wurdle.models.Message;
+import uta.group23.wurdle.models.Message;
 import uta.group23.wurdle.models.Player;
 
 import java.util.UUID;
@@ -16,7 +17,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -168,6 +171,28 @@ public class WSServer extends WebSocketServer {
                         broadCastLobbyList();
                     }
 
+                    if (subId == 5) {
+                        // receiving word data
+                        // "coords": [[0,0],[0,1],[0,2] ...
+                        ArrayList<int[]> selectedCells = new ArrayList<>();
+                        String coords = subData.get("data").getAsJsonObject().get("coords").getAsString();
+                        String lobbyID = subData.get("data").getAsJsonObject().get("lobbyID").getAsString();
+                        Player player = ctx.getPlayerByConn(conn);
+                        Lobby lobby = ctx.searchID(lobbyID);
+
+                        // construct selected cells
+                        JsonArray cellArray = JsonParser.parseString(coords).getAsJsonArray();
+                        for (int i = 0; i < cellArray.size(); i++) {
+                            JsonArray cell = cellArray.get(i).getAsJsonArray();
+                            int[] cellCoords = { cell.get(0).getAsInt(), cell.get(1).getAsInt() };
+                            selectedCells.add(cellCoords);
+                        }
+
+                        // check word
+                        lobby.getGame().checkWord(player, selectedCells);
+
+                    }
+
                     break;
                 case 30:
                     // send message
@@ -278,6 +303,11 @@ public class WSServer extends WebSocketServer {
 
         conn.send(ctx.getMessageBoard());
         conn.send(ctx.getLobbyList());
+        // conn.send("{\"type\": \"selfID\", \"id\": \"" + newId + "\"}");
+        conn.send("[\"data\",{\"id\":1,\"data\":{\"id\":\"" + newId + "\"}}]");
+
+        conn.send(ctx.getMessageBoard());
+        conn.send(ctx.getLobbyList());
     }
 
     @Override
@@ -289,8 +319,14 @@ public class WSServer extends WebSocketServer {
         // last message as json
         broadcast(ctx.getMessageBoard());
 
+        ctx.addMessage("System", "Player '" + ctx.getPlayerByConn(conn).getNickname() + "' has disconnected");
+        // last message as json
+        broadcast(ctx.getMessageBoard());
+
         ctx.removePlayer(conn);
         System.out.println("Client count: " + ctx.getPlayerSize());
+
+        broadCastLobbyList();
 
         broadCastLobbyList();
 

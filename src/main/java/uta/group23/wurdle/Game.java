@@ -63,7 +63,8 @@ public class Game {
     }
 
     public boolean isGameOver(Player player, int pointThreshold) {
-        return false;
+        // Check if the game is over based on a score threshold
+        return player.getScore() >= pointThreshold;
     }
 
     public void display_selection(int selected_cell, int hovered_cell) {
