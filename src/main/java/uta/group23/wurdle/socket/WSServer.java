@@ -63,6 +63,20 @@ public class WSServer extends WebSocketServer {
         // ["data",{"id":30,"data":"\<message content\>"}] example
         // ["join",{"id":"d6576da3-3a90-4fff-a144-4540354804fe","data":{"username":"person"}}]
 
+        if (j.get(0).getAsString().equals("changeUsername")) {
+            JsonObject data = j.get(1).getAsJsonObject();
+            String newUsername = data.get("data").getAsJsonObject().get("username").getAsString();
+            Player player = ctx.getPlayerByConn(conn);
+    
+            if (player != null && ctx.isGameEnded()) {  // Ensure the game has ended
+                player.setNickname(newUsername);
+                conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Username changed to " + newUsername + "\"}}]");
+            } else {
+                conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Cannot change username during an active game\"}}]");
+            }
+        }
+
+
         if (j.get(0).getAsString().equals("join")) {
             JsonObject data = j.get(1).getAsJsonObject();
             String username = data.get("data").getAsJsonObject().get("username").getAsString();
