@@ -37,17 +37,34 @@ public class Game {
     public void updateTimer() {
     }
 
-    public void checkWord(Player player, String selectedCells[]) {
+   public void checkWord(Player player, String selectedCells[]) 
+    {
+        //check is at least 3 cells are selected
+        if (selectedCells.length < 3) 
+        {
+            //clear selected cells to allow player to select new word
+            selectedCells = new String[0];
+        return;
+        }
     }
 
     public void removeWordFound(String word) {
     }
 
-    public void assignPoints(Player player) {
+    public void assignPoints(Player player, String selectedCells[]) 
+    {
+        //calculate score for word found based on word length
+        int lengthmultiplier = 2;
+        int score = selectedCells.length * lengthmultiplier;
+
+        //get players current score and add on the score for the word found
+        int currentScore = player.getScore();
+        player.setScore(currentScore + score);
     }
 
     public boolean isGameOver(Player player, int pointThreshold) {
-        return false;
+        // Check if the game is over based on a score threshold
+        return player.getScore() >= pointThreshold;
     }
 
     public void display_selection(int selected_cell, int hovered_cell) {
