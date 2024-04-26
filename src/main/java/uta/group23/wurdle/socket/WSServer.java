@@ -128,7 +128,27 @@ public class WSServer extends WebSocketServer {
             JsonObject data = j.get(1).getAsJsonObject();
             switch (data.get("id").getAsInt()) {
                 case 11:
+                    if (j.get(0).getAsString().equals("data")) {
+JsonObject data j.get(1).getAsJsonObject();
+switch (data.get("id").getAsInt()) {
+                case 11:
                     // server->client message
+                    /*["data", {
+                    "id": 12,
+                     "data": {
+                    "id": 5,
+                    "data": { < your stuff here>}
+                    }            
+                    }]
+                    */
+                    Assuming message type is a word selection
+                    String msgData = data.get("data").getAsJsonObject().get("msg").getAsString();
+                    String[] selectedCells = msgData.split(","); // Example: "A1,B2,C3" => ["A1", "B2", "C3"]
+                   Player player = ctx.getPlayerByConn (conn);
+                   if (player != null) {
+                    game.checkWord(player, selectedCells); // Check word validity and assign points
+                    }
+                    broadcast(ctx.getMessageBoard());
                     break;
                 case 12:
                     // client->server message
