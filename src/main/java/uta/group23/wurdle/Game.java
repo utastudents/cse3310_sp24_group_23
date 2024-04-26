@@ -77,5 +77,19 @@ public class Game {
     public void displayWordsFound(Player player, int numFound) {
 
     }
+    
+    public void hint_player(Player player) 
+    {
+        //check the is player reached 5 consecHints
+        if (player.getConsecHints() == 5) 
+        {
+            // Disqualify the player
+        } 
+        else 
+        {
+            // Increment consecHints
+            player.incrementConsecHints();
+        }
+    }
 
 }
