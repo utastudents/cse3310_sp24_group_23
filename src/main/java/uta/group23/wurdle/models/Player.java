@@ -69,6 +69,14 @@ public class Player {
         this.score = score;
     }
 
+    public int getConsecHints() {
+        return this.consecHints;
+    }
+
+    public void incrementConsecHints() {
+        this.consecHints++;
+    }
+
     @Override
     public String toString() {
         return nickname + " " + score;
