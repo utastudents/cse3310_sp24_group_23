@@ -648,6 +648,30 @@ document.getElementById("joinButton").addEventListener("click", function () {
   }
 });
 
+
+document.getElementById("specatateButton").addEventListener("click", function () {
+  if (selectedLobbyId) {
+    send(
+      JSON.stringify({
+        type: "spectateLobby",
+        lobbyId: selectedLobbyId,
+      })
+    );
+
+    
+    // Update client state and UI
+    clientState.lobby.id = selectedLobbyId;
+
+    // Hide the lobby list and show the player list
+    showPlayerList();
+
+    // ...
+    // ...
+  } else {
+    sendToast("Please select a lobby to spectate.");
+  }
+});
+
 function highlightSelectedRow(row) {
   const rows = Array.from(lobbyTableBody.getElementsByTagName("tr"));
   rows.forEach((r) => r.classList.remove("table-primary"));
