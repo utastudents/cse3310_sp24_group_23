@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import uta.group23.wurdle.Game;
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.grid.GridGen;
 import uta.group23.wurdle.models.Colour;
@@ -23,8 +24,7 @@ public class Lobby {
     private HashSet<Player> players;
     private int playerCount;
     private int playerCap;
-    private Grid grid;
-    private GridGen gridGen;
+    private Game game;
 
     public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
@@ -44,12 +44,12 @@ public class Lobby {
         return lobbyName;
     }
 
-    public void setLobbyOwner(Player player) {
-        this.lobbyOwner = player;
+    public Game getGame() {
+        return game;
     }
 
-    public Grid getGrid() {
-        return this.grid;
+    public void setLobbyOwner(Player player) {
+        this.lobbyOwner = player;
     }
 
     public String getLobbyID() {

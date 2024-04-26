@@ -3,18 +3,17 @@ package uta.group23.wurdle;
 import java.io.File;
 import java.util.ArrayList;
 
+import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.models.Player;
 
 public class Game {
-    private ArrayList<Player> players;
-    private ArrayList<String> grid;
+    private Grid grid;
     // Timer
     private File wordList;
     private ArrayList<String> found;
 
     public Game() {
-        this.players = new ArrayList<Player>();
-        this.grid = new ArrayList<String>();
+        this.grid = new Grid(20, 20);
         this.wordList = new File("wordlist.txt");
         this.found = new ArrayList<String>();
     }
@@ -37,27 +36,33 @@ public class Game {
     public void updateTimer() {
     }
 
-   public void checkWord(Player player, String selectedCells[]) 
-    {
-        //check is at least 3 cells are selected
-        if (selectedCells.length < 3) 
-        {
-            //clear selected cells to allow player to select new word
-            selectedCells = new String[0];
-        return;
+    // check coords
+    public void checkWord(Player player, ArrayList<int[]> selectedCells) {
+        // check is at least 3 cells are selected
+        if (selectedCells.size() < 3) {
+            return;
         }
+
+        String constructedWord = "";
+        for (int i = 0; i < selectedCells.size(); i++) {
+            // get the letter from the cell
+            char letter = grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).getLetter();
+            constructedWord += letter;
+            // add the letter to the constructed word
+        }
+
+        // TODO: check if the word is in the word list
     }
 
     public void removeWordFound(String word) {
     }
 
-    public void assignPoints(Player player, String selectedCells[]) 
-    {
-        //calculate score for word found based on word length
+    public void assignPoints(Player player, String selectedCells[]) {
+        // calculate score for word found based on word length
         int lengthmultiplier = 2;
         int score = selectedCells.length * lengthmultiplier;
 
-        //get players current score and add on the score for the word found
+        // get players current score and add on the score for the word found
         int currentScore = player.getScore();
         player.setScore(currentScore + score);
     }
@@ -78,16 +83,12 @@ public class Game {
     public void displayWordsFound(Player player, int numFound) {
 
     }
-    
-    public void hint_player(Player player) 
-    {
-        //check the is player reached 5 consecHints
-        if (player.getConsecHints() == 5) 
-        {
+
+    public void hint_player(Player player) {
+        // check the is player reached 5 consecHints
+        if (player.getConsecHints() == 5) {
             // Disqualify the player
-        } 
-        else 
-        {
+        } else {
             // Increment consecHints
             player.incrementConsecHints();
         }
