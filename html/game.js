@@ -48,6 +48,7 @@ this.clientState = {
   uuid: "",
   inGame: false, // game has started
   inLobby: false,
+  usernameSet: false 
 };
 
 this.widgets = {
@@ -147,17 +148,43 @@ const setUsername = () => {
           username: clientState.username,
         },
       },
-    ])
+    ]),
+    function() {
+      clientState.usernameSet = true;
+      disableUsernameInput();
+      localStorage.setItem("username", clientState.username); 
+      sendToast("Username updated to " + clientState.username);
+    }
   );
+
+
 
   //sendToast("Username updated to " + username);
 
   //localStorage.setItem("username", username);
 };
 
-if (clientState.username != "") {
-  sendToast("Welcome back, " + clientState.username + "!");
+//if (clientState.username != "") {
+  //sendToast("Welcome back, " + clientState.username + "!");
+//}
+
+// Function to disable the username input and button
+function disableUsernameInput() {
+  document.getElementById("new-username").disabled = true;
+  document.getElementById("updateUsernameButton").disabled = true;
 }
+
+// Restore username from localStorage on page load and disable input if already set
+document.addEventListener("DOMContentLoaded", function () {
+  const savedUsername = localStorage.getItem("username");
+  if (savedUsername) {
+    clientState.username = savedUsername;
+    clientState.usernameSet = true;
+    document.getElementById("new-username").value = savedUsername;
+    disableUsernameInput();
+    sendToast("Welcome back, " + savedUsername + "!");
+  }
+});
 
 webSocket.onmessage = function (event) {
   /*
