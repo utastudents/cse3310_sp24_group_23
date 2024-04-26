@@ -34,21 +34,31 @@ public class GridTest {
 
     //Commented out to ensure deploy success -> make sure this test works later
 
-    // @Test
-    // public void canFindWordMultiple() {
-    //     // might not pass all the time, but is meant to make sure that
-    //     // the word list is being read correctly and actually contains valid words from
-    //     // the list
+    @Test
+    public void canFindWordMultiple() {
+        // might not pass all the time, but is meant to make sure that
+        // the word list is being read correctly and actually contains valid words from
+        // the list
 
-    //     GridGen gen = new GridGen();
-    //     Grid grid = new Grid(20, 20);
-    //     gen.addWordToGrid("Trung", grid);
-    //     gen.addWordToGrid("Austin", grid);
+        GridGen gen = new GridGen();
+        Grid grid = new Grid(20, 20);
+        gen.addWordToGrid("Trung", grid);
+        gen.addWordToGrid("Austin", grid);
 
-    //     assertTrue(GridGen.wordExists("Trung", grid));
-    //     assertTrue(GridGen.wordExists("Austin", grid));
+        assertTrue(GridGen.wordExists("Trung", grid));
+        assertTrue(GridGen.wordExists("Austin", grid));
 
-    // }
+                // print the grid
+                for (int i = 0; i < grid.getWidth(); i++) {
+                    for (int j = 0; j < grid.getHeight(); j++) {
+        
+                        System.out.print(grid.getCell(i, j).getLetter() + " ");
+        
+                    }
+                    System.out.println();
+                }
+
+    }
 
     @Test
     public void validGrid() throws Exception {
@@ -79,7 +89,7 @@ public class GridTest {
         System.out.println("Char count: " + g.getCharCount());
         g.calculateDensity();
         System.out.println("Grid density: " + g.getDensity());
-        System.out.println("Words" + g.getWords().size());
+        System.out.println("Words: " + g.getWords().size());
 
         // print the grid
         for (int i = 0; i < g.getWidth(); i++) {

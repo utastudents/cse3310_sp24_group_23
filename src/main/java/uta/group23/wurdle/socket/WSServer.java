@@ -72,6 +72,12 @@ public class WSServer extends WebSocketServer {
 
         }
 
+        if (j.get(0).getAsString().equals("leave")) { // leave lobby
+
+            ctx.leaveLobby(conn);
+            broadCastLobbyList();
+        }
+
         if (j.get(0).getAsString().equals("create")) {
             /*
              * JSON.stringify([
@@ -100,6 +106,15 @@ public class WSServer extends WebSocketServer {
             Mode lobbyMode = Mode.valueOf(modeStr);
             Player lobbyOwner = ctx.getPlayerByConn(conn);
             Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
+            lobby.addPlayer(lobbyOwner);
+
+            // send data back to creator
+            String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
+                    + lobby.toJsonObjectPrivate().toString()
+                    + "}}]";
+
+            System.out.println(lobbyData);
+            conn.send(lobbyData);
 
             ctx.addLobby(lobby, lobbyOwner);
 
@@ -114,6 +129,44 @@ public class WSServer extends WebSocketServer {
                     break;
                 case 12:
                     // client->server message
+                    /*
+                     * [
+                     * "data",
+                     * {
+                     * id: 12, // C->S
+                     * data: {
+                     * id: 1, // join lobby
+                     * data: {
+                     * id: id,
+                     * },
+                     * },
+                     * },
+                     * ]
+                     * 
+                     */
+
+                    JsonObject subData = data.get("data").getAsJsonObject();
+                    int subId = subData.get("id").getAsInt();
+
+                    if (subId == 1) {
+                        System.out.println("Joining lobby");
+                        // join lobby
+                        String lobbyID = subData.get("data").getAsJsonObject().get("id").getAsString();
+                        Lobby lobby = ctx.searchID(lobbyID);
+                        Player player = ctx.getPlayerByConn(conn);
+                        lobby.addPlayer(player);
+
+                        // broadcast lobby info to all clients of this lobby
+                        for (Player p : lobby.getPlayers()) {
+                            String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
+                                    + lobby.toJsonObjectPrivate().toString() + "}}]";
+
+                            System.out.println(lobbyData);
+                            p.getConn().send(lobbyData);
+                        }
+
+                        broadCastLobbyList();
+                    }
 
                     break;
                 case 30:
@@ -196,62 +249,6 @@ public class WSServer extends WebSocketServer {
          * 
          * broadCastLobbyList();
          */
-
-    }
-
-    private void setUsername(WebSocket conn, JsonObject j) {
-        String username = j.get("username").getAsString();
-        // ctx.getPlayerByConn(conn).setNickname(username);
-        if (ctx.isUsernameTaken(username)) {
-            /* type: "usernameQuery", accepted: false */
-            conn.send("{\"type\": \"usernameQuery\", \"accepted\": false}");
-            return;
-        }
-
-        conn.send("{\"type\": \"usernameQuery\", \"accepted\": true}");
-        ctx.getPlayerByConn(conn).setNickname(username);
-        ctx.addMessage("System", "New player connected: " + username);
-        broadcast(ctx.getMessageBoard());
-    }
-
-    private void leaveLobby(WebSocket conn, JsonObject j) {
-        String lobbyID = j.get("lobbyID").getAsString();
-        Lobby lobby = ctx.searchID(lobbyID);
-        Player player = ctx.getPlayerByConn(conn);
-        lobby.removePlayer(player);
-
-        // broadcast lobby info to all clients of this lobby
-        for (Player p : lobby.getPlayers()) {
-            String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
-            p.getClient().getConn().send(data);
-        }
-
-        broadCastLobbyList();
-    }
-
-    private void createLobby(WebSocket conn, JsonObject j) {
-        String lobbyName = j.get("lobbyName").getAsString();
-        String lobbyID = UUID.randomUUID().toString();
-        String password = "";
-
-        int playerCap = j.get("playerCount").getAsInt();
-
-        if (j.get("password") != null) {
-            password = j.get("password").getAsString();
-        }
-
-        String mode = j.get("lobbyMode").getAsString();
-        System.out.println(1);
-        String modeStr = mode.equals("timer") ? "Timer" : "Point";
-        Mode lobbyMode = Mode.valueOf(modeStr);
-        Player lobbyOwner = ctx.getPlayerByConn(conn);
-        Lobby lobby = new Lobby(lobbyName, lobbyID, Status.WAITING, 0, lobbyMode, password, playerCap, lobbyOwner);
-
-        ctx.addLobby(lobby, lobbyOwner);
-
-        String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " + lobby.toJsonObjectPrivate().toString() + "}";
-        conn.send(data);
-        broadCastLobbyList();
 
     }
 
