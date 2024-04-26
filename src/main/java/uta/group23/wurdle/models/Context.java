@@ -14,8 +14,17 @@ public class Context {
     private ArrayList<Player> players = new ArrayList<>();
     private MessageBoard messageBoard = new MessageBoard();
     private ArrayList<Lobby> lobbies = new ArrayList<>();
+    private boolean gameEnded = true;
 
     public Context() {
+    }
+
+    public boolean isGameEnded() {
+        return isGameEnded();
+    }
+
+    public void setGameEnded(boolean gameEnded) {
+        this.gameEnded = gameEnded;
     }
 
     public void addPlayer(Player player) {
