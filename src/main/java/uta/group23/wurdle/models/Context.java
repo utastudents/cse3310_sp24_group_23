@@ -38,7 +38,7 @@ public class Context {
                 }
             }
         }
-        System.out.println("Client removed" + nick);
+        System.out.println("Client removed: " + nick);
     }
 
     public void removePlayer(WebSocket conn) {

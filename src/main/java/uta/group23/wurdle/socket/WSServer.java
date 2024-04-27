@@ -110,6 +110,9 @@ public class WSServer extends WebSocketServer {
             ctx.addLobby(lobby, lobbyOwner);
 
             broadCastLobbyList();
+
+            // Send lobby name and ID to the client
+            sendLobbyInfo(conn, lobby);
         }
 
         if (j.get(0).getAsString().equals("data")) {
@@ -238,6 +241,17 @@ public class WSServer extends WebSocketServer {
          * broadCastLobbyList();
          */
 
+    }
+
+    private void sendLobbyInfo(WebSocket conn, Lobby lobby) {
+        JsonObject lobbyInfo = new JsonObject();
+        lobbyInfo.addProperty("id", 11);
+        JsonObject data = new JsonObject();
+        data.addProperty("name", lobby.getLobbyName());
+        data.addProperty("id", lobby.getLobbyID());
+        lobbyInfo.add("data", data);
+        
+        conn.send(lobbyInfo.toString());
     }
 
     @Override
