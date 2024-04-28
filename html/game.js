@@ -174,6 +174,11 @@ function disableUsernameInput() {
   document.getElementById("updateUsernameButton").disabled = true;
 }
 
+function enableUsernameInput(){
+  document.getElementById("new-username").disabled = false;
+  document.getElementById("updateUsernameButton").disabled = false;
+}
+
 // Restore username from localStorage on page load and disable input if already set
 document.addEventListener("DOMContentLoaded", function () {
   const savedUsername = localStorage.getItem("username");
@@ -210,8 +215,17 @@ webSocket.onmessage = function (event) {
   // ["data",{"id":30,"data":"\<message content\>"}]
   // ["data",{"id":1,"data":{"id":<id>}}]
 
-  if (message[0] == "data") {
+  if (message[0] === "error") {
+    console.log("Username already taken");
+    const errorData = message[1].data;
+    if (errorData.msg.includes("Username already taken")) {
+        sendToast("Username already taken. Please choose another.");
+        enableUsernameInput(); // Ensure this function enables the input field for username
+        
+    }
+} else if (message[0] == "data") {
     // message[1] is the data object
+    
     const data = message[1];
     console.log(data.id);
     switch (data.id) {

@@ -69,8 +69,12 @@ public class WSServer extends WebSocketServer {
             Player player = ctx.getPlayerByConn(conn);
     
             if (player != null && ctx.isGameEnded()) {  // Ensure the game has ended
-                player.setNickname(newUsername);
-                conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Username changed to " + newUsername + "\"}}]");
+                if (!ctx.isUsernameTaken(newUsername)) {
+                    player.setNickname(newUsername);
+                    conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Username changed to " + newUsername + "\"}}]");
+                } else {
+                    conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Username already taken. Choose a different one.\"}}]");
+                }
             } else {
                 conn.send("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"Cannot change username during an active game\"}}]");
             }
@@ -80,14 +84,24 @@ public class WSServer extends WebSocketServer {
         if (j.get(0).getAsString().equals("join")) {
             JsonObject data = j.get(1).getAsJsonObject();
             String username = data.get("data").getAsJsonObject().get("username").getAsString();
-            ctx.getPlayerByConn(conn).setNickname(username);
-
-            ctx.addMessage("System", "New player connected: " + username);
-
-            broadcast("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"" + username
-                    + " has joined the game\"}}]");
-
+        
+            // Check if the username is already taken
+            if (!ctx.isUsernameTaken(username)) {
+                Player player = ctx.getPlayerByConn(conn);
+                if (player != null) {
+                    System.out.println("Username Set");
+                    player.setNickname(username);
+                    ctx.addMessage("System", "New player connected: " + username);
+                    broadcast("[\"data\",{\"id\":30,\"data\":{\"id\":\"system\",\"msg\":\"" + username + " has joined the game\"}}]");
+                }
+            } else {
+                System.out.println("ERROR SEND");
+                // Send a distinct error type message to the client if the username is taken
+                conn.send("[\"error\",{\"id\":30,\"data\":{\"msg\":\"Username already taken. Please choose another.\"}}]");
+            }
+            
         }
+        
 
         if (j.get(0).getAsString().equals("leave")) { // leave lobby
 
@@ -317,11 +331,7 @@ public class WSServer extends WebSocketServer {
 
         conn.send(ctx.getMessageBoard());
         conn.send(ctx.getLobbyList());
-        // conn.send("{\"type\": \"selfID\", \"id\": \"" + newId + "\"}");
-        conn.send("[\"data\",{\"id\":1,\"data\":{\"id\":\"" + newId + "\"}}]");
-
-        conn.send(ctx.getMessageBoard());
-        conn.send(ctx.getLobbyList());
+        
     }
 
     @Override
