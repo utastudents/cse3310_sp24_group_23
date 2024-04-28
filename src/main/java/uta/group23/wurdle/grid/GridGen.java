@@ -19,6 +19,8 @@ import java.util.Timer;
 
 public class GridGen {
     private File wordList;
+    private static String[] words;
+    private static Set<String> wordSet;
     private int density;
 
     enum Direction {
@@ -39,10 +41,33 @@ public class GridGen {
         if (!this.wordList.exists() || !this.wordList.isFile()) {
             throw new IllegalArgumentException("Invalid word list file path: " + this.wordList.getAbsolutePath());
         }
+        if (words == null) {
+            loadWordsFromFile();
+        }
     }
 
     public GridGen() {
         this.wordList = null;
+    }
+
+    private static void loadWordsFromFile() {
+        if (words == null) {
+            ArrayList<String> wordList = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new FileReader(new File("src/words.txt")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    wordList.add(line.trim().toUpperCase());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            words = wordList.toArray(new String[0]);
+            wordSet = new HashSet<>(wordList);
+        }
+    }
+
+    public String[] getWords() {
+        return words;
     }
 
     // public int getCellIndex(int x, int y, Grid grid) {
@@ -343,39 +368,18 @@ public class GridGen {
         }
     }
 
-    // public void generateGrid(Grid grid) throws Exception {
-    //     // make sure word fits in grid and when the grid is full, stop
-    //     // if the word fits, add it to the grid
 
-    //     BufferedReader reader = new BufferedReader(new FileReader(wordList));
-
-    //     String line = reader.readLine();
-    //     while (line != null && !gridFull(grid)) {
-    //         if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight()) {
-    //             // add word to grid
-    //             addWordToGrid(line, grid);
-    //         }
-    //         line = reader.readLine();
-    //     }
-
-    //     // fill empty cells
-    //     fillEmptyCells(grid);
-
-    //     reader.close();
-    //     }
-
-    public void generateGrid(Grid grid) throws IOException {
+    public void generateGrid(Grid grid, String[] wordList) {
         Set<String> usedWords = new HashSet<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(wordList))) {
-            String line;
-            while ((line = reader.readLine()) != null && !gridFull(grid)) {
-                if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight() && !usedWords.contains(line.toUpperCase())) {
-                    addWordToGrid(line, grid);
-                    usedWords.add(line.toUpperCase());
-                }
+        Random random = new Random();
+        while (!gridFull(grid)) {
+            int index = random.nextInt(wordList.length);
+            String word = wordList[index];
+            if (word.length() <= grid.getWidth() && word.length() <= grid.getHeight() && !usedWords.contains(word)) {
+                addWordToGrid(word, grid);
+                usedWords.add(word);
             }
         }
-
         // Fill empty cells
         fillEmptyCells(grid);
     }

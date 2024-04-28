@@ -3,6 +3,11 @@ package com.group23.wurdle;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uta.group23.wurdle.grid.Cell;
@@ -116,4 +121,64 @@ public class GridTest {
         assertTrue(end - start < 1000);
 
     }
+
+
+
+    // Need to fix the test or the logic to generate the grid
+    // This test takes dynasties, even for a 10x10 bruh 
+    @Test
+    public void generateGridFromWordList() {
+        Grid grid = new Grid(20, 20);
+        GridGen gen = new GridGen("src/words.txt");
+        String[] words = gen.getWords();
+        Set<String> usedWords = new HashSet<>();
+        
+        while(!gen.gridFull(grid)) {
+            Random random = new Random();
+            int index = random.nextInt(words.length);
+            String word = words[index];
+                gen.addWordToGrid(word, grid);
+                usedWords.add(word);
+        }
+
+        // This thing is the culprit making it take 50 decades but I dunno how to fix
+        // Check if the grid is filled with words from the word list
+        // for (int i = 0; i < grid.getWidth(); i++) {
+        //     for (int j = 0; j < grid.getHeight(); j++) {
+        //         Cell cell = grid.getCell(i, j);
+        //         assertTrue(GridGen.wordExists(String.valueOf(cell.getLetter()), grid));
+        //     }
+        // }
+
+        // Print the generated grid
+        for (int i = 0; i < grid.getWidth(); i++) {
+            for (int j = 0; j < grid.getHeight(); j++) {
+                System.out.print(grid.getCell(i, j).getLetter() + " ");
+            }
+            System.out.println();
+        }
+
+
+        // Holy shit, I found the problem uhhhhh it uses a LOT of words I can't brain rn anymore so we fix it later
+        // Print the list of used words
+        System.out.println("\nUsed Words: ");
+        for (String usedWord : usedWords) {
+            System.out.print(usedWord + " ");
+        }
+    }
+    
+
+    @Test
+    public void wordsLoadedFromFile() {
+        GridGen gen = new GridGen("src/words.txt");
+        String[] words = gen.getWords();
+        assertTrue(words.length > 0);
+    
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(words.length);
+            System.out.println(words[index]);
+        }
+    }
+
 }

@@ -233,12 +233,14 @@ webSocket.onmessage = function (event) {
             let owner = document.createElement("td");
             let status = document.createElement("td");
             let playerCount = document.createElement("td");
+            let mode = document.createElement("td");
             let joinButton = document.createElement("button");
 
             lobbyName.textContent = lobby.lobbyName;
             owner.textContent = lobby.ownerName;
             status.textContent = lobby.lobbyStatus;
             playerCount.textContent = lobby.playerCount;
+            mode.textContent = lobby.lobbyMode;
             joinButton.textContent = "Join";
             joinButton.className = "joinButton btn btn-primary";
 
@@ -249,6 +251,7 @@ webSocket.onmessage = function (event) {
             row.appendChild(lobbyName);
             row.appendChild(status);
             row.appendChild(playerCount);
+            row.appendChild(mode);
 
             if (
               lobby.lobbyStatus === "WAITING" &&
