@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.models.Player;
+import uta.group23.wurdle.models.Timer;
 
 public class Game {
     private Grid grid;
@@ -21,10 +22,15 @@ public class Game {
     public void initializeGrid() {
     }
 
-    public void start() {
+    public void start() 
+    {
+        startTimer();
     }
 
-    public void startTimer() {
+    public void startTimer() 
+    {
+        Timer timer = new Timer();
+        timer.startTimer();
     }
 
     public void stop() {
