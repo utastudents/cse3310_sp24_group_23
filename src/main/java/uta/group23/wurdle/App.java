@@ -7,7 +7,7 @@ import com.sun.net.httpserver.*;
 import uta.group23.wurdle.models.Context;
 
 import uta.group23.wurdle.server.HTTPServer;
-import uta.group23.wurdle.socket
+import uta.group23.wurdle.socket.*;
 import uta.group23.wurdle.Game;
 
 public class App {
