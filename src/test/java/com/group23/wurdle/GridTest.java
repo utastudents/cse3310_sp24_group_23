@@ -36,7 +36,7 @@ public class GridTest {
 
         float density = l.getGame().getGrid().getDensity();
 
-        assert (density > 0.65);
+        assert (density > 0.67);
 
         assert (l.getGame().getGrid().getWords().size() > 0);
     }
