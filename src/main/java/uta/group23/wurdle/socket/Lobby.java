@@ -1,14 +1,17 @@
 package uta.group23.wurdle.socket;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import org.java_websocket.WebSocket;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import uta.group23.wurdle.Game;
-import uta.group23.wurdle.grid.Grid;
+
 import uta.group23.wurdle.grid.GridGen;
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
@@ -38,6 +41,7 @@ public class Lobby {
         this.lobbyMode = lobbyMode;
         this.players = new HashSet<>();
         this.playerCap = playerCap;
+        this.game = new Game();
     }
 
     public String getLobbyName() {
@@ -106,8 +110,14 @@ public class Lobby {
         return false;
     }
 
-    public void startGame() {
-        // Start game
+    public void startGame() throws IOException {
+        // populate grid with words
+
+        GridGen gridGen = new GridGen(); // grid generator helper object
+        String staticPath = "./html/";
+        gridGen.setWordList(staticPath + "words.txt");
+        gridGen.generateGrid(game.getGrid());
+
     }
 
     public HashSet<Player> getPlayers() {
@@ -159,6 +169,15 @@ public class Lobby {
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
         jsonObject.addProperty("password", password);
         jsonObject.addProperty("lobbyMode", lobbyMode.toString());
+        if (lobbyStatus == Status.IN_PROGRESS) {
+            // wordlist
+            JsonArray wordList = new JsonArray();
+            for (String word : game.getGrid().getWords().keySet()) {
+                wordList.add(word);
+            }
+
+            jsonObject.add("wordList", wordList);
+        }
 
         jsonObject.add("players", playersList);
         return jsonObject;

@@ -9,19 +9,16 @@ import uta.group23.wurdle.models.Player;
 public class Game {
     private Grid grid;
     // Timer
-    private File wordList;
+
     private ArrayList<String> found;
 
     public Game() {
         this.grid = new Grid(20, 20);
-        this.wordList = new File("wordlist.txt");
+
         this.found = new ArrayList<String>();
     }
 
     public void initializeGrid() {
-    }
-
-    public void start() {
     }
 
     public void startTimer() {
@@ -52,19 +49,37 @@ public class Game {
         }
 
         // TODO: check if the word is in the word list
+        // if it is, add it to the found list
+        // grid has words <String, Direction>
+        // if the word is found, remove it from the grid
+        if (grid.getWords().containsKey(constructedWord)) {
+            found.add(constructedWord);
+            grid.getWords().remove(constructedWord);
+            assignPoints(player, constructedWord);
+
+            // set state of cells to claimed
+            for (int i = 0; i < selectedCells.size(); i++) {
+                // set claimId to player id
+                grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).setClaimId(player.getId());
+                grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).setIsClaimed(true);
+            }
+        }
+
     }
 
     public void removeWordFound(String word) {
     }
 
-    public void assignPoints(Player player, String selectedCells[]) {
+    public void assignPoints(Player player, String word) {
         // calculate score for word found based on word length
         int lengthmultiplier = 2;
-        int score = selectedCells.length * lengthmultiplier;
+        int score = word.length() * lengthmultiplier;
 
         // get players current score and add on the score for the word found
         int currentScore = player.getScore();
         player.setScore(currentScore + score);
+
+        System.out.println("Player " + player.getNickname() + " found word: " + word + " for " + score + " points");
     }
 
     public boolean isGameOver(Player player, int pointThreshold) {
@@ -92,6 +107,11 @@ public class Game {
             // Increment consecHints
             player.incrementConsecHints();
         }
+    }
+
+    public Grid getGrid() {
+
+        return grid;
     }
 
 }
