@@ -92,6 +92,7 @@
           </div>
         </div>
 
+        <!--
         <div
           class="lobby-settings-container"
           id="lobbySettingsContainer"
@@ -146,6 +147,7 @@
             </form>
           </div>
         </div>
+        -->
 
         <div class="settings-container" style="display: none">
           <div class="settings-menu">
@@ -187,7 +189,7 @@
         </div>
 
         <div class="recent-leaderboard-container">
-          <h3>Last Game Highscores</h3>
+          <h3>Leaderboard</h3>
           <table class="table table-striped table-sm">
             <thead align="center">
               <tr>
@@ -195,29 +197,7 @@
                 <th>Points</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Recent highscores will be displayed here -->
-              <tr>
-                <td>John Doe</td>
-                <td>1500</td>
-              </tr>
-              <tr>
-                <td>Jane Smith</td>
-                <td>1200</td>
-              </tr>
-              <tr>
-                <td>Bob Johnson</td>
-                <td>1100</td>
-              </tr>
-              <tr>
-                <td>Alice Williams</td>
-                <td>1050</td>
-              </tr>
-              <tr>
-                <td>Tom Davis</td>
-                <td>1000</td>
-              </tr>
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
 
@@ -225,18 +205,6 @@
           <div class="lobbyForm container text-center">
             <h1>Wurdle</h1>
             <h2>The Word Search Game</h2>
-
-            <form id="lobbyForm">
-              <div class="form-group">
-                <button
-                  type="button"
-                  class="btn btn-primary mt-3"
-                  id="gameStart-button"
-                >
-                  Start Game
-                </button>
-              </div>
-            </form>
 
             <div class="lobby-list">
               <div class="lobby-list-header">
@@ -303,8 +271,13 @@
           </div>
         </div>
 
-        <div id="wordGrid" class="container text-center mt-3 align-center">
+        <div id="wordGrid">
           <!-- Word grid will be displayed here -->
+          <table class="table table-bordered" id="wordGridTable">
+            <tbody>
+              <!-- Word grid will be displayed here -->
+            </tbody>
+          </table>
         </div>
 
         <div
@@ -440,8 +413,12 @@
               >
                 Leave Lobby
               </button>
-              <button class="btn btn-primary ready-button">Ready</button>
-              <button class="btn btn-success start-button">Start</button>
+              <button class="btn btn-primary ready-button" id="readyButton">
+                Ready
+              </button>
+              <button class="btn btn-success start-button" id="startButton">
+                Start
+              </button>
             </div>
           </div>
         </div>

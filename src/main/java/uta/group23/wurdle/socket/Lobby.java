@@ -1,14 +1,17 @@
 package uta.group23.wurdle.socket;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import org.java_websocket.WebSocket;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import uta.group23.wurdle.Game;
-import uta.group23.wurdle.grid.Grid;
+
 import uta.group23.wurdle.grid.GridGen;
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
@@ -25,6 +28,7 @@ public class Lobby {
     private int playerCount;
     private int playerCap;
     private Game game;
+    private HashSet<Player> readyPlayers;
 
     public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
@@ -38,6 +42,9 @@ public class Lobby {
         this.lobbyMode = lobbyMode;
         this.players = new HashSet<>();
         this.playerCap = playerCap;
+        this.game = new Game();
+        this.playerCount = 0;
+        this.readyPlayers = new HashSet<>();
     }
 
     public String getLobbyName() {
@@ -106,8 +113,14 @@ public class Lobby {
         return false;
     }
 
-    public void startGame() {
-        // Start game
+    public void startGame() throws IOException {
+        // populate grid with words
+
+        GridGen gridGen = new GridGen(); // grid generator helper object
+        String staticPath = "./html/";
+        gridGen.setWordList(staticPath + "words.txt");
+        gridGen.generateGrid(game.getGrid());
+
     }
 
     public HashSet<Player> getPlayers() {
@@ -159,9 +172,29 @@ public class Lobby {
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
         jsonObject.addProperty("password", password);
         jsonObject.addProperty("lobbyMode", lobbyMode.toString());
+        jsonObject.addProperty("readyCount", readyPlayers.size());
+        if (lobbyStatus == Status.IN_PROGRESS) {
+            // wordlist
+            JsonArray wordList = new JsonArray();
+            for (String word : game.getGrid().getWords().keySet()) {
+                wordList.add(word);
+            }
+
+            jsonObject.add("wordList", wordList);
+        }
 
         jsonObject.add("players", playersList);
         return jsonObject;
+
+    }
+
+    public void setPlayerReady(Player player) {
+        readyPlayers.add(player);
+
+    }
+
+    public void setPlayerUnready(Player player) {
+        readyPlayers.remove(player);
 
     }
 }

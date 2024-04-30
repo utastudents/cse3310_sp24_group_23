@@ -54,7 +54,7 @@ this.widgets = {
   lobbyForm: document.getElementById("lobbyForm"),
   lobbyCreationContainer: document.getElementById("lobby-creation-container"),
   lobbyList: document.querySelector(".lobby-list"),
-  playerList: document.getElementById("playerListHorizontal"),
+  playerList: document.getElementById("playerList"),
 };
 
 function sendMessage() {
@@ -328,8 +328,32 @@ webSocket.onmessage = function (event) {
           // lobby update private
           const lobby = data.data.data;
 
+          if (
+            lobby.lobbyStatus === "WAITING" &&
+            lobby.playerCount == lobby.readyCount
+          ) {
+            // hide the lobby list
+            showPlayerList();
+            widgets.playerList.style.display = "none";
+
+            clientState.inGame = true;
+
+            // show the word grid
+            document.getElementById("wordGrid").style.display = "block";
+
+            populateGrid();
+          } else {
+            sendToast("Waiting for players to ready up.");
+          }
+
           clientState.lobby.players = lobby.players;
           clientState.lobby.id = lobby.id;
+          clientState.inGame = lobby.lobbyStatus === "IN_PROGRESS";
+
+          // show word grid
+          if (clientState.inGame) {
+            document.getElementById("wordGrid").style.display = "block";
+          }
 
           document.getElementById("lobbyName").textContent =
             "Lobby Name: " + lobby.lobbyName;
@@ -348,6 +372,24 @@ webSocket.onmessage = function (event) {
             row.appendChild(cell);
             playerTableBody.appendChild(row);
           });
+
+          // check players ready == playerCount and in progress
+        }
+
+        if (data.data.id == 3) {
+          // retrieve grid data
+          // [ [ "a", "b", "c" ], [ "d", "e", "f" ], [ "g", "h", "i" ] ]
+
+          const grid = data.data.data;
+          console.log(grid);
+
+          // clear the table html so that we can update it with the new data
+
+          const tbody = document
+            .getElementById("wordGridTable")
+            .querySelector("tbody");
+          tbody.innerHTML = "";
+          populateGrid(grid);
         }
         break;
 
@@ -433,6 +475,146 @@ const showLobbyList = () => {
   document.querySelector(".lobby-creation-container").style.display = "block";
 };
 
+const populateGrid = (chars) => {
+  // chars -> "{\"claimId\":\"\",\"letter\":\"B\",\"isClaimed\":false}"
+  const table = document.getElementById("wordGridTable");
+  table.style.width = "70%";
+  table.style.height = "70%";
+  const tbody = table.querySelector("tbody");
+
+  let isMouseDown = false;
+  let startX, startY;
+  let coords = [];
+
+  function startDragging(event) {
+    isMouseDown = true;
+    const cell = event.target;
+    startX = parseInt(cell.id.split("-")[1]);
+    startY = parseInt(cell.id.split("-")[2]);
+    event.preventDefault();
+    unhighlightAllCells();
+    highlightCell(startX, startY);
+    coords = [[startX, startY]]; // Reset coords array
+  }
+
+  function dragOverCell(event) {
+    if (isMouseDown) {
+      const cell = event.target;
+      const endX = parseInt(cell.id.split("-")[1]);
+      const endY = parseInt(cell.id.split("-")[2]);
+      if (
+        startX === endX ||
+        startY === endY ||
+        Math.abs(startX - endX) === Math.abs(startY - endY)
+      ) {
+        unhighlightAllCells();
+        highlightCellsInDirection(startX, startY, endX, endY);
+        updateCoords(startX, startY, endX, endY);
+      }
+    }
+  }
+
+  function stopDragging() {
+    isMouseDown = false;
+    sendCoordsToServer(coords);
+  }
+
+  function disableCell(cell) {
+    cell.style.backgroundColor = "gray";
+    cell.style.color = "white";
+    cell.removeEventListener("mousedown", startDragging);
+    cell.removeEventListener("mouseover", dragOverCell);
+    cell.removeEventListener("mouseup", stopDragging);
+    cell.style.pointerEvents = "none";
+  }
+
+  function highlightCell(x, y) {
+    const cell = document.getElementById(`cell-${x}-${y}`);
+    cell.style.backgroundColor = "yellow";
+  }
+
+  function unhighlightAllCells() {
+    const cells = document.querySelectorAll("td");
+    cells.forEach((cell) => {
+      cell.style.backgroundColor = "";
+    });
+  }
+
+  function highlightCellsInDirection(startX, startY, endX, endY) {
+    let x = startX;
+    let y = startY;
+    while (x !== endX || y !== endY) {
+      highlightCell(x, y);
+      if (x < endX) x++;
+      else if (x > endX) x--;
+      if (y < endY) y++;
+      else if (y > endY) y--;
+    }
+    highlightCell(endX, endY);
+  }
+
+  function updateCoords(startX, startY, endX, endY) {
+    coords = [];
+    let x = startX;
+    let y = startY;
+    while (x !== endX || y !== endY) {
+      coords.push([x, y]);
+      if (x < endX) x++;
+      else if (x > endX) x--;
+      if (y < endY) y++;
+      else if (y > endY) y--;
+    }
+    coords.push([endX, endY]);
+  }
+
+  function sendCoordsToServer(coords) {
+    const message = JSON.stringify([
+      "data",
+      {
+        id: 12,
+        data: {
+          id: 5,
+          data: {
+            coords: coords,
+            lobbyID: clientState.lobby.id,
+          },
+        },
+      },
+    ]);
+    // Here, you need to send the message to the server
+    // For demonstration purposes, let's just log the message
+    console.log("Sending message to server:", message);
+
+    send(message);
+
+    // clear the table html so that we can update it with the new data
+    tbody.innerHTML = "";
+  }
+
+  // Create the grid
+  for (let i = 0; i < 20; i++) {
+    let row = document.createElement("tr");
+    for (let j = 0; j < 20; j++) {
+      let cell = document.createElement("td");
+      // [{"claimId":"","letter":"B","isClaimed":false}, ...] 2d array
+      const cellData = chars[i][j];
+      const claimed = cellData.isClaimed;
+      cell.textContent = cellData.letter;
+
+      // disable the cell if it is claimed
+      if (claimed) {
+        disableCell(cell);
+      }
+      cell.id = `cell-${i}-${j}`;
+      cell.addEventListener("mousedown", startDragging);
+      cell.addEventListener("mouseover", dragOverCell);
+      cell.addEventListener("mouseup", stopDragging);
+      row.appendChild(cell);
+    }
+    tbody.appendChild(row);
+  }
+};
+
 const createLobby = () => {
   if (clientState.username == "") {
     sendToast("Please enter a username.");
@@ -470,6 +652,11 @@ const createLobby = () => {
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
+  // prompt for username
+  if (clientState.username == "") {
+    document.getElementById("usernamePrompt").style.display = "block";
+  }
+
   showLobbyList();
 
   if (!clientState.gameStarted) {
@@ -490,6 +677,7 @@ document.addEventListener("DOMContentLoaded", function () {
     table.appendChild(row);
   }
 
+  // wipe the word grid
   document.getElementById("wordGrid").appendChild(table);
 
   document
@@ -497,6 +685,62 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("click", function () {
       setUsername();
     });
+
+  document.getElementById("readyButton").addEventListener("click", function () {
+    if (document.getElementById("readyButton").textContent === "Ready") {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 4,
+              data: {
+                id: clientState.lobby.id,
+                status: "READY",
+              },
+            },
+          },
+        ])
+      );
+      document.getElementById("readyButton").textContent = "Unready";
+    } else {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 5,
+              data: {
+                id: clientState.lobby.id,
+                status: "UNREADY",
+              },
+            },
+          },
+        ])
+      );
+      document.getElementById("readyButton").textContent = "Ready";
+    }
+  });
+
+  document.getElementById("startButton").addEventListener("click", function () {
+    console.log("start button clicked.");
+    send(
+      JSON.stringify([
+        "data",
+        {
+          id: 12,
+          data: {
+            id: 2,
+            data: {
+              id: clientState.lobby.id,
+            },
+          },
+        },
+      ])
+    );
+  });
 
   document
     .getElementById("createLobbyButton")
@@ -535,6 +779,7 @@ document
     );
 
     clientState.inLobby = false;
+    clientState.inGame = false;
     showLobbyList();
   });
 
@@ -638,6 +883,7 @@ document.getElementById("joinButton").addEventListener("click", function () {
 
     // Update client state and UI
     clientState.lobby.id = selectedLobbyId;
+    clientState.inLobby = true;
 
     // Hide the lobby list and show the player list
     showPlayerList();
@@ -679,4 +925,16 @@ function filterLobbyList(lobbies, searchTerm) {
     }
   });
   */
+
+  // function cellClickHandler(row, col) {
+  //   const cellId = `cell-${row}-${col}`;
+  //   const cell = document.getElementById(cellId);
+  //   if (!startPoint) {
+  //     // get the starting point
+  //     startPoint = { row, col };
+  //     cell.style.backgroundColor = "blue";
+  //   } else {
+  //     highlightSelection;
+  //   }
+  // }
 }

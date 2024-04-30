@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 public class Grid {
     private int width;
     private int height;
@@ -23,6 +27,33 @@ public class Grid {
                 grid[i][j] = new Cell();
             }
         }
+    }
+
+    public String gridDataJson() {
+        // string[][] 2d letter array
+
+        /*
+         * 
+         * [ [ "a", "b", "c" ], [ "d", "e", "f" ], [ "g", "h", "i" ] ]
+         */
+
+        JsonArray gridData = new JsonArray();
+
+        for (int i = 0; i < width; i++) {
+            JsonArray row = new JsonArray();
+            for (int j = 0; j < height; j++) {
+                Cell cell = getCell(i, j);
+                JsonObject cc = new JsonObject();
+                cc.addProperty("letter", cell.getLetter());
+                cc.addProperty("claimId", cell.getClaimId());
+                cc.addProperty("isClaimed", cell.getIsClaimed());
+                row.add(cc);
+            }
+            gridData.add(row);
+        }
+
+        return gridData.toString();
+
     }
 
     public void setDensity(float density) {
@@ -55,7 +86,7 @@ public class Grid {
     }
 
     public void setCell(int x, int y, char letter) {
-        grid[x][y].letter = letter;
+        grid[x][y].setLetter(letter);
     }
 
     public Cell getCell(int x, int y) {
@@ -78,8 +109,8 @@ public class Grid {
         return height;
     }
 
-    public void claimCell(int x, int y, UUID playerId) {
-        grid[x][y].claimId = playerId;
+    public void claimCell(int x, int y, String playerId) {
+        grid[x][y].setClaimId(playerId);
     }
 
 }

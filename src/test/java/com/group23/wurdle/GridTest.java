@@ -8,6 +8,11 @@ import org.junit.Test;
 import uta.group23.wurdle.grid.Cell;
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.grid.GridGen;
+import uta.group23.wurdle.models.Colour;
+import uta.group23.wurdle.models.Player;
+import uta.group23.wurdle.socket.Lobby;
+import uta.group23.wurdle.socket.Mode;
+import uta.group23.wurdle.socket.Status;
 
 /**
  * Unit test for simple App.
@@ -16,6 +21,45 @@ public class GridTest {
     /**
      * Rigorous Test :-)
      */
+
+    @Test
+    public void TestWordListValid() throws Exception {
+
+        Lobby l = new Lobby("lobbyName", "lobbyID", Status.WAITING, 0, Mode.Timer, "password", 4,
+                new Player("bot", Colour.Red));
+
+        assert (l.getGame().getGrid().getWords().size() == 0);
+        GridGen gen = new GridGen();
+
+        gen.setWordList("src/words.txt");
+        gen.generateGrid(l.getGame().getGrid());
+
+        float density = l.getGame().getGrid().getDensity();
+
+        assert (density > 0.67);
+
+        assert (l.getGame().getGrid().getWords().size() > 0);
+    }
+
+    @Test
+    public void testGridGenWithWordlist() throws Exception {
+        Grid g = new Grid(20, 20);
+        GridGen gen = new GridGen();
+
+        gen.setWordList("src/words.txt");
+
+        gen.generateGrid(g);
+
+        // print the grid
+        for (int i = 0; i < g.getWidth(); i++) {
+            for (int j = 0; j < g.getHeight(); j++) {
+
+                System.out.print(g.getCell(i, j).getLetter() + " ");
+
+            }
+            System.out.println();
+        }
+    }
 
     private void add10Words(GridGen g, Grid grid) {
         g.addWordToGrid("Trung", grid);
@@ -32,7 +76,7 @@ public class GridTest {
         g.fillEmptyCells(grid);
     }
 
-    //Commented out to ensure deploy success -> make sure this test works later
+    // Commented out to ensure deploy success -> make sure this test works later
 
     @Test
     public void canFindWordMultiple() {
@@ -48,15 +92,15 @@ public class GridTest {
         assertTrue(GridGen.wordExists("Trung", grid));
         assertTrue(GridGen.wordExists("Austin", grid));
 
-                // print the grid
-                for (int i = 0; i < grid.getWidth(); i++) {
-                    for (int j = 0; j < grid.getHeight(); j++) {
-        
-                        System.out.print(grid.getCell(i, j).getLetter() + " ");
-        
-                    }
-                    System.out.println();
-                }
+        // print the grid
+        for (int i = 0; i < grid.getWidth(); i++) {
+            for (int j = 0; j < grid.getHeight(); j++) {
+
+                System.out.print(grid.getCell(i, j).getLetter() + " ");
+
+            }
+            System.out.println();
+        }
 
     }
 
@@ -116,4 +160,5 @@ public class GridTest {
         assertTrue(end - start < 1000);
 
     }
+
 }
