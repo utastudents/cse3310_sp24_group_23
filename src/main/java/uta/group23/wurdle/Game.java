@@ -47,6 +47,7 @@ public class Game {
             constructedWord += letter;
             // add the letter to the constructed word
         }
+        System.out.println("Constructed word: " + constructedWord);
 
         // TODO: check if the word is in the word list
         // if it is, add it to the found list

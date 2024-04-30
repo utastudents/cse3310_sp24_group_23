@@ -23,14 +23,14 @@ public class Context {
         System.out.println("Client added" + player.getClient().getConn().getResourceDescriptor());
     }
 
-    public void leaveLobby(WebSocket conn) {
+    public void leaveLobby(String id) {
         // remove player from possible lobbies O(n*m)
-        String nick = getPlayerByConn(conn).getNickname();
+        Player player = getPlayerById(id);
         for (Lobby l : lobbies) {
             // if lobby owner and player count zero, remove lobby
             // if players present, transfer ownership to next player
-            if (l.getPlayers().contains(getPlayerByConn(conn))) {
-                l.removePlayer(getPlayerByConn(conn));
+            if (l.getPlayers().contains(player)) {
+                l.removePlayer(player);
                 if (l.getPlayers().size() == 0) {
                     lobbies.remove(l);
                 } else {
@@ -38,18 +38,20 @@ public class Context {
                 }
             }
         }
-        System.out.println("Client removed" + nick);
+
+        System.out.println("Client left lobby " + player.getNickname());
     }
 
-    public void removePlayer(WebSocket conn) {
+    public void removePlayer(String id) {
 
         // remove player from possible lobbies O(n*m)
-        String nick = getPlayerByConn(conn).getNickname();
+        String nick = getPlayerById(id).getNickname();
+        Player player = getPlayerById(id);
         for (Lobby l : lobbies) {
             // if lobby owner and player count zero, remove lobby
             // if players present, transfer ownership to next player
-            if (l.getPlayers().contains(getPlayerByConn(conn))) {
-                l.removePlayer(getPlayerByConn(conn));
+            if (l.getPlayers().contains(player)) {
+                l.removePlayer(player);
                 if (l.getPlayers().size() == 0) {
                     lobbies.remove(l);
                 } else {
@@ -57,9 +59,9 @@ public class Context {
                 }
             }
         }
-        System.out.println("Client removed" + nick);
+        System.out.println("Client removed " + nick);
 
-        players.remove(getPlayerByConn(conn));
+        players.remove(player);
     }
 
     public void addMessage(String nick, String message) {
@@ -70,6 +72,10 @@ public class Context {
 
     public Player getPlayerByConn(WebSocket conn) {
         return players.stream().filter(client -> client.getClient().getConn().equals(conn)).findFirst().orElse(null);
+    }
+
+    public Player getPlayerById(String id) {
+        return players.stream().filter(client -> client.getplayerId().equals(id)).findFirst().orElse(null);
     }
 
     public int getPlayerSize() {

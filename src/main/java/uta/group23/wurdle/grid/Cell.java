@@ -6,6 +6,8 @@ public class Cell {
     private String claimId;
     private char letter;
     private Boolean isClaimed;
+    private Boolean isHighlighted;
+    private String selectorID;
 
     public char getLetter() {
         return this.letter;
@@ -35,5 +37,24 @@ public class Cell {
         this.claimId = "";
         this.isClaimed = false;
         this.letter = ' ';
+        this.isHighlighted = false;
+        this.selectorID = "";
+    }
+
+    public void setIsHighlighted(boolean b) {
+        // TODO Auto-generated method stub
+        this.isHighlighted = b;
+    }
+
+    public Boolean getIsHighlighted() {
+        return this.isHighlighted;
+    }
+
+    public void setSelectorID(String id) {
+        this.selectorID = id;
+    }
+
+    public String getSelectorID() {
+        return this.selectorID;
     }
 }
