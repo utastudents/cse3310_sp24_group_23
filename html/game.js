@@ -101,7 +101,7 @@ function sendMessage() {
   chatMessages.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
-this.clientState.username = localStorage.getItem("username") || "";
+this.clientState.username = "";
 
 // JavaScript to handle message sent via enter key
 document
@@ -229,6 +229,33 @@ webSocket.onmessage = function (event) {
         // ["data",{"id":11,"data": {"id":0,"data":[{"lobbyName":"sfs","lobbyStatus":"WAITING","playerCount":1,"id":"e82cfd8e-b917-4bab-a27a-260346c03339","ownerID":"247bb7d4-7262-4a42-989b-44fd6c5856d7","ownerName":"person"}]}}]
         // 0 public lobby list
         // 1 private lobby information
+
+        if (data.data.id == 8) {
+          // username rejected
+          sendToast("Username already taken.");
+
+          // ask for username again
+          clientState.username = "";
+          username = prompt("Please enter a username.");
+          send(
+            JSON.stringify([
+              "join",
+              {
+                id: clientState.uuid,
+                data: {
+                  username: username,
+                },
+              },
+            ])
+          );
+        }
+
+        if (data.data.id == 9) {
+          // username accepted
+          clientState.username = data.data.data.username;
+          sendToast("Username updated to " + clientState.username);
+        }
+
         if (data.data.id == 7) {
           // game started
           clientState.gameStarted = true;
@@ -709,8 +736,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (clientState.username == "") {
     username = prompt("Please enter a username.");
-    clientState.username = username;
-    localStorage.setItem("username", username);
+    send(
+      JSON.stringify([
+        "join",
+        {
+          id: clientState.uuid,
+          data: {
+            username: username,
+          },
+        },
+      ])
+    );
   }
 
   showLobbyList();

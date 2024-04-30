@@ -68,7 +68,23 @@ public class WSServer extends WebSocketServer {
         if (j.get(0).getAsString().equals("join")) {
             JsonObject data = j.get(1).getAsJsonObject();
             String username = data.get("data").getAsJsonObject().get("username").getAsString();
+
+            // check if username is already taken
+            if (ctx.isUsernameTaken(username)) {
+                // send rejected
+                // 11 is server->client message
+                // id 8 is rejected
+                // id 9 is accepted
+                // pass username if accepted
+                conn.send("[\"data\",{\"id\":11,\"data\":{\"id\":8}}]");
+                return;
+            }
+
+            // set username
             ctx.getPlayerByConn(conn).setNickname(username);
+            conn.send("[\"data\",{\"id\":11,\"data\":{\"id\":9,\"data\":{\"username\":\"" + username + "\"}}}]");
+
+            // ctx.getPlayerByConn(conn).setNickname(username);
 
             ctx.addMessage("System", "New player connected: " + username);
 
