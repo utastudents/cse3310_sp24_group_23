@@ -28,6 +28,7 @@ public class Lobby {
     private int playerCount;
     private int playerCap;
     private Game game;
+    private HashSet<Player> readyPlayers;
 
     public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
@@ -42,6 +43,8 @@ public class Lobby {
         this.players = new HashSet<>();
         this.playerCap = playerCap;
         this.game = new Game();
+        this.playerCount = 0;
+        this.readyPlayers = new HashSet<>();
     }
 
     public String getLobbyName() {
@@ -169,6 +172,7 @@ public class Lobby {
         jsonObject.addProperty("ownerID", lobbyOwner.getId());
         jsonObject.addProperty("password", password);
         jsonObject.addProperty("lobbyMode", lobbyMode.toString());
+        jsonObject.addProperty("readyCount", readyPlayers.size());
         if (lobbyStatus == Status.IN_PROGRESS) {
             // wordlist
             JsonArray wordList = new JsonArray();
@@ -181,6 +185,16 @@ public class Lobby {
 
         jsonObject.add("players", playersList);
         return jsonObject;
+
+    }
+
+    public void setPlayerReady(Player player) {
+        readyPlayers.add(player);
+
+    }
+
+    public void setPlayerUnready(Player player) {
+        readyPlayers.remove(player);
 
     }
 }

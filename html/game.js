@@ -328,6 +328,24 @@ webSocket.onmessage = function (event) {
           // lobby update private
           const lobby = data.data.data;
 
+          if (
+            lobby.lobbyStatus === "WAITING" &&
+            lobby.playerCount == lobby.readyCount
+          ) {
+            // hide the lobby list
+            showPlayerList();
+            widgets.playerList.style.display = "none";
+
+            clientState.inGame = true;
+
+            // show the word grid
+            document.getElementById("wordGrid").style.display = "block";
+
+            populateGrid();
+          } else {
+            sendToast("Waiting for players to ready up.");
+          }
+
           clientState.lobby.players = lobby.players;
           clientState.lobby.id = lobby.id;
           clientState.inGame = lobby.lobbyStatus === "IN_PROGRESS";
@@ -354,6 +372,8 @@ webSocket.onmessage = function (event) {
             row.appendChild(cell);
             playerTableBody.appendChild(row);
           });
+
+          // check players ready == playerCount and in progress
         }
 
         if (data.data.id == 3) {
@@ -632,6 +652,11 @@ const createLobby = () => {
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
+  // prompt for username
+  if (clientState.username == "") {
+    document.getElementById("usernamePrompt").style.display = "block";
+  }
+
   showLobbyList();
 
   if (!clientState.gameStarted) {
@@ -661,6 +686,44 @@ document.addEventListener("DOMContentLoaded", function () {
       setUsername();
     });
 
+  document.getElementById("readyButton").addEventListener("click", function () {
+    if (document.getElementById("readyButton").textContent === "Ready") {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 4,
+              data: {
+                id: clientState.lobby.id,
+                status: "READY",
+              },
+            },
+          },
+        ])
+      );
+      document.getElementById("readyButton").textContent = "Unready";
+    } else {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 5,
+              data: {
+                id: clientState.lobby.id,
+                status: "UNREADY",
+              },
+            },
+          },
+        ])
+      );
+      document.getElementById("readyButton").textContent = "Ready";
+    }
+  });
+
   document.getElementById("startButton").addEventListener("click", function () {
     console.log("start button clicked.");
     send(
@@ -677,17 +740,6 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       ])
     );
-
-    // hide the lobby list
-    showPlayerList();
-    widgets.playerList.style.display = "none";
-
-    clientState.inGame = true;
-
-    // show the word grid
-    document.getElementById("wordGrid").style.display = "block";
-
-    populateGrid();
   });
 
   document

@@ -227,6 +227,20 @@ public class WSServer extends WebSocketServer {
 
                     }
 
+                    if (subId == 4) {
+                        // ready
+                        String lobbyID = subData.get("data").getAsJsonObject().get("id").getAsString();
+                        Lobby lobby = ctx.searchID(lobbyID);
+                        Player player = ctx.getPlayerByConn(conn);
+                        String readyStatus = subData.get("data").getAsJsonObject().get("status").getAsString();
+                        if (readyStatus.equals("READY")) {
+                            lobby.setPlayerReady(player);
+                        } else {
+                            lobby.setPlayerUnready(player);
+                        }
+
+                    }
+
                     if (subId == 2) {
                         // start game
                         String lobbyID = subData.get("data").getAsJsonObject().get("id").getAsString();
