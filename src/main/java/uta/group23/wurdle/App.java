@@ -14,11 +14,13 @@ public class App {
     public static void main(String[] args) {
 
         Context ctx = new Context();
-        HTTPServer server = new HTTPServer(9023, ctx);
+        Integer httpPort = Integer.parseInt(System.getenv("HTTP_PORT"));
+        HTTPServer httpServer = new HTTPServer(httpPort, ctx);
 
         try {
             // port 9123
-            WSServer socketServer = new WSServer("127.0.0.1", new InetSocketAddress(9123), ctx);
+            String wsPort = System.getenv("WEBSOCKET_PORT");
+            WSServer socketServer = new WSServer("127.0.0.1", new InetSocketAddress(Integer.parseInt(wsPort)), ctx);
             socketServer.setReuseAddr(true);
             socketServer.start();
 
