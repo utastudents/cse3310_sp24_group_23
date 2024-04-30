@@ -34,6 +34,10 @@ public class GridTest {
         gen.setWordList("src/words.txt");
         gen.generateGrid(l.getGame().getGrid());
 
+        float density = l.getGame().getGrid().getDensity();
+
+        assert (density > 0.65);
+
         assert (l.getGame().getGrid().getWords().size() > 0);
     }
 
