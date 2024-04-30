@@ -47,6 +47,8 @@ public class Grid {
                 cc.addProperty("letter", cell.getLetter());
                 cc.addProperty("claimId", cell.getClaimId());
                 cc.addProperty("isClaimed", cell.getIsClaimed());
+                cc.addProperty("isHighlighted", cell.getIsHighlighted());
+                cc.addProperty("selectorID", cell.getSelectorID());
                 row.add(cc);
             }
             gridData.add(row);
@@ -111,6 +113,11 @@ public class Grid {
 
     public void claimCell(int x, int y, String playerId) {
         grid[x][y].setClaimId(playerId);
+    }
+
+    public void highlightCell(int i, int j, boolean b) {
+        // TODO Auto-generated method stub
+        grid[i][j].setIsHighlighted(b);
     }
 
 }

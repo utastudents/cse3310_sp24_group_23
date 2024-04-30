@@ -42,6 +42,8 @@ this.clientState = {
     name: "",
     owner: "",
     players: [],
+    readyCount: 0,
+    playerCount: 0,
   },
 
   username: "",
@@ -110,6 +112,22 @@ document
     }
   });
 
+const buildGridBase = () => {
+  const table = document.getElementById("wordGridTable");
+  table.style.width = "70%";
+  table.style.height = "70%";
+  const tbody = table.querySelector("tbody");
+  for (let i = 0; i < 20; i++) {
+    let row = document.createElement("tr");
+    for (let j = 0; j < 20; j++) {
+      let cell = document.createElement("td");
+      cell.textContent = " ";
+      row.appendChild(cell);
+    }
+    tbody.appendChild(row);
+  }
+};
+
 const sendToast = (message) => {
   Toastify({
     text: message,
@@ -175,7 +193,7 @@ webSocket.onmessage = function (event) {
 
   if (!clientState.inLobby) {
     document.getElementById("wordGrid").style.display = "none";
-    document.getElementById("playerListHorizontal").style.display = "none";
+    //document.getElementById("playerListHorizontal").style.display = "none";
   }
 
   const message = JSON.parse(event.data);
@@ -186,7 +204,7 @@ webSocket.onmessage = function (event) {
   if (message[0] == "data") {
     // message[1] is the data object
     const data = message[1];
-    console.log(data.id);
+
     switch (data.id) {
       // get the type of data were parsing
       case 1:
@@ -211,6 +229,16 @@ webSocket.onmessage = function (event) {
         // ["data",{"id":11,"data": {"id":0,"data":[{"lobbyName":"sfs","lobbyStatus":"WAITING","playerCount":1,"id":"e82cfd8e-b917-4bab-a27a-260346c03339","ownerID":"247bb7d4-7262-4a42-989b-44fd6c5856d7","ownerName":"person"}]}}]
         // 0 public lobby list
         // 1 private lobby information
+        if (data.data.id == 7) {
+          // game started
+          clientState.gameStarted = true;
+          sendToast("Game started.");
+
+          // show the word grid
+          // create a word grid
+
+          buildGridBase();
+        }
         if (data.data.id == 0) {
           // update lobby list
           const lobbyList = data.data.data;
@@ -292,68 +320,18 @@ webSocket.onmessage = function (event) {
         }
 
         if (data.data.id == 1) {
-          /*
-          [
-  "data",
-  {
-    "id": 11,
-    "data": {
-      "id": 1,
-      "data": {
-        "lobbyName": "hello",
-        "lobbyStatus": "IN_PROGRESS",
-        "playerCount": 2,
-        "id": "7d21db73-2a46-4b94-b8e0-f18fdc08faf4",
-        "ownerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
-        "password": "",
-        "players": [
-          {
-            "nickname": "93346552-a1ad-4cd3-ab34-11b402d98d9f",
-            "playerID": "ba3ceb38-2b0a-417b-a6d0-53593b1c48d2",
-            "score": 0
-          },
-          {
-            "nickname": "orange",
-            "playerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
-            "score": 0
-          }
-        ]
-      }
-    }
-  }
-]   
-          */
           // update private lobby information
-
-          // lobby update private
           const lobby = data.data.data;
 
-          if (
-            lobby.lobbyStatus === "WAITING" &&
-            lobby.playerCount == lobby.readyCount
-          ) {
-            // hide the lobby list
-            showPlayerList();
-            widgets.playerList.style.display = "none";
-
-            clientState.inGame = true;
-
-            // show the word grid
-            document.getElementById("wordGrid").style.display = "block";
-
-            populateGrid();
-          } else {
-            sendToast("Waiting for players to ready up.");
-          }
+          clientState.lobby.players = lobby.players;
+          clientState.lobby.playerCount = lobby.playerCount;
+          clientState.lobby.readyCount = lobby.readyCount;
 
           clientState.lobby.players = lobby.players;
           clientState.lobby.id = lobby.id;
           clientState.inGame = lobby.lobbyStatus === "IN_PROGRESS";
 
           // show word grid
-          if (clientState.inGame) {
-            document.getElementById("wordGrid").style.display = "block";
-          }
 
           document.getElementById("lobbyName").textContent =
             "Lobby Name: " + lobby.lobbyName;
@@ -367,7 +345,7 @@ webSocket.onmessage = function (event) {
           lobby.players.forEach((player) => {
             let row = document.createElement("tr");
             let cell = document.createElement("td");
-            console.log(cell);
+
             cell.textContent = player.nickname;
             row.appendChild(cell);
             playerTableBody.appendChild(row);
@@ -388,8 +366,13 @@ webSocket.onmessage = function (event) {
           const tbody = document
             .getElementById("wordGridTable")
             .querySelector("tbody");
-          tbody.innerHTML = "";
+
           populateGrid(grid);
+
+          // show the word grid
+          document.getElementById("wordGrid").style.display = "block";
+          widgets.lobbyList.style.display = "none";
+          document.getElementById("playerList").style.display = "none";
         }
         break;
 
@@ -466,7 +449,7 @@ const addMessage = (username, message, timestamp) => {
 
 const showPlayerList = () => {
   document.querySelector("#playerList").style.display = "block";
-  document.querySelector(".lobby-list").style.display = "none";
+  //document.querySelector(".lobby-list").style.display = "none";
 };
 
 const showLobbyList = () => {
@@ -484,7 +467,30 @@ const populateGrid = (chars) => {
 
   let isMouseDown = false;
   let startX, startY;
-  let coords = [];
+  let coords = new Set();
+
+  function broadcastLastCell(highlighted) {
+    const lastCell = coords[coords.length - 1]; // Get the last cell from the coords array
+
+    const message = JSON.stringify([
+      "data",
+      {
+        id: 12,
+        data: {
+          id: 6,
+          data: {
+            coords: [lastCell], // Broadcast only the last cell
+            lobbyID: clientState.lobby.id,
+            highlighted: highlighted, // Add a flag to indicate if it's highlighted or unhighlighted
+            id: clientState.uuid,
+          },
+        },
+      },
+    ]);
+
+    // Here, you need to send the message to the server
+    send(message);
+  }
 
   function startDragging(event) {
     isMouseDown = true;
@@ -500,6 +506,7 @@ const populateGrid = (chars) => {
   function dragOverCell(event) {
     if (isMouseDown) {
       const cell = event.target;
+      broadcastLastCell(true);
       const endX = parseInt(cell.id.split("-")[1]);
       const endY = parseInt(cell.id.split("-")[2]);
       if (
@@ -517,6 +524,31 @@ const populateGrid = (chars) => {
   function stopDragging() {
     isMouseDown = false;
     sendCoordsToServer(coords);
+    unhighlightAllCells();
+
+    // unhighlight all cells on server
+    // for every cell in coords, unhighlight, then clear coords
+
+    for (let i = 0; i < coords.length; i++) {
+      const message = JSON.stringify([
+        "data",
+        {
+          id: 12,
+          data: {
+            id: 6,
+            data: {
+              coords: [coords[i]], // Broadcast only the last cell
+              lobbyID: clientState.lobby.id,
+              highlighted: false, // Add a flag to indicate if it's highlighted or unhighlighted
+              id: clientState.uuid,
+            },
+          },
+        },
+      ]);
+
+      // Here, you need to send the message to the server
+      send(message);
+    }
   }
 
   function disableCell(cell) {
@@ -586,33 +618,54 @@ const populateGrid = (chars) => {
     console.log("Sending message to server:", message);
 
     send(message);
-
-    // clear the table html so that we can update it with the new data
-    tbody.innerHTML = "";
+    coords = [];
   }
 
-  // Create the grid
-  for (let i = 0; i < 20; i++) {
-    let row = document.createElement("tr");
-    for (let j = 0; j < 20; j++) {
-      let cell = document.createElement("td");
-      // [{"claimId":"","letter":"B","isClaimed":false}, ...] 2d array
-      const cellData = chars[i][j];
-      const claimed = cellData.isClaimed;
-      cell.textContent = cellData.letter;
+  // Modify the grid cells
+  // table already created when game started
+  const cells = tbody.querySelectorAll("td");
+  let i = 0;
+  for (let row = 0; row < 20; row++) {
+    for (let col = 0; col < 20; col++) {
+      const cell = cells[i];
+      const char = chars[row][col];
+      cell.textContent = char.letter;
 
-      // disable the cell if it is claimed
-      if (claimed) {
+      // make sure ours is yellow, only others will be another color
+      if (char.isHighlighted && char.selectorID !== clientState.uuid) {
+        cell.style.backgroundColor = "blue";
+      }
+
+      if (!char.isHighlighted) {
+        cell.style.backgroundColor = "";
+      }
+
+      if (char.isClaimed) {
         disableCell(cell);
       }
-      cell.id = `cell-${i}-${j}`;
-      cell.addEventListener("mousedown", startDragging);
-      cell.addEventListener("mouseover", dragOverCell);
-      cell.addEventListener("mouseup", stopDragging);
-      row.appendChild(cell);
+
+      cell.id = `cell-${row}-${col}`;
+
+      // only add event listener if cell does not have an event listenr
+      if (!cell.hasEventListener) {
+        cell.addEventListener("mousedown", startDragging);
+        cell.addEventListener("mouseover", dragOverCell);
+        cell.addEventListener("mouseup", stopDragging);
+        cell.hasEventListener = true;
+      }
+      i++;
     }
-    tbody.appendChild(row);
   }
+};
+
+const debounce = (func, delay) => {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
 };
 
 const createLobby = () => {
@@ -652,9 +705,12 @@ const createLobby = () => {
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
-  // prompt for username
+  // ask for username by showing alert
+
   if (clientState.username == "") {
-    document.getElementById("usernamePrompt").style.display = "block";
+    username = prompt("Please enter a username.");
+    clientState.username = username;
+    localStorage.setItem("username", username);
   }
 
   showLobbyList();
@@ -664,22 +720,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById("wordGrid").style.display = "some";
   }
 
-  // set wordGrid to 50x50 grid
-
-  let table = document.createElement("table");
-  for (let i = 0; i < 50; i++) {
-    let row = document.createElement("tr");
-    for (let j = 0; j < 50; j++) {
-      let cell = document.createElement("td");
-      cell.textContent = " ";
-      row.appendChild(cell);
-    }
-    table.appendChild(row);
-  }
-
-  // wipe the word grid
-  document.getElementById("wordGrid").appendChild(table);
-
   document
     .getElementById("updateUsernameButton")
     .addEventListener("click", function () {
@@ -687,6 +727,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   document.getElementById("readyButton").addEventListener("click", function () {
+    document.getElementById("readyButton").textContent === "Ready"
+      ? (document.getElementById("readyButton").textContent = "Unready")
+      : (document.getElementById("readyButton").textContent = "Ready");
     if (document.getElementById("readyButton").textContent === "Ready") {
       send(
         JSON.stringify([
@@ -703,7 +746,6 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         ])
       );
-      document.getElementById("readyButton").textContent = "Unready";
     } else {
       send(
         JSON.stringify([
@@ -720,26 +762,30 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         ])
       );
-      document.getElementById("readyButton").textContent = "Ready";
     }
   });
 
   document.getElementById("startButton").addEventListener("click", function () {
-    console.log("start button clicked.");
-    send(
-      JSON.stringify([
-        "data",
-        {
-          id: 12,
-          data: {
-            id: 2,
+    if (clientState.lobby.readyCount < clientState.lobby.playerCount) {
+      sendToast("Need all players to be ready.");
+      return;
+    }
+
+    if (clientState.lobby)
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
             data: {
-              id: clientState.lobby.id,
+              id: 2,
+              data: {
+                id: clientState.lobby.id,
+              },
             },
           },
-        },
-      ])
-    );
+        ])
+      );
   });
 
   document
@@ -886,7 +932,14 @@ document.getElementById("joinButton").addEventListener("click", function () {
     clientState.inLobby = true;
 
     // Hide the lobby list and show the player list
-    showPlayerList();
+    //showPlayerList();
+    document.getElementById("playerList").style.display = "block";
+    document.querySelector("#playerListHorizontal").style.display = "block";
+
+    // if not lobby owner, don't show the start button
+    if (clientState.lobby.owner !== clientState.uuid) {
+      document.getElementById("startButton").style.display = "none";
+    }
 
     // ...
   } else {

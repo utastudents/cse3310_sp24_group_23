@@ -77,9 +77,10 @@ public class WSServer extends WebSocketServer {
 
         }
 
-        if (j.get(0).getAsString().equals("leave")) { // leave lobby
-
-            ctx.leaveLobby(conn);
+        if (j.get(0).getAsString().equals("leave")) {
+            System.out.println("Leaving lobby");
+            String id = ctx.getPlayerByConn(conn).getplayerId();
+            ctx.leaveLobby(id);
             broadCastLobbyList();
         }
 
@@ -173,6 +174,52 @@ public class WSServer extends WebSocketServer {
                         broadCastLobbyList();
                     }
 
+                    if (subId == 6) {
+                        // highlight or unhighlight selected cell
+                        // single coord pair
+                        // ["data",{"id":12,"data":{"id":6,"data":{"coords":[7,6], highlight: true,
+                        // lobbyID:}}}]
+
+                        System.out.println("Highlighting cell");
+                        ArrayList<int[]> selectedCells = new ArrayList<>();
+                        // construct coords array
+                        String coords = subData.get("data").getAsJsonObject().get("coords").toString();
+
+                        System.out.println("Selected cells: " + coords);
+
+                        // update grid and broadcast to all players
+                        String lobbyID = subData.get("data").getAsJsonObject().get("lobbyID").getAsString();
+                        Player player = ctx.getPlayerByConn(conn);
+
+                        Lobby lobby = ctx.searchID(lobbyID);
+
+                        // construct selected cells
+                        JsonArray cellArray = JsonParser.parseString(coords).getAsJsonArray();
+                        for (int i = 0; i < cellArray.size(); i++) {
+                            System.out.println(cellArray.get(i));
+                            JsonArray cell = cellArray.get(i).getAsJsonArray();
+                            int[] cellCoords = { cell.get(0).getAsInt(), cell.get(1).getAsInt() };
+                            selectedCells.add(cellCoords);
+                            Boolean isHighlighted = subData.get("data").getAsJsonObject().get("highlighted")
+                                    .getAsBoolean();
+                            lobby.getGame().getGrid().highlightCell(cellCoords[0], cellCoords[1],
+                                    isHighlighted);
+
+                            System.out.println("Highlighting cell: " + cellCoords[0] + ", " + cellCoords[1]);
+
+                            // set selectorID
+                            lobby.getGame().getGrid().getCell(cellCoords[0], cellCoords[1])
+                                    .setSelectorID(player.getplayerId());
+                        }
+
+                        // broadcast updated grid to all players
+                        for (Player p : lobby.getPlayers()) {
+                            String gridData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":3,\"data\":"
+                                    + lobby.getGame().getGrid().gridDataJson() + "}}]";
+                            p.getConn().send(gridData);
+                        }
+                    }
+
                     if (subId == 5) {
                         // receiving word data
                         // "coords": [[0,0],[0,1],[0,2] ...
@@ -182,13 +229,11 @@ public class WSServer extends WebSocketServer {
                          * 10],[7,11],[7,12],[7,13]],"lobbyID":"9d945fb8-9ac1-452d-8d3b-74658571dd89"}}}
                          * ]
                          */
-                        System.out.println("Checking word -1");
+
                         ArrayList<int[]> selectedCells = new ArrayList<>();
-                        System.out.println("Checking word");
+
                         // construct coords array
                         String coords = subData.get("data").getAsJsonObject().get("coords").toString();
-
-                        System.out.println("Selected cells: " + coords);
 
                         String lobbyID = subData.get("data").getAsJsonObject().get("lobbyID").getAsString();
                         Player player = ctx.getPlayerByConn(conn);
@@ -205,8 +250,6 @@ public class WSServer extends WebSocketServer {
                             selectedCells.add(cellCoords);
                         }
 
-                        System.out.println("Selected cells: " + selectedCells);
-
                         // check word
                         lobby.getGame().checkWord(player, selectedCells);
 
@@ -216,10 +259,7 @@ public class WSServer extends WebSocketServer {
                                     + "{\"id\":\"" + player.getplayerId() + "\",\"score\":\""
                                     + player.getScore() + "\"}}}]";
                             p.getConn().send(scoreData);
-                        }
 
-                        // broadcast updated grid to all players
-                        for (Player p : lobby.getPlayers()) {
                             String gridData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":3,\"data\":"
                                     + lobby.getGame().getGrid().gridDataJson() + "}}]";
                             p.getConn().send(gridData);
@@ -239,6 +279,14 @@ public class WSServer extends WebSocketServer {
                             lobby.setPlayerUnready(player);
                         }
 
+                        // broadcast lobby information
+                        for (Player p : lobby.getPlayers()) {
+                            String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
+                                    + lobby.toJsonObjectPrivate().toString() + "}}]";
+
+                            p.getConn().send(lobbyData);
+                        }
+
                     }
 
                     if (subId == 2) {
@@ -249,37 +297,25 @@ public class WSServer extends WebSocketServer {
                             lobby.startGame();
                             Game game = lobby.getGame();
 
-                            // print grid
-                            for (int i = 0; i < game.getGrid().getWidth(); i++) {
-                                for (int p = 0; p < game.getGrid().getHeight(); p++) {
-                                    System.out.print(game.getGrid().getCell(i, p).getLetter() + " ");
-                                }
-                                System.out.println();
-                            }
-
-                            // broadcast grid data to all players
-                            // request type: 11, subId: 3 -> grid data
-                            System.out.println("printing letter");
-
-                            System.out.println(lobby.getGame().getGrid().getCell(0, 0).getLetter());
-
                             // broadcast lobby information
                             for (Player p : lobby.getPlayers()) {
                                 String lobbyData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":1,\"data\":"
                                         + lobby.toJsonObjectPrivate().toString() + "}}]";
 
-                                System.out.println(lobbyData);
                                 p.getConn().send(lobbyData);
-                            }
 
-                            for (Player p : lobby.getPlayers()) {
+                                String gameStartData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":7}}]";
+
+                                p.getConn().send(gameStartData);
+
                                 String gridData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":3,\"data\":"
-                                        + lobby.getGame().getGrid().gridDataJson() + "}}]";
+                                        + game.getGrid().gridDataJson() + "}}]";
+
                                 p.getConn().send(gridData);
                             }
 
                         } catch (IOException e) {
-                            System.out.println("Error starting game");
+
                             e.printStackTrace();
                         }
 
@@ -406,8 +442,9 @@ public class WSServer extends WebSocketServer {
         ctx.addMessage("System", "Player '" + ctx.getPlayerByConn(conn).getNickname() + "' has disconnected");
         // last message as json
         broadcast(ctx.getMessageBoard());
+        String id = ctx.getPlayerByConn(conn).getplayerId();
 
-        ctx.removePlayer(conn);
+        ctx.removePlayer(id);
         System.out.println("Client count: " + ctx.getPlayerSize());
 
         broadCastLobbyList();
