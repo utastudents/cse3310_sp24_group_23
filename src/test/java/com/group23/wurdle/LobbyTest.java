@@ -21,7 +21,7 @@ public class LobbyTest {
         host = new Player("Host", Colour.Blue);
         player1 = new Player("Player1", Colour.Red);
         player2 = new Player("Player2", Colour.Green);
-        lobby = new Lobby("Test Lobby", "001", Status.WAITING, 0, Mode.Point, "securePass", 10, host);
+        lobby = new Lobby("Test Lobby", "001", Status.WAITING, 0, Mode.Point, "securePass", 4, host);
         lobbyList = new LobbyList();
         lobbyList.addLobby(lobby, host, null);
     }

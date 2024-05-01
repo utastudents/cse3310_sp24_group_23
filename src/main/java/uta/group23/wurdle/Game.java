@@ -2,6 +2,7 @@ package uta.group23.wurdle;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.models.Player;
@@ -36,17 +37,17 @@ public class Game {
     public void updateTimer() {
     }
 
-    // check coords
-    public void checkWord(Player player, ArrayList<int[]> selectedCells) {
+    
+    public void checkWord(Player player, List<int[]> path) {
         // check is at least 3 cells are selected
-        if (selectedCells.size() < 3) {
+        if (path.size() < 3) {
             return;
         }
 
         String constructedWord = "";
-        for (int i = 0; i < selectedCells.size(); i++) {
+        for (int i = 0; i < path.size(); i++) {
             // get the letter from the cell
-            char letter = grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).getLetter();
+            char letter = grid.getCell(path.get(i)[0], path.get(i)[1]).getLetter();
             constructedWord += letter;
             // add the letter to the constructed word
         }
@@ -62,7 +63,7 @@ public class Game {
         int lengthmultiplier = 2;
         int score = selectedCells.length * lengthmultiplier;
 
-        // get players current score and add on the score for the word found
+        // get players current scscore and add on the score for the word found
         int currentScore = player.getScore();
         player.setScore(currentScore + score);
     }
@@ -92,6 +93,11 @@ public class Game {
             // Increment consecHints
             player.incrementConsecHints();
         }
+    }
+
+    public void completeWord(Player player1, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'completeWord'");
     }
 
 }
