@@ -82,7 +82,7 @@ public class LobbyTest {
         for (int i = 0; i < 10; i++) {  
             lobby.addPlayer(new Player("Player" + i, Colour.Yellow));
         }
-        Player newPlayer = new Player("Latecomer", Colour.Purple);
+        Player newPlayer = new Player("Late", Colour.Purple);
         lobby.addPlayer(newPlayer);
         assertFalse(lobby.getPlayers().contains(newPlayer));
     }
