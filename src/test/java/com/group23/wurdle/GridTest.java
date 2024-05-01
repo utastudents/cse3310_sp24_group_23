@@ -1,10 +1,12 @@
 package com.group23.wurdle;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import uta.group23.wurdle.Game;
 import uta.group23.wurdle.grid.Cell;
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.grid.GridGen;
@@ -159,6 +161,39 @@ public class GridTest {
 
         assertTrue(end - start < 1000);
 
+    }
+
+    @Test
+    public void testInitialGridDensity() {
+        Game game = new Game();
+        Grid grid = game.getGrid();
+
+        float density = grid.getDensity();
+
+        assertTrue(density <= 0.67);
+    }
+
+    @Test
+    public void testGridSquare() {
+        Game game = new Game();
+        Grid grid = game.getGrid();
+
+        int width = grid.getWidth();
+        int height = grid.getHeight();
+
+        assertTrue("Grid should be square in shape", width == height);
+    }
+
+    @Test
+    public void testGridSize() {
+        Game game = new Game();
+        Grid grid = game.getGrid();
+
+        int width = grid.getWidth();
+        int height = grid.getHeight();
+
+        assertEquals("Grid width should be 20", 20, width);
+        assertEquals("Grid height should be 20", 20, height);
     }
 
 }
