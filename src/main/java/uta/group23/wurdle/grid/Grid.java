@@ -3,6 +3,7 @@ package uta.group23.wurdle.grid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.HashSet;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -15,6 +16,7 @@ public class Grid {
     private Cell[][] grid;
     private float density;
     private HashMap<String, Direction> words = new HashMap<>();
+    private HashSet<String> foundWords = new HashSet<>();
 
     public Grid(int width, int height) {
         this.width = width;
@@ -27,6 +29,10 @@ public class Grid {
                 grid[i][j] = new Cell();
             }
         }
+    }
+
+    public void addFoundWord(String word) {
+        foundWords.add(word);
     }
 
     public String gridDataJson() {
@@ -49,6 +55,7 @@ public class Grid {
                 cc.addProperty("isClaimed", cell.getIsClaimed());
                 cc.addProperty("isHighlighted", cell.getIsHighlighted());
                 cc.addProperty("selectorID", cell.getSelectorID());
+
                 row.add(cc);
             }
             gridData.add(row);
@@ -118,6 +125,10 @@ public class Grid {
     public void highlightCell(int i, int j, boolean b) {
         // TODO Auto-generated method stub
         grid[i][j].setIsHighlighted(b);
+    }
+
+    public HashSet<String> getFoundWords() {
+        return foundWords;
     }
 
 }

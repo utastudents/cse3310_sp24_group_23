@@ -3,6 +3,7 @@ package uta.group23.wurdle.socket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.java_websocket.WebSocket;
 
@@ -68,9 +69,11 @@ public class Lobby {
     }
 
     private void checkFull() {
-        if (playerCount == playerCap) {
-            lobbyStatus = Status.IN_PROGRESS;
-        }
+        /*
+         * if (playerCount == playerCap) {
+         * lobbyStatus = Status.IN_PROGRESS;
+         * }
+         */
     }
 
     public void addPlayer(Player player) {
@@ -115,6 +118,7 @@ public class Lobby {
 
     public void startGame() throws IOException {
         // populate grid with words
+        lobbyStatus = Status.IN_PROGRESS;
 
         GridGen gridGen = new GridGen(); // grid generator helper object
         String staticPath = "./html/";
@@ -173,15 +177,22 @@ public class Lobby {
         jsonObject.addProperty("password", password);
         jsonObject.addProperty("lobbyMode", lobbyMode.toString());
         jsonObject.addProperty("readyCount", readyPlayers.size());
-        if (lobbyStatus == Status.IN_PROGRESS) {
-            // wordlist
-            JsonArray wordList = new JsonArray();
-            for (String word : game.getGrid().getWords().keySet()) {
-                wordList.add(word);
-            }
 
-            jsonObject.add("wordList", wordList);
-        }
+        /*
+         * if (lobbyStatus == Status.IN_PROGRESS) {
+         * // wordlist
+         * JsonArray words = new JsonArray();
+         * 
+         * for (String word : game.getWords().keySet()) {
+         * JsonObject wordObj = new JsonObject();
+         * wordObj.addProperty("word", word);
+         * wordObj.addProperty("found", game.getWords().get(word));
+         * words.add(wordObj);
+         * }
+         * 
+         * jsonObject.add("words", words);
+         * }
+         */
 
         jsonObject.add("players", playersList);
         return jsonObject;

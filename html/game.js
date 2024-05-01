@@ -114,8 +114,8 @@ document
 
 const buildGridBase = () => {
   const table = document.getElementById("wordGridTable");
-  table.style.width = "70%";
-  table.style.height = "70%";
+  table.style.width = "400px";
+  table.style.height = "400px";
   const tbody = table.querySelector("tbody");
   for (let i = 0; i < 20; i++) {
     let row = document.createElement("tr");
@@ -211,6 +211,8 @@ webSocket.onmessage = function (event) {
         // add player
         clientState.uuid = data.data.id;
 
+        // hide playerlist
+
         if (localStorage.getItem("username") != null) {
           send(
             JSON.stringify([
@@ -230,13 +232,61 @@ webSocket.onmessage = function (event) {
         // 0 public lobby list
         // 1 private lobby information
 
+        if (data.data.id == 4) {
+          // wordlist info
+          /*
+        public String getWordListJson() {
+        JsonObject wordList = new JsonObject();
+        wordList.addProperty("words", grid.getWords().keySet().toString());
+        wordList.addProperty("foundWords", grid.getFoundWords().toString());
+        return wordList.toString();
+    }
+          */
+
+          const wordListData = data.data.data;
+
+          let wordListElement = document.getElementById("wordList");
+          wordListElement.innerHTML = "";
+
+          let wordListHeader = document.createElement("h3");
+          wordListHeader.textContent = "Word List";
+          wordListElement.appendChild(wordListHeader);
+
+          let wordListItems = document.createElement("div");
+          wordListItems.className = "word-column";
+
+          let words = wordListData.words;
+          let foundWordsSet = new Set(wordListData.foundWords);
+
+          words.forEach((word, index) => {
+            if (index > 0 && index % 10 === 0) {
+              wordListElement.appendChild(wordListItems);
+              wordListItems = document.createElement("div");
+              wordListItems.className = "word-column";
+            }
+
+            let span = document.createElement("span");
+            span.textContent = word;
+            span.style.marginRight = "10px"; // Adjust the margin as needed
+            if (foundWordsSet.has(word)) {
+              span.style.textDecoration = "line-through";
+            }
+            wordListItems.appendChild(span);
+          });
+
+          wordListElement.appendChild(wordListItems);
+
+          // Show the word list container
+          document.getElementById("wordListContainer").style.display = "block";
+        }
+
         if (data.data.id == 8) {
           // username rejected
           sendToast("Username already taken.");
 
           // ask for username again
           clientState.username = "";
-          username = prompt("Please enter a username.");
+          username = prompt("Please enter a unique username.");
           send(
             JSON.stringify([
               "join",
@@ -253,7 +303,9 @@ webSocket.onmessage = function (event) {
         if (data.data.id == 9) {
           // username accepted
           clientState.username = data.data.data.username;
-          sendToast("Username updated to " + clientState.username);
+          if (clientState.username != "") {
+            sendToast("Username updated to " + clientState.username);
+          }
         }
 
         if (data.data.id == 7) {
@@ -358,6 +410,12 @@ webSocket.onmessage = function (event) {
           clientState.lobby.id = lobby.id;
           clientState.inGame = lobby.lobbyStatus === "IN_PROGRESS";
 
+          // show the player list
+          // if status is waiting, show player list
+
+          if (lobby.lobbyStatus === "WAITING") {
+            showPlayerList();
+          }
           // show word grid
 
           document.getElementById("lobbyName").textContent =
@@ -413,16 +471,6 @@ webSocket.onmessage = function (event) {
     }
   }
 
-  if (message.type == "usernameQuery") {
-    //const username = document.getElementById("new-username").value;
-    if (message.accepted) {
-      localStorage.setItem("username", clientState.username);
-      sendToast("Username updated to " + clientState.username);
-    } else {
-      sendToast("Username already taken.");
-      localStorage.setItem("username", "");
-    }
-  }
   /* 
   if (message.type == "lobbyUpdate") {
     const playerTable = document.getElementById("playerListHorizontal");
@@ -488,8 +536,7 @@ const showLobbyList = () => {
 const populateGrid = (chars) => {
   // chars -> "{\"claimId\":\"\",\"letter\":\"B\",\"isClaimed\":false}"
   const table = document.getElementById("wordGridTable");
-  table.style.width = "70%";
-  table.style.height = "70%";
+
   const tbody = table.querySelector("tbody");
 
   let isMouseDown = false;
@@ -660,15 +707,19 @@ const populateGrid = (chars) => {
 
       // make sure ours is yellow, only others will be another color
       if (char.isHighlighted && char.selectorID !== clientState.uuid) {
-        cell.style.backgroundColor = "blue";
+        // set cell highlight in a way that is nice on the eyes//
+        cell.style.backgroundColor = "lightblue";
       }
 
-      if (!char.isHighlighted) {
-        cell.style.backgroundColor = "";
-      }
-
+      /* 
       if (char.isClaimed) {
         disableCell(cell);
+      }
+      */
+
+      // instead of disabling cell, we can just cross it out
+      if (char.isClaimed) {
+        cell.style.textDecoration = "line-through";
       }
 
       cell.id = `cell-${row}-${col}`;
@@ -763,10 +814,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   document.getElementById("readyButton").addEventListener("click", function () {
-    document.getElementById("readyButton").textContent === "Ready"
+    document.getElementById("readyButton").textContent.trim() === "Ready"
       ? (document.getElementById("readyButton").textContent = "Unready")
       : (document.getElementById("readyButton").textContent = "Ready");
-    if (document.getElementById("readyButton").textContent === "Ready") {
+    if (document.getElementById("readyButton").textContent.trim() === "Ready") {
       send(
         JSON.stringify([
           "data",
