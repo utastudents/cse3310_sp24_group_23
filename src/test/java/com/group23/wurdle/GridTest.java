@@ -161,4 +161,46 @@ public class GridTest {
 
     }
 
+    
+    @Test
+    public void testWordExistsHorizontal() {
+        // Create a new grid
+        Grid grid = new Grid(5, 5);
+        // Create a GridGen object
+        GridGen generator = new GridGen();
+        generator.addWordToGrid("TEST", grid);
+        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists horizontally in the grid
+    }
+
+    @Test
+    public void testWordExistsVertical() {
+        // Create a new grid
+        Grid grid = new Grid(5, 5);
+        // Create a GridGen object
+        GridGen generator = new GridGen();
+        generator.addWordToGrid("TEST", grid);
+        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists vertically in the grid
+    }
+
+    @Test
+    public void testWordExistsDiagonalUp() {
+        // Create a new grid
+        Grid grid = new Grid(5, 5);
+        // Create a GridGen object
+        GridGen generator = new GridGen();
+        generator.addWordToGrid("TEST", grid);
+        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists diagonally up in the grid
+    }
+
+    @Test
+    public void testWordExistsDiagonalDown() {
+        // Create a new grid
+        Grid grid = new Grid(5, 5);
+        // Create a GridGen object
+        GridGen generator = new GridGen();
+        generator.addWordToGrid("TEST", grid);
+        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists diagonally down in the grid
+    }
+
+
 }
