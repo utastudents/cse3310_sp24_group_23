@@ -223,7 +223,7 @@ public class GridTest {
         // Create a GridGen object
         GridGen generator = new GridGen();
         generator.addWordToGrid("TEST", grid);
-        assertTrue(GridGen.wordExists("TEST", grid));
+        assertTrue(GridGen.wordExists("TEST", grid));  // Verify if the word "TEST" exists diagonally up in the grid
     }
 
     @Test
