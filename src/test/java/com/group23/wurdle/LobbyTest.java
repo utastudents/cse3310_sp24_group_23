@@ -59,8 +59,8 @@ public class LobbyTest {
 
     @Test
     public void testChangeMaxPlayers() {
-        lobby.setPlayerCap(15);  
-        assertEquals("Player capacity should update correctly.", 15, lobby.getPlayerCap());  
+        lobby.setPlayerCap(4);  
+        assertEquals("Player capacity should update correctly.", 4, lobby.getPlayerCap());  
     }
 
 
