@@ -1,10 +1,14 @@
-package uta.group23.wurdle.socket;
+package com.group23.wurdle;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import uta.group23.wurdle.models.Player;
+import uta.group23.wurdle.socket.Lobby;
+import uta.group23.wurdle.socket.LobbyList;
+import uta.group23.wurdle.socket.Mode;
+import uta.group23.wurdle.socket.Status;
 import uta.group23.wurdle.models.Colour;
 
 public class LobbyTest {
