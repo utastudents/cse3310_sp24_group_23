@@ -15,23 +15,15 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 
-
-
 public class GridGen {
     private File wordList;
     private int density;
-
-    enum Direction {
-        Horizontal,
-        Vertical,
-        DiagonalUp,
-        DiagonalDown
-    }
 
     enum OperationMode {
         Forward,
         Backward
     }
+
     private OperationMode op;
 
     public GridGen(String wordList) {
@@ -46,7 +38,7 @@ public class GridGen {
     }
 
     // public int getCellIndex(int x, int y, Grid grid) {
-    //     return x * grid.getWidth() + y;
+    // return x * grid.getWidth() + y;
     // }
 
     public static boolean wordExists(String word, Grid grid) {
@@ -204,7 +196,7 @@ public class GridGen {
             }
 
             // Check if there is an existing letter in the current cell
-            char existingLetter = grid.getCell(currX, currY).letter;
+            char existingLetter = grid.getCell(currX, currY).getLetter();
             if (existingLetter != ' ' && existingLetter != word.charAt(i)) {
                 return false;
             }
@@ -219,8 +211,13 @@ public class GridGen {
         word = word.toUpperCase();
         int maxRetries = 100; // Maximum number of retries to find a valid placement
         int retryCount = 0;
-    
+
         while (retryCount < maxRetries) {
+
+            if (word.length() < 3) {
+                retryCount++;
+                continue;
+            }
             // Get random starting point
             int x = (int) (Math.random() * grid.getHeight());
             int y = (int) (Math.random() * grid.getWidth());
@@ -230,7 +227,7 @@ public class GridGen {
                 retryCount++;
                 continue; // No valid direction found, try again
             }
-    
+
             // Check if word fits in grid
             if (dir == Direction.Horizontal) {
                 if (y + word.length() > grid.getWidth()) {
@@ -269,7 +266,7 @@ public class GridGen {
                     continue;
                 }
             }
-    
+
             // Add word to grid
             for (int i = 0; i < word.length(); i++) {
                 int currX = x;
@@ -284,15 +281,17 @@ public class GridGen {
                     grid.setCell(x + i, y + i, word.charAt(i));
                 }
             }
-            grid.addWord(word, null);
+            grid.addWord(word, dir);
             grid.addCharCount(word.length());
             grid.calculateDensity();
             return; // Word successfully added, return
         }
-    
-        // Note: If the word manages to reach past the retry threshold, then that means it didn't find a valid placement x number of times
+
+        // Note: If the word manages to reach past the retry threshold, then that means
+        // it didn't find a valid placement x number of times
         // Dunno if we wanna keep this implementation of adding a word
-        // If we want, we can choose to skip the word or find a different way to handle it?
+        // If we want, we can choose to skip the word or find a different way to handle
+        // it?
     }
 
     private Direction getRandomDirection(Grid grid, String word) {
@@ -308,7 +307,7 @@ public class GridGen {
         }
         return directions[(int) (Math.random() * maxIndex)];
     }
-    
+
     private boolean isValidDirection(Grid grid, String word, Direction dir) {
         if (dir == Direction.Horizontal && word.length() <= grid.getWidth()) {
             return true;
@@ -344,32 +343,34 @@ public class GridGen {
     }
 
     // public void generateGrid(Grid grid) throws Exception {
-    //     // make sure word fits in grid and when the grid is full, stop
-    //     // if the word fits, add it to the grid
+    // // make sure word fits in grid and when the grid is full, stop
+    // // if the word fits, add it to the grid
 
-    //     BufferedReader reader = new BufferedReader(new FileReader(wordList));
+    // BufferedReader reader = new BufferedReader(new FileReader(wordList));
 
-    //     String line = reader.readLine();
-    //     while (line != null && !gridFull(grid)) {
-    //         if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight()) {
-    //             // add word to grid
-    //             addWordToGrid(line, grid);
-    //         }
-    //         line = reader.readLine();
-    //     }
+    // String line = reader.readLine();
+    // while (line != null && !gridFull(grid)) {
+    // if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight()) {
+    // // add word to grid
+    // addWordToGrid(line, grid);
+    // }
+    // line = reader.readLine();
+    // }
 
-    //     // fill empty cells
-    //     fillEmptyCells(grid);
+    // // fill empty cells
+    // fillEmptyCells(grid);
 
-    //     reader.close();
-    //     }
+    // reader.close();
+    // }
 
     public void generateGrid(Grid grid) throws IOException {
         Set<String> usedWords = new HashSet<>();
+        System.out.println("Wordlist: " + wordList);
         try (BufferedReader reader = new BufferedReader(new FileReader(wordList))) {
             String line;
             while ((line = reader.readLine()) != null && !gridFull(grid)) {
-                if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight() && !usedWords.contains(line.toUpperCase())) {
+                if (line.length() <= grid.getWidth() && line.length() <= grid.getHeight()
+                        && !usedWords.contains(line.toUpperCase())) {
                     addWordToGrid(line, grid);
                     usedWords.add(line.toUpperCase());
                 }
@@ -378,45 +379,50 @@ public class GridGen {
 
         // Fill empty cells
         fillEmptyCells(grid);
+
     }
 
     private boolean canPlaceHorizontally(String word, int x, int y, Grid grid) {
         for (int i = 0; i < word.length(); i++) {
-            if (grid.getCell(x, y + i).letter != ' ' && grid.getCell(x, y + i).letter != word.charAt(i)) {
+            if (grid.getCell(x, y + i).getLetter() != ' ' && grid.getCell(x, y + i).getLetter() != word.charAt(i)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     private boolean canPlaceVertically(String word, int x, int y, Grid grid) {
         for (int i = 0; i < word.length(); i++) {
-            if (grid.getCell(x + i, y).letter != ' ' && grid.getCell(x + i, y).letter != word.charAt(i)) {
+            if (grid.getCell(x + i, y).getLetter() != ' ' && grid.getCell(x + i, y).getLetter() != word.charAt(i)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     private boolean canPlaceDiagonallyUp(String word, int x, int y, Grid grid) {
         for (int i = 0; i < word.length(); i++) {
-            if (grid.getCell(x - i, y + i).letter != ' ' && grid.getCell(x - i, y + i).letter != word.charAt(i)) {
+            if (grid.getCell(x - i, y + i).getLetter() != ' '
+                    && grid.getCell(x - i, y + i).getLetter() != word.charAt(i)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     private boolean canPlaceDiagonallyDown(String word, int x, int y, Grid grid) {
         for (int i = 0; i < word.length(); i++) {
-            if (grid.getCell(x + i, y + i).letter != ' ' && grid.getCell(x + i, y + i).letter != word.charAt(i)) {
+            if (grid.getCell(x + i, y + i).getLetter() != ' '
+                    && grid.getCell(x + i, y + i).getLetter() != word.charAt(i)) {
                 return false;
             }
         }
         return true;
     }
 
+    public void setWordList(String string) {
+        // TODO Auto-generated method stub
+        this.wordList = new File(string);
+    }
 
 }
-
-

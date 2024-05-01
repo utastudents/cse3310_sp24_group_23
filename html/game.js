@@ -42,6 +42,8 @@ this.clientState = {
     name: "",
     owner: "",
     players: [],
+    readyCount: 0,
+    playerCount: 0,
   },
 
   username: "",
@@ -54,7 +56,7 @@ this.widgets = {
   lobbyForm: document.getElementById("lobbyForm"),
   lobbyCreationContainer: document.getElementById("lobby-creation-container"),
   lobbyList: document.querySelector(".lobby-list"),
-  playerList: document.getElementById("playerListHorizontal"),
+  playerList: document.getElementById("playerList"),
 };
 
 function sendMessage() {
@@ -99,7 +101,7 @@ function sendMessage() {
   chatMessages.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
-this.clientState.username = localStorage.getItem("username") || "";
+this.clientState.username = "";
 
 // JavaScript to handle message sent via enter key
 document
@@ -109,6 +111,22 @@ document
       sendMessage();
     }
   });
+
+const buildGridBase = () => {
+  const table = document.getElementById("wordGridTable");
+  table.style.width = "400px";
+  table.style.height = "400px";
+  const tbody = table.querySelector("tbody");
+  for (let i = 0; i < 20; i++) {
+    let row = document.createElement("tr");
+    for (let j = 0; j < 20; j++) {
+      let cell = document.createElement("td");
+      cell.textContent = " ";
+      row.appendChild(cell);
+    }
+    tbody.appendChild(row);
+  }
+};
 
 const sendToast = (message) => {
   Toastify({
@@ -175,7 +193,7 @@ webSocket.onmessage = function (event) {
 
   if (!clientState.inLobby) {
     document.getElementById("wordGrid").style.display = "none";
-    document.getElementById("playerListHorizontal").style.display = "none";
+    //document.getElementById("playerListHorizontal").style.display = "none";
   }
 
   const message = JSON.parse(event.data);
@@ -186,12 +204,14 @@ webSocket.onmessage = function (event) {
   if (message[0] == "data") {
     // message[1] is the data object
     const data = message[1];
-    console.log(data.id);
+
     switch (data.id) {
       // get the type of data were parsing
       case 1:
         // add player
         clientState.uuid = data.data.id;
+
+        // hide playerlist
 
         if (localStorage.getItem("username") != null) {
           send(
@@ -211,6 +231,93 @@ webSocket.onmessage = function (event) {
         // ["data",{"id":11,"data": {"id":0,"data":[{"lobbyName":"sfs","lobbyStatus":"WAITING","playerCount":1,"id":"e82cfd8e-b917-4bab-a27a-260346c03339","ownerID":"247bb7d4-7262-4a42-989b-44fd6c5856d7","ownerName":"person"}]}}]
         // 0 public lobby list
         // 1 private lobby information
+
+        if (data.data.id == 4) {
+          // wordlist info
+          /*
+        public String getWordListJson() {
+        JsonObject wordList = new JsonObject();
+        wordList.addProperty("words", grid.getWords().keySet().toString());
+        wordList.addProperty("foundWords", grid.getFoundWords().toString());
+        return wordList.toString();
+    }
+          */
+
+          const wordListData = data.data.data;
+
+          let wordListElement = document.getElementById("wordList");
+          wordListElement.innerHTML = "";
+
+          let wordListHeader = document.createElement("h3");
+          wordListHeader.textContent = "Word List";
+          wordListElement.appendChild(wordListHeader);
+
+          let wordListItems = document.createElement("div");
+          wordListItems.className = "word-column";
+
+          let words = wordListData.words;
+          let foundWordsSet = new Set(wordListData.foundWords);
+
+          words.forEach((word, index) => {
+            if (index > 0 && index % 10 === 0) {
+              wordListElement.appendChild(wordListItems);
+              wordListItems = document.createElement("div");
+              wordListItems.className = "word-column";
+            }
+
+            let span = document.createElement("span");
+            span.textContent = word;
+            span.style.marginRight = "10px"; // Adjust the margin as needed
+            if (foundWordsSet.has(word)) {
+              span.style.textDecoration = "line-through";
+            }
+            wordListItems.appendChild(span);
+          });
+
+          wordListElement.appendChild(wordListItems);
+
+          // Show the word list container
+          document.getElementById("wordListContainer").style.display = "block";
+        }
+
+        if (data.data.id == 8) {
+          // username rejected
+          sendToast("Username already taken.");
+
+          // ask for username again
+          clientState.username = "";
+          username = prompt("Please enter a unique username.");
+          send(
+            JSON.stringify([
+              "join",
+              {
+                id: clientState.uuid,
+                data: {
+                  username: username,
+                },
+              },
+            ])
+          );
+        }
+
+        if (data.data.id == 9) {
+          // username accepted
+          clientState.username = data.data.data.username;
+          if (clientState.username != "") {
+            sendToast("Username updated to " + clientState.username);
+          }
+        }
+
+        if (data.data.id == 7) {
+          // game started
+          clientState.gameStarted = true;
+          sendToast("Game started.");
+
+          // show the word grid
+          // create a word grid
+
+          buildGridBase();
+        }
         if (data.data.id == 0) {
           // update lobby list
           const lobbyList = data.data.data;
@@ -292,44 +399,24 @@ webSocket.onmessage = function (event) {
         }
 
         if (data.data.id == 1) {
-          /*
-          [
-  "data",
-  {
-    "id": 11,
-    "data": {
-      "id": 1,
-      "data": {
-        "lobbyName": "hello",
-        "lobbyStatus": "IN_PROGRESS",
-        "playerCount": 2,
-        "id": "7d21db73-2a46-4b94-b8e0-f18fdc08faf4",
-        "ownerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
-        "password": "",
-        "players": [
-          {
-            "nickname": "93346552-a1ad-4cd3-ab34-11b402d98d9f",
-            "playerID": "ba3ceb38-2b0a-417b-a6d0-53593b1c48d2",
-            "score": 0
-          },
-          {
-            "nickname": "orange",
-            "playerID": "66cd877a-27e7-4ba6-a344-8c80d0ecd63d",
-            "score": 0
-          }
-        ]
-      }
-    }
-  }
-]   
-          */
           // update private lobby information
-
-          // lobby update private
           const lobby = data.data.data;
 
           clientState.lobby.players = lobby.players;
+          clientState.lobby.playerCount = lobby.playerCount;
+          clientState.lobby.readyCount = lobby.readyCount;
+
+          clientState.lobby.players = lobby.players;
           clientState.lobby.id = lobby.id;
+          clientState.inGame = lobby.lobbyStatus === "IN_PROGRESS";
+
+          // show the player list
+          // if status is waiting, show player list
+
+          if (lobby.lobbyStatus === "WAITING") {
+            showPlayerList();
+          }
+          // show word grid
 
           document.getElementById("lobbyName").textContent =
             "Lobby Name: " + lobby.lobbyName;
@@ -343,11 +430,34 @@ webSocket.onmessage = function (event) {
           lobby.players.forEach((player) => {
             let row = document.createElement("tr");
             let cell = document.createElement("td");
-            console.log(cell);
+
             cell.textContent = player.nickname;
             row.appendChild(cell);
             playerTableBody.appendChild(row);
           });
+
+          // check players ready == playerCount and in progress
+        }
+
+        if (data.data.id == 3) {
+          // retrieve grid data
+          // [ [ "a", "b", "c" ], [ "d", "e", "f" ], [ "g", "h", "i" ] ]
+
+          const grid = data.data.data;
+          console.log(grid);
+
+          // clear the table html so that we can update it with the new data
+
+          const tbody = document
+            .getElementById("wordGridTable")
+            .querySelector("tbody");
+
+          populateGrid(grid);
+
+          // show the word grid
+          document.getElementById("wordGrid").style.display = "block";
+          widgets.lobbyList.style.display = "none";
+          document.getElementById("playerList").style.display = "none";
         }
         break;
 
@@ -361,16 +471,6 @@ webSocket.onmessage = function (event) {
     }
   }
 
-  if (message.type == "usernameQuery") {
-    //const username = document.getElementById("new-username").value;
-    if (message.accepted) {
-      localStorage.setItem("username", clientState.username);
-      sendToast("Username updated to " + clientState.username);
-    } else {
-      sendToast("Username already taken.");
-      localStorage.setItem("username", "");
-    }
-  }
   /* 
   if (message.type == "lobbyUpdate") {
     const playerTable = document.getElementById("playerListHorizontal");
@@ -424,13 +524,226 @@ const addMessage = (username, message, timestamp) => {
 
 const showPlayerList = () => {
   document.querySelector("#playerList").style.display = "block";
-  document.querySelector(".lobby-list").style.display = "none";
+  //document.querySelector(".lobby-list").style.display = "none";
 };
 
 const showLobbyList = () => {
   document.querySelector("#playerList").style.display = "none";
   document.querySelector(".lobby-list").style.display = "block";
   document.querySelector(".lobby-creation-container").style.display = "block";
+};
+
+const populateGrid = (chars) => {
+  // chars -> "{\"claimId\":\"\",\"letter\":\"B\",\"isClaimed\":false}"
+  const table = document.getElementById("wordGridTable");
+
+  const tbody = table.querySelector("tbody");
+
+  let isMouseDown = false;
+  let startX, startY;
+  let coords = new Set();
+
+  function broadcastLastCell(highlighted) {
+    const lastCell = coords[coords.length - 1]; // Get the last cell from the coords array
+
+    const message = JSON.stringify([
+      "data",
+      {
+        id: 12,
+        data: {
+          id: 6,
+          data: {
+            coords: [lastCell], // Broadcast only the last cell
+            lobbyID: clientState.lobby.id,
+            highlighted: highlighted, // Add a flag to indicate if it's highlighted or unhighlighted
+            id: clientState.uuid,
+          },
+        },
+      },
+    ]);
+
+    // Here, you need to send the message to the server
+    send(message);
+  }
+
+  function startDragging(event) {
+    isMouseDown = true;
+    const cell = event.target;
+    startX = parseInt(cell.id.split("-")[1]);
+    startY = parseInt(cell.id.split("-")[2]);
+    event.preventDefault();
+    unhighlightAllCells();
+    highlightCell(startX, startY);
+    coords = [[startX, startY]]; // Reset coords array
+  }
+
+  function dragOverCell(event) {
+    if (isMouseDown) {
+      const cell = event.target;
+      broadcastLastCell(true);
+      const endX = parseInt(cell.id.split("-")[1]);
+      const endY = parseInt(cell.id.split("-")[2]);
+      if (
+        startX === endX ||
+        startY === endY ||
+        Math.abs(startX - endX) === Math.abs(startY - endY)
+      ) {
+        unhighlightAllCells();
+        highlightCellsInDirection(startX, startY, endX, endY);
+        updateCoords(startX, startY, endX, endY);
+      }
+    }
+  }
+
+  function stopDragging() {
+    isMouseDown = false;
+    sendCoordsToServer(coords);
+    unhighlightAllCells();
+
+    // unhighlight all cells on server
+    // for every cell in coords, unhighlight, then clear coords
+
+    for (let i = 0; i < coords.length; i++) {
+      const message = JSON.stringify([
+        "data",
+        {
+          id: 12,
+          data: {
+            id: 6,
+            data: {
+              coords: [coords[i]], // Broadcast only the last cell
+              lobbyID: clientState.lobby.id,
+              highlighted: false, // Add a flag to indicate if it's highlighted or unhighlighted
+              id: clientState.uuid,
+            },
+          },
+        },
+      ]);
+
+      // Here, you need to send the message to the server
+      send(message);
+    }
+  }
+
+  function disableCell(cell) {
+    cell.style.backgroundColor = "gray";
+    cell.style.color = "white";
+    cell.removeEventListener("mousedown", startDragging);
+    cell.removeEventListener("mouseover", dragOverCell);
+    cell.removeEventListener("mouseup", stopDragging);
+    cell.style.pointerEvents = "none";
+  }
+
+  function highlightCell(x, y) {
+    const cell = document.getElementById(`cell-${x}-${y}`);
+    cell.style.backgroundColor = "yellow";
+  }
+
+  function unhighlightAllCells() {
+    const cells = document.querySelectorAll("td");
+    cells.forEach((cell) => {
+      cell.style.backgroundColor = "";
+    });
+  }
+
+  function highlightCellsInDirection(startX, startY, endX, endY) {
+    let x = startX;
+    let y = startY;
+    while (x !== endX || y !== endY) {
+      highlightCell(x, y);
+      if (x < endX) x++;
+      else if (x > endX) x--;
+      if (y < endY) y++;
+      else if (y > endY) y--;
+    }
+    highlightCell(endX, endY);
+  }
+
+  function updateCoords(startX, startY, endX, endY) {
+    coords = [];
+    let x = startX;
+    let y = startY;
+    while (x !== endX || y !== endY) {
+      coords.push([x, y]);
+      if (x < endX) x++;
+      else if (x > endX) x--;
+      if (y < endY) y++;
+      else if (y > endY) y--;
+    }
+    coords.push([endX, endY]);
+  }
+
+  function sendCoordsToServer(coords) {
+    const message = JSON.stringify([
+      "data",
+      {
+        id: 12,
+        data: {
+          id: 5,
+          data: {
+            coords: coords,
+            lobbyID: clientState.lobby.id,
+          },
+        },
+      },
+    ]);
+    // Here, you need to send the message to the server
+    // For demonstration purposes, let's just log the message
+    console.log("Sending message to server:", message);
+
+    send(message);
+    coords = [];
+  }
+
+  // Modify the grid cells
+  // table already created when game started
+  const cells = tbody.querySelectorAll("td");
+  let i = 0;
+  for (let row = 0; row < 20; row++) {
+    for (let col = 0; col < 20; col++) {
+      const cell = cells[i];
+      const char = chars[row][col];
+      cell.textContent = char.letter;
+
+      // make sure ours is yellow, only others will be another color
+      if (char.isHighlighted && char.selectorID !== clientState.uuid) {
+        // set cell highlight in a way that is nice on the eyes//
+        cell.style.backgroundColor = "lightblue";
+      }
+
+      /* 
+      if (char.isClaimed) {
+        disableCell(cell);
+      }
+      */
+
+      // instead of disabling cell, we can just cross it out
+      if (char.isClaimed) {
+        cell.style.textDecoration = "line-through";
+      }
+
+      cell.id = `cell-${row}-${col}`;
+
+      // only add event listener if cell does not have an event listenr
+      if (!cell.hasEventListener) {
+        cell.addEventListener("mousedown", startDragging);
+        cell.addEventListener("mouseover", dragOverCell);
+        cell.addEventListener("mouseup", stopDragging);
+        cell.hasEventListener = true;
+      }
+      i++;
+    }
+  }
+};
+
+const debounce = (func, delay) => {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
 };
 
 const createLobby = () => {
@@ -470,6 +783,23 @@ const createLobby = () => {
 
 // event listeners so we don't get the bullshit function not defined error
 document.addEventListener("DOMContentLoaded", function () {
+  // ask for username by showing alert
+
+  if (clientState.username == "") {
+    username = prompt("Please enter a username.");
+    send(
+      JSON.stringify([
+        "join",
+        {
+          id: clientState.uuid,
+          data: {
+            username: username,
+          },
+        },
+      ])
+    );
+  }
+
   showLobbyList();
 
   if (!clientState.gameStarted) {
@@ -477,26 +807,73 @@ document.addEventListener("DOMContentLoaded", function () {
     //document.getElementById("wordGrid").style.display = "some";
   }
 
-  // set wordGrid to 50x50 grid
-
-  let table = document.createElement("table");
-  for (let i = 0; i < 50; i++) {
-    let row = document.createElement("tr");
-    for (let j = 0; j < 50; j++) {
-      let cell = document.createElement("td");
-      cell.textContent = " ";
-      row.appendChild(cell);
-    }
-    table.appendChild(row);
-  }
-
-  document.getElementById("wordGrid").appendChild(table);
-
   document
     .getElementById("updateUsernameButton")
     .addEventListener("click", function () {
       setUsername();
     });
+
+  document.getElementById("readyButton").addEventListener("click", function () {
+    document.getElementById("readyButton").textContent.trim() === "Ready"
+      ? (document.getElementById("readyButton").textContent = "Unready")
+      : (document.getElementById("readyButton").textContent = "Ready");
+    if (document.getElementById("readyButton").textContent.trim() === "Ready") {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 4,
+              data: {
+                id: clientState.lobby.id,
+                status: "READY",
+              },
+            },
+          },
+        ])
+      );
+    } else {
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 5,
+              data: {
+                id: clientState.lobby.id,
+                status: "UNREADY",
+              },
+            },
+          },
+        ])
+      );
+    }
+  });
+
+  document.getElementById("startButton").addEventListener("click", function () {
+    if (clientState.lobby.readyCount < clientState.lobby.playerCount) {
+      sendToast("Need all players to be ready.");
+      return;
+    }
+
+    if (clientState.lobby)
+      send(
+        JSON.stringify([
+          "data",
+          {
+            id: 12,
+            data: {
+              id: 2,
+              data: {
+                id: clientState.lobby.id,
+              },
+            },
+          },
+        ])
+      );
+  });
 
   document
     .getElementById("createLobbyButton")
@@ -535,6 +912,7 @@ document
     );
 
     clientState.inLobby = false;
+    clientState.inGame = false;
     showLobbyList();
   });
 
@@ -638,9 +1016,17 @@ document.getElementById("joinButton").addEventListener("click", function () {
 
     // Update client state and UI
     clientState.lobby.id = selectedLobbyId;
+    clientState.inLobby = true;
 
     // Hide the lobby list and show the player list
-    showPlayerList();
+    //showPlayerList();
+    document.getElementById("playerList").style.display = "block";
+    document.querySelector("#playerListHorizontal").style.display = "block";
+
+    // if not lobby owner, don't show the start button
+    if (clientState.lobby.owner !== clientState.uuid) {
+      document.getElementById("startButton").style.display = "none";
+    }
 
     // ...
   } else {
@@ -679,4 +1065,16 @@ function filterLobbyList(lobbies, searchTerm) {
     }
   });
   */
+
+  // function cellClickHandler(row, col) {
+  //   const cellId = `cell-${row}-${col}`;
+  //   const cell = document.getElementById(cellId);
+  //   if (!startPoint) {
+  //     // get the starting point
+  //     startPoint = { row, col };
+  //     cell.style.backgroundColor = "blue";
+  //   } else {
+  //     highlightSelection;
+  //   }
+  // }
 }

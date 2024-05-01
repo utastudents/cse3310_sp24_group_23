@@ -3,6 +3,11 @@ package uta.group23.wurdle.grid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.HashSet;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class Grid {
     private int width;
@@ -11,6 +16,7 @@ public class Grid {
     private Cell[][] grid;
     private float density;
     private HashMap<String, Direction> words = new HashMap<>();
+    private HashSet<String> foundWords = new HashSet<>();
 
     public Grid(int width, int height) {
         this.width = width;
@@ -23,6 +29,40 @@ public class Grid {
                 grid[i][j] = new Cell();
             }
         }
+    }
+
+    public void addFoundWord(String word) {
+        foundWords.add(word);
+    }
+
+    public String gridDataJson() {
+        // string[][] 2d letter array
+
+        /*
+         * 
+         * [ [ "a", "b", "c" ], [ "d", "e", "f" ], [ "g", "h", "i" ] ]
+         */
+
+        JsonArray gridData = new JsonArray();
+
+        for (int i = 0; i < width; i++) {
+            JsonArray row = new JsonArray();
+            for (int j = 0; j < height; j++) {
+                Cell cell = getCell(i, j);
+                JsonObject cc = new JsonObject();
+                cc.addProperty("letter", cell.getLetter());
+                cc.addProperty("claimId", cell.getClaimId());
+                cc.addProperty("isClaimed", cell.getIsClaimed());
+                cc.addProperty("isHighlighted", cell.getIsHighlighted());
+                cc.addProperty("selectorID", cell.getSelectorID());
+
+                row.add(cc);
+            }
+            gridData.add(row);
+        }
+
+        return gridData.toString();
+
     }
 
     public void setDensity(float density) {
@@ -55,7 +95,7 @@ public class Grid {
     }
 
     public void setCell(int x, int y, char letter) {
-        grid[x][y].letter = letter;
+        grid[x][y].setLetter(letter);
     }
 
     public Cell getCell(int x, int y) {
@@ -78,8 +118,17 @@ public class Grid {
         return height;
     }
 
-    public void claimCell(int x, int y, UUID playerId) {
-        grid[x][y].claimId = playerId;
+    public void claimCell(int x, int y, String playerId) {
+        grid[x][y].setClaimId(playerId);
+    }
+
+    public void highlightCell(int i, int j, boolean b) {
+        // TODO Auto-generated method stub
+        grid[i][j].setIsHighlighted(b);
+    }
+
+    public HashSet<String> getFoundWords() {
+        return foundWords;
     }
 
 }

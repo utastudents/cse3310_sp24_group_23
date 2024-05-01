@@ -2,6 +2,11 @@ package uta.group23.wurdle;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.models.Player;
@@ -9,19 +14,15 @@ import uta.group23.wurdle.models.Player;
 public class Game {
     private Grid grid;
     // Timer
-    private File wordList;
-    private ArrayList<String> found;
+
+    private HashMap<String, Boolean> words;
 
     public Game() {
         this.grid = new Grid(20, 20);
-        this.wordList = new File("wordlist.txt");
-        this.found = new ArrayList<String>();
+        this.words = new HashMap<String, Boolean>();
     }
 
     public void initializeGrid() {
-    }
-
-    public void start() {
     }
 
     public void startTimer() {
@@ -34,6 +35,21 @@ public class Game {
     }
 
     public void updateTimer() {
+    }
+
+    public HashMap<String, Boolean> getWords() {
+        return words;
+    }
+
+    public Boolean isWordFound(String word) {
+        return words.get(word);
+    }
+
+    public void initializeWords(Set<String> words) {
+        // initialize the words to be found
+        for (String word : words) {
+            this.words.put(word, false);
+        }
     }
 
     // check coords
@@ -50,21 +66,41 @@ public class Game {
             constructedWord += letter;
             // add the letter to the constructed word
         }
+        System.out.println("Constructed word: " + constructedWord);
 
-        // TODO: check if the word is in the word list
+        // if it is, add it to the found list
+        // grid has words <String, Direction>
+        // if the word is found, remove it from the grid
+        if (grid.getWords().containsKey(constructedWord)) {
+            // set word to found
+            words.put(constructedWord, true);
+            // grid.getWords().remove(constructedWord);
+            grid.addFoundWord(constructedWord);
+            assignPoints(player, constructedWord);
+
+            // set state of cells to claimed
+            for (int i = 0; i < selectedCells.size(); i++) {
+                // set claimId to player id
+                grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).setClaimId(player.getId());
+                grid.getCell(selectedCells.get(i)[0], selectedCells.get(i)[1]).setIsClaimed(true);
+            }
+        }
+
     }
 
     public void removeWordFound(String word) {
     }
 
-    public void assignPoints(Player player, String selectedCells[]) {
+    public void assignPoints(Player player, String word) {
         // calculate score for word found based on word length
         int lengthmultiplier = 2;
-        int score = selectedCells.length * lengthmultiplier;
+        int score = word.length() * lengthmultiplier;
 
         // get players current score and add on the score for the word found
         int currentScore = player.getScore();
         player.setScore(currentScore + score);
+
+        System.out.println("Player " + player.getNickname() + " found word: " + word + " for " + score + " points");
     }
 
     public boolean isGameOver(Player player, int pointThreshold) {
@@ -92,6 +128,33 @@ public class Game {
             // Increment consecHints
             player.incrementConsecHints();
         }
+    }
+
+    public Grid getGrid() {
+
+        return grid;
+    }
+
+    public String getWordListJson() {
+        JsonObject wordList = new JsonObject();
+        // toString creates "[]" instead of []
+        /*
+         * wordList.addProperty("words", grid.getWords().keySet().toString());
+         * wordList.addProperty("foundWords", grid.getFoundWords().toString());
+         */
+        JsonArray words = new JsonArray();
+        for (String word : grid.getWords().keySet()) {
+            words.add(word);
+        }
+        wordList.add("words", words);
+
+        JsonArray foundWords = new JsonArray();
+        for (String word : grid.getFoundWords()) {
+            foundWords.add(word);
+        }
+        wordList.add("foundWords", foundWords);
+
+        return wordList.toString();
     }
 
 }
