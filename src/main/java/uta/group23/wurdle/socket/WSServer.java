@@ -279,6 +279,12 @@ public class WSServer extends WebSocketServer {
                             String gridData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":3,\"data\":"
                                     + lobby.getGame().getGrid().gridDataJson() + "}}]";
                             p.getConn().send(gridData);
+
+                            // use Id 4 for wordlist undiscovred and found
+                            String wordListData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":4,\"data\":"
+                                    + lobby.getGame().getWordListJson() + "}}]";
+
+                            p.getConn().send(wordListData);
                         }
 
                     }
@@ -327,7 +333,12 @@ public class WSServer extends WebSocketServer {
                                 String gridData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":3,\"data\":"
                                         + game.getGrid().gridDataJson() + "}}]";
 
+                                // use Id 4 for wordlist undiscovred and found
+                                String wordListData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":4,\"data\":"
+                                        + game.getWordListJson() + "}}]";
+
                                 p.getConn().send(gridData);
+                                p.getConn().send(wordListData);
                             }
 
                         } catch (IOException e) {
@@ -355,69 +366,6 @@ public class WSServer extends WebSocketServer {
         } else {
             return;
         }
-
-        /**
-         * if (j.get("type").getAsString().equals("message")) {
-         * String msg = j.get("content").getAsString();
-         * 
-         * // add to message board
-         * ctx.addMessage(ctx.getPlayerByConn(conn).getNickname(), msg);
-         * // broadcast messageBoard to all clients
-         * /**
-         * messageBoard: [
-         * {"username": "Player 1", "message": "Hello, is anyone here?"},]
-         * 
-         * 
-         * broadCastMessageBoard();
-         * 
-         * }
-         * 
-         * broadCastLobbyList();
-         * 
-         * if (j.get("type").getAsString().equals("setUsername")) {
-         * setUsername(conn, j);
-         * }
-         * 
-         * if (j.get("type").getAsString().equals("createLobby")) {
-         * createLobby(conn, j);
-         * }
-         * 
-         * if (j.get("type").getAsString().equals("leaveLobby")) {
-         * leaveLobby(conn, j);
-         * }
-         * 
-         * if (j.get("type").getAsString().equals("startGame")) {
-         * String lobbyID = j.get("lobbyID").getAsString();
-         * Lobby lobby = ctx.searchID(lobbyID);
-         * lobby.startGame();
-         * }
-         * 
-         * if (j.get("type").getAsString().equals("joinLobby")) {
-         * 
-         * String lobbyID = j.get("lobbyId").getAsString();
-         * Lobby lobby = ctx.searchID(lobbyID);
-         * 
-         * if (j.get("password") != null) {
-         * String password = j.get("password").getAsString();
-         * if (!lobby.getPassword().equals(password)) {
-         * return;
-         * }
-         * }
-         * 
-         * Player player = ctx.getPlayerByConn(conn);
-         * lobby.addPlayer(player);
-         * 
-         * // broadcast lobby info to all clients of this lobby
-         * 
-         * for (Player p : lobby.getPlayers()) {
-         * String data = "{\"type\": \"lobbyUpdate\", \"lobby\": " +
-         * lobby.toJsonObjectPrivate().toString() + "}";
-         * System.out.println(data);
-         * p.getClient().getConn().send(data);
-         * }
-         * 
-         * broadCastLobbyList();
-         */
 
     }
 
@@ -452,7 +400,6 @@ public class WSServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        // TODO Auto-generated method stub
         System.out.println("Connection closed : " + conn.getResourceDescriptor());
 
         ctx.addMessage("System", "Player '" + ctx.getPlayerByConn(conn).getNickname() + "' has disconnected");

@@ -213,6 +213,11 @@ public class GridGen {
         int retryCount = 0;
 
         while (retryCount < maxRetries) {
+
+            if (word.length() < 3) {
+                retryCount++;
+                continue;
+            }
             // Get random starting point
             int x = (int) (Math.random() * grid.getHeight());
             int y = (int) (Math.random() * grid.getWidth());
