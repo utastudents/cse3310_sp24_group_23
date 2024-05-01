@@ -248,9 +248,9 @@ webSocket.onmessage = function (event) {
           let wordListElement = document.getElementById("wordList");
           wordListElement.innerHTML = "";
 
-          let wordListHeader = document.createElement("h3");
-          wordListHeader.textContent = "Word List";
-          wordListElement.appendChild(wordListHeader);
+          // let wordListHeader = document.createElement("h3");
+          // wordListHeader.textContent = "Word List";
+          // wordListElement.appendChild(wordListHeader);
 
           let wordListItems = document.createElement("div");
           wordListItems.className = "word-column";
@@ -278,6 +278,10 @@ webSocket.onmessage = function (event) {
 
           // Show the word list container
           document.getElementById("wordListContainer").style.display = "block";
+
+          // Show leave game container
+          document.getElementById("leave-game-container").style.display = "block";
+          
         }
 
         if (data.data.id == 8) {
@@ -813,6 +817,26 @@ document.addEventListener("DOMContentLoaded", function () {
       setUsername();
     });
 
+    document
+    .getElementById("leaveGameButton")
+    .addEventListener("click", function () {
+      send(
+        JSON.stringify([
+          "leave",
+          {
+            id: clientState.uuid,
+            data: {
+              username: clientState.username,
+            },
+          },
+        ])
+      );
+  
+      clientState.inLobby = false;
+      clientState.inGame = false;
+      showLobbyList();
+    });
+
   document.getElementById("readyButton").addEventListener("click", function () {
     document.getElementById("readyButton").textContent.trim() === "Ready"
       ? (document.getElementById("readyButton").textContent = "Unready")
@@ -1077,4 +1101,25 @@ function filterLobbyList(lobbies, searchTerm) {
   //     highlightSelection;
   //   }
   // }
+}
+
+// dunno why this isn't populating the container
+function updateLeaderboard(leaderboardData) {
+  const leaderboardContainer = document.querySelector('.recent-leaderboard-container tbody');
+  leaderboardContainer.innerHTML = '';
+
+  leaderboardData.forEach((player, index) => {
+    const playerRow = document.createElement('tr');
+
+    const nameCell = document.createElement('td');
+    nameCell.textContent = player.name;
+    playerRow.appendChild(nameCell);
+
+    const scoreCell = document.createElement('td');
+    scoreCell.textContent = player.score;
+    playerRow.appendChild(scoreCell);
+
+    leaderboardContainer.appendChild(playerRow);
+  });
+ 
 }

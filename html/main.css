@@ -3,7 +3,7 @@
     top: 20px;
     right: 20px;
     width: 320px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 10px;
     box-sizing: border-box;
     border-radius: 10px;
@@ -34,7 +34,7 @@
     right: 20px;
     bottom: 20px;
     width: 320px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 10px;
@@ -43,7 +43,7 @@
     flex-direction: column;
   }
   .chatBox {
-    background-color: #252525;
+    background-color: #2e3035;
     border: 1px solid #dee2e6;
     border-radius: 5px;
     padding:20px;
@@ -89,13 +89,13 @@
     display: grid;
     width: 100%;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: 10px;
 }
 
 .lobby-list {
     /* width: 100%; */
     width: 900px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 10px;
@@ -109,7 +109,7 @@
 .lobby-list-header {
     position: sticky;
     top: 0;
-    background-color: #252525;
+    background-color: #2e3035;
     padding-bottom: 1rem;
     z-index: 1;
 }
@@ -117,7 +117,7 @@
 .lobby-controls-header {
     position: sticky;
     bottom: 0;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 1rem 0;
     z-index: 1;
 }
@@ -162,7 +162,7 @@
     top: 20px;
     left: 20px;
     width: 260px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 15px;
     box-sizing: border-box;
     border-radius: 8px;
@@ -217,7 +217,7 @@
     top: 20px;
     left: 20px;
     width: 260px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 15px;
     box-sizing: border-box;
     border-radius: 8px;
@@ -314,7 +314,7 @@
     top: 395px;
     left: 20px;
     width: 260px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 15px;
     box-sizing: border-box;
     border-radius: 8px;
@@ -329,7 +329,7 @@
     top: 475px;
     left: 20px;
     width: 260px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 15px;
     box-sizing: border-box;
     border-radius: 8px;
@@ -351,7 +351,7 @@
   .playerList {
     width: 100%;
     max-width: 900px;
-    background-color: #252525;
+    background-color: #2e3035;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 10px;
@@ -365,7 +365,7 @@
 .player-list-header {
     position: sticky;
     top: 0;
-    background-color: #252525;
+    background-color: #2e3035;
     padding-bottom: 1rem;
     z-index: 1;
     width: 100%;
@@ -494,7 +494,7 @@
   
 }
 #wordGridTable {
-  
+  width: 100%;
   justify-content: center;
   align-items: center;
   margin: auto;
@@ -522,4 +522,63 @@
   /* animate on highlight */
   transition: background-color 0.5s;
   
+}
+
+.wordListContainer {
+  width: 60%;
+  height: 300px;
+  background-color: #2e3035;
+  padding: 15px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  max-height: 500px; /* Adjust the maximum height as needed */
+  overflow-y: auto;
+  margin: 0 auto; /* Center justify the container */
+}
+
+.wordList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.word-column {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.word-column span {
+  margin-right: 10px;
+}
+
+.wordListTitle {
+  margin-top: 30px;
+  text-align: center; 
+  margin-bottom: 10px;
+}
+
+
+.leave-game-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background-color: #2e3035;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.leave-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.leave-game button {
+  margin-top: 4px;
 }

@@ -349,6 +349,12 @@ public class WSServer extends WebSocketServer {
                     }
 
                     break;
+                case 13:
+                    // Request leaderboard
+                    String leaderboardData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":13,\"data\":"
+                            + leaderboard.getLeaderboardData() + "}}]";
+                    conn.send(leaderboardData);
+                    break;   
                 case 30:
                     // send message
 
@@ -392,6 +398,12 @@ public class WSServer extends WebSocketServer {
         // send selfID to client
         // conn.send("{\"type\": \"selfID\", \"id\": \"" + newId + "\"}");
         conn.send("[\"data\",{\"id\":1,\"data\":{\"id\":\"" + newId + "\"}}]");
+
+        // Send initial leaderboard data
+        String leaderboardData = "[\"data\",{\"id\":11,\"data\":" + "{\"id\":13,\"data\":"
+                + leaderboard.getLeaderboardData() + "}}]";
+        conn.send(leaderboardData);
+        }
 
         conn.send(ctx.getMessageBoard());
         conn.send(ctx.getLobbyList());
