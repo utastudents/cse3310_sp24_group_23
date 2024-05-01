@@ -38,6 +38,7 @@ public class Lobby {
         this.lobbyMode = lobbyMode;
         this.players = new HashSet<>();
         this.playerCap = playerCap;
+        this.game = new Game();
     }
 
     public String getLobbyName() {
@@ -56,19 +57,27 @@ public class Lobby {
         return lobbyID;
     }
 
+
+    public int getPlayerCap() {
+        return this.playerCap;  // Returns the current player capacity of the lobby
+    }
+    
+
     public String getPassword() {
         return password;
     }
+    
 
-    private void checkFull() {
+    private boolean checkFull() {
         if (playerCount == playerCap) {
             lobbyStatus = Status.IN_PROGRESS;
         }
+        return false;
     }
 
     public void addPlayer(Player player) {
 
-        if (playerCount == playerCap) {
+        if (playerCount >= playerCap) {
             return;
         }
 
@@ -122,6 +131,11 @@ public class Lobby {
         return this.lobbyStatus;
     }
 
+    public void setPlayerCap(int newCap) {
+        this.playerCap = newCap;
+    }
+    
+
     public String toJson() {
         // only return the non-sensitive information
         return "{\"lobbyName\":\"" + lobbyName + "\",\"lobbyID\":" + lobbyID + ",\"lobbyOwner\":\""
@@ -164,4 +178,8 @@ public class Lobby {
         return jsonObject;
 
     }
+
+    
+
+   
 }
