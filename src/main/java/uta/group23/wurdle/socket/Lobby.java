@@ -21,10 +21,11 @@ public class Lobby {
     private int playerNum;
     private String password;
     private Mode lobbyMode;
-    private HashSet<Player> players;
-    private int playerCount;
+    private HashSet<Player> players = new HashSet<>();
+    private int playerCount = 0;
     private int playerCap;
-    private Game game;
+    private Game game = new Game();
+    private HashSet<Player> readyPlayers = new HashSet<>();
 
     public Lobby(String lobbyName, String lobbyID, Status lobbyStatus, int playerNum, Mode lobbyMode, String password,
             int playerCap,
@@ -69,10 +70,12 @@ public class Lobby {
     
 
     private boolean checkFull() {
-        if (playerCount == playerCap) {
+        if (playerCount >= playerCap) {
             lobbyStatus = Status.IN_PROGRESS;
+            return true;
         }
         return false;
+        
     }
 
     public void addPlayer(Player player) {
@@ -89,7 +92,7 @@ public class Lobby {
             // don't need to compare conn since nickname is unique
         }
         players.add(player);
-        this.playerCount++;
+        playerCount++;
         checkFull();
     }
 
