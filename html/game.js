@@ -245,8 +245,6 @@ webSocket.onmessage = function (event) {
 
           const wordListData = data.data.data;
 
-          
-
           let wordListElement = document.getElementById("wordList");
           wordListElement.innerHTML = "";
 
@@ -399,6 +397,11 @@ webSocket.onmessage = function (event) {
 
             tbody.appendChild(row);
           });
+        }
+
+        if (data.data.id == 10) {
+          // set title to version
+          document.title = data.data.data;
         }
 
         if (data.data.id == 1) {
@@ -575,7 +578,7 @@ const populateGrid = (chars) => {
     startX = parseInt(cell.id.split("-")[1]);
     startY = parseInt(cell.id.split("-")[2]);
     event.preventDefault();
-    unhighlightAllCells();
+
     highlightCell(startX, startY);
     coords = [[startX, startY]]; // Reset coords array
   }
@@ -591,7 +594,6 @@ const populateGrid = (chars) => {
         startY === endY ||
         Math.abs(startX - endX) === Math.abs(startY - endY)
       ) {
-        unhighlightAllCells();
         highlightCellsInDirection(startX, startY, endX, endY);
         updateCoords(startX, startY, endX, endY);
       }
@@ -709,20 +711,13 @@ const populateGrid = (chars) => {
       cell.textContent = char.letter;
 
       // make sure ours is yellow, only others will be another color
-      if (char.isHighlighted && char.selectorID !== clientState.uuid) {
+      if (char.isHighlighted && char.selectorID != clientState.uuid) {
         // set cell highlight in a way that is nice on the eyes//
         cell.style.backgroundColor = "lightblue";
       }
 
-      /* 
       if (char.isClaimed) {
-        disableCell(cell);
-      }
-      */
-
-      // instead of disabling cell, we can just cross it out
-      if (char.isClaimed) {
-        cell.style.textDecoration = "line-through";
+        cell.style.backgroundColor = "gray";
       }
 
       cell.id = `cell-${row}-${col}`;

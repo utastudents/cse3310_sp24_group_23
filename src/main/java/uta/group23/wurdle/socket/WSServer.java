@@ -66,6 +66,13 @@ public class WSServer extends WebSocketServer {
         // ["join",{"id":"d6576da3-3a90-4fff-a144-4540354804fe","data":{"username":"person"}}]
 
         if (j.get(0).getAsString().equals("join")) {
+            String version;
+            // get version from env
+            // if not set, default to "local build"
+
+            version = System.getenv("VERSION") != null ? System.getenv("VERSION") : "local build";
+
+            conn.send("[\"data\",{\"id\":11,\"data\":{\"id\":10,\"data\":\"" + version + "\"}}]");
             JsonObject data = j.get(1).getAsJsonObject();
             String username = data.get("data").getAsJsonObject().get("username").getAsString();
 
@@ -395,6 +402,14 @@ public class WSServer extends WebSocketServer {
 
         conn.send(ctx.getMessageBoard());
         conn.send(ctx.getLobbyList());
+
+        String version;
+        // get version from env
+        // if not set, default to "local build"
+
+        version = System.getenv("VERSION") != null ? System.getenv("VERSION") : "local build";
+
+        conn.send("[\"data\",{\"id\":11,\"data\":{\"id\":10,\"data\":\"" + version + "\"}}]");
 
     }
 
