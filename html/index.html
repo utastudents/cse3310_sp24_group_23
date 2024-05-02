@@ -56,14 +56,13 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="lobby-password">Password:</label>
-                <div class="input-group">
+                <label for="lobby-password" hidden>Password:</label>
+                <div class="input-group" hidden >
                   <input
                     type="password"
                     class="form-control"
                     id="lobby-password"
                     placeholder="4-digit PIN"
-                    pattern="[0-9]{4}"
                     minlength="4"
                     maxlength="4"
                     disabled
@@ -76,7 +75,7 @@
                         onchange="togglePasswordField()"
                       />
                       <!-- Alt + 255 character here cause I don't wanna figure out the css just for a space there :D -->
-                       Require  Require
+                       Require
                     </div>
                   </div>
                 </div>
@@ -212,7 +211,7 @@
                   <div class="col-md-6">
                     <h3>Lobby List</h3>
                   </div>
-                  <div class="col-md-6 text-right">
+                  <div class="col-md-6 text-right" hidden >
                     <input
                       type="text"
                       class="form-control"
@@ -243,11 +242,11 @@
               <div class="lobby-controls-header">
                 <div class="row align-items-center">
                   <div class="col-md-6">
-                    <div class="lobby-password-container">
+                    <div class="lobby-password-container" hidden>
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="4-digit PIN Password"
+                        placeholder="4-char PIN Password"
                         id="lobbyPassword"
                       />
                     </div>
@@ -256,11 +255,11 @@
                     <div class="lobby-button-container">
                       <button
                         class="btn btn-secondary mr-4 spec-wide"
-                        id="specatateButton"
+                        id="specatateButton" hidden
                       >
                         Spectate
                       </button>
-                      <button class="btn btn-primary join-wide" id="joinButton">
+                      <button class="btn btn-primary join-wide" id="joinButton" hidden>
                         Join
                       </button>
                     </div>
@@ -281,14 +280,15 @@
             </table>
           </div>
 
-          <div class="container text-center" id="wordListContainer">
-            <div class="col-md-12">
-              <div class="wordList" id="wordList">
-                <!-- Word list will be displayed here -->
-              </div>
+          <div class="wordListTitle" id="wordListTitle" style="display: none">
+            <h3>Word List</h3>
+          </div>
+        
+          <div class="wordListContainer" id="wordListContainer" style="display: none">
+            <div class="wordList" id="wordList">
+              <!-- Word list will be displayed here -->
             </div>
           </div>
-        </div>
         <div
           class="playerList container text-center"
           id="playerList"
@@ -452,6 +452,12 @@
             >
               Set
             </button>
+          </div>
+        </div>
+
+        <div class="leave-game-container" hidden >
+          <div class="leave-game">
+            <button class="btn btn-danger" id="leaveLobbyButton">Leave Lobby</button>
           </div>
         </div>
 

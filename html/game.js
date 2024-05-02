@@ -245,12 +245,14 @@ webSocket.onmessage = function (event) {
 
           const wordListData = data.data.data;
 
+          
+
           let wordListElement = document.getElementById("wordList");
           wordListElement.innerHTML = "";
 
-          let wordListHeader = document.createElement("h3");
-          wordListHeader.textContent = "Word List";
-          wordListElement.appendChild(wordListHeader);
+          // let wordListHeader = document.createElement("h3");
+          // wordListHeader.textContent = "Word List";
+          // wordListElement.appendChild(wordListHeader);
 
           let wordListItems = document.createElement("div");
           wordListItems.className = "word-column";
@@ -277,6 +279,7 @@ webSocket.onmessage = function (event) {
           wordListElement.appendChild(wordListItems);
 
           // Show the word list container
+          document.getElementById("wordListTitle").style.display = "block";
           document.getElementById("wordListContainer").style.display = "block";
         }
 
