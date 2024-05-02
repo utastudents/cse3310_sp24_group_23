@@ -8,8 +8,11 @@ import org.junit.Test;
 
 import uta.group23.wurdle.Game;
 import uta.group23.wurdle.grid.Cell;
+import java.util.HashMap;
+
 import uta.group23.wurdle.grid.Grid;
 import uta.group23.wurdle.grid.GridGen;
+import uta.group23.wurdle.grid.Direction;
 import uta.group23.wurdle.models.Colour;
 import uta.group23.wurdle.models.Player;
 import uta.group23.wurdle.socket.Lobby;
@@ -195,46 +198,24 @@ public class GridTest {
         assertEquals("Grid width should be 20", 20, width);
         assertEquals("Grid height should be 20", 20, height);
     }
-
-     @Test
-    public void testWordExistsHorizontal() {
-        // Create a new grid
-        Grid grid = new Grid(5, 5);
-        // Create a GridGen object
-        GridGen generator = new GridGen();
-        generator.addWordToGrid("TEST", grid);
-        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists horizontally in the grid
-    }
-
+    
     @Test
-    public void testWordExistsVertical() {
-        // Create a new grid
+    public void testWordExistsDirection() {
         Grid grid = new Grid(5, 5);
-        // Create a GridGen object
         GridGen generator = new GridGen();
         generator.addWordToGrid("TEST", grid);
-        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists vertically in the grid
+
+        // Retrieve the word and its direction from the grid
+        HashMap<String, Direction> words = grid.getWords();
+        Direction direction = words.get("TEST");
+
+        // Check if the direction is valid
+        assertTrue(isAllowedDirection(direction));
     }
 
-    @Test
-    public void testWordExistsDiagonalUp() {
-        // Create a new grid
-        Grid grid = new Grid(5, 5);
-        // Create a GridGen object
-        GridGen generator = new GridGen();
-        generator.addWordToGrid("TEST", grid);
-        assertTrue(GridGen.wordExists("TEST", grid));  // Verify if the word "TEST" exists diagonally up in the grid
-    }
-
-    @Test
-    public void testWordExistsDiagonalDown() {
-        // Create a new grid
-        Grid grid = new Grid(5, 5);
-        // Create a GridGen object
-        GridGen generator = new GridGen();
-        generator.addWordToGrid("TEST", grid);
-        assertTrue(GridGen.wordExists("TEST", grid)); // Verify if the word "TEST" exists diagonally down in the grid
-    }
-
+private boolean isAllowedDirection(Direction direction) {
+    return direction == Direction.Horizontal || direction == Direction.Vertical || 
+           direction == Direction.DiagonalUp || direction == Direction.DiagonalDown;
+}
 
 }
